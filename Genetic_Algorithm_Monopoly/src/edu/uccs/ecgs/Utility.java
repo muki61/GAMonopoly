@@ -1,8 +1,32 @@
 package edu.uccs.ecgs;
 
+import java.io.IOException;
+
+import javax.swing.JFileChooser;
+
 public class Utility {
+  private static String rootDir;
+  
   public static StringBuilder getDirForGen(int generation) {
-    StringBuilder dir = new StringBuilder("D:/Documents and Data/Kevin/CS571/Mono_SGA");
+    if (rootDir == null || rootDir.equals("")) {
+      JFileChooser fc = new JFileChooser();
+      fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      fc.setDialogTitle("Select directory to save data files");
+      int returnVal = JFileChooser.CANCEL_OPTION;
+      while (returnVal != JFileChooser.APPROVE_OPTION) {
+        returnVal = fc.showDialog(null, "Select");
+        System.out.println(returnVal);
+      }
+
+      try {
+        rootDir = fc.getSelectedFile().getCanonicalPath();
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+   
+    StringBuilder dir = new StringBuilder(rootDir);
     dir.append("/");
     
     if (generation < 10) {
