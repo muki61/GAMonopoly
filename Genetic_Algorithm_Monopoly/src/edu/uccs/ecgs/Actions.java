@@ -1,4 +1,4 @@
-package cs571.mukhar;
+package edu.uccs.ecgs;
 
 public enum Actions {
     ROLL_DICE, PAY_BAIL, DONE, NULL, PAY_RENT, EVAL_PROPERTY, 

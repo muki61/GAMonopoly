@@ -1,14 +1,14 @@
-package cs571.mukhar.states;
+package edu.uccs.ecgs.states;
 
-import cs571.mukhar.Actions;
-import cs571.mukhar.BankruptcyException;
-import cs571.mukhar.Cards;
-import cs571.mukhar.Chance;
-import cs571.mukhar.CommunityChest;
-import cs571.mukhar.Location;
-import cs571.mukhar.Monopoly;
-import cs571.mukhar.PropertyFactory;
-import cs571.mukhar.PropertyGroups;
+import edu.uccs.ecgs.Actions;
+import edu.uccs.ecgs.BankruptcyException;
+import edu.uccs.ecgs.Cards;
+import edu.uccs.ecgs.Chance;
+import edu.uccs.ecgs.CommunityChest;
+import edu.uccs.ecgs.Location;
+import edu.uccs.ecgs.Monopoly;
+import edu.uccs.ecgs.PropertyFactory;
+import edu.uccs.ecgs.PropertyGroups;
 
 public class AtNewLocationState extends PlayerState {
 

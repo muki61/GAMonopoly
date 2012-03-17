@@ -1,4 +1,4 @@
-package cs571.utility;
+package edu.uccs.ecgs.utility;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -18,7 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import cs571.mukhar.Utility;
+import edu.uccs.ecgs.Utility;
 
 public class FitnessReader extends JFrame implements ActionListener {
   JTextField t2;

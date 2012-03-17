@@ -1,12 +1,12 @@
-package cs571.mukhar.states;
+package edu.uccs.ecgs.states;
 
 import java.util.TreeMap;
 
-import cs571.mukhar.Actions;
-import cs571.mukhar.BankruptcyException;
-import cs571.mukhar.Location;
-import cs571.mukhar.Monopoly;
-import cs571.mukhar.PropertyFactory;
+import edu.uccs.ecgs.Actions;
+import edu.uccs.ecgs.BankruptcyException;
+import edu.uccs.ecgs.Location;
+import edu.uccs.ecgs.Monopoly;
+import edu.uccs.ecgs.PropertyFactory;
 
 public class BuyPropertyState extends PlayerState {
 

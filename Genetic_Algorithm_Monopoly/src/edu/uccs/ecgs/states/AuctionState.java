@@ -1,10 +1,10 @@
-package cs571.mukhar.states;
+package edu.uccs.ecgs.states;
 
 import java.util.TreeMap;
 
-import cs571.mukhar.Actions;
-import cs571.mukhar.Location;
-import cs571.mukhar.Monopoly;
+import edu.uccs.ecgs.Actions;
+import edu.uccs.ecgs.Location;
+import edu.uccs.ecgs.Monopoly;
 
 public class AuctionState extends PlayerState {
   @Override

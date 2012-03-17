@@ -1,4 +1,4 @@
-package cs571.mukhar;
+package edu.uccs.ecgs;
 
 public enum GameState {
   ACTIVE, AT_NEW_LOCATION, AUCTION, BAIL_PAID, BUILD_PROPERTY, INACTIVE, IN_JAIL, 

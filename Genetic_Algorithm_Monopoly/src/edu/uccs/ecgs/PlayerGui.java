@@ -1,4 +1,4 @@
-package cs571.mukhar;
+package edu.uccs.ecgs;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

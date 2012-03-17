@@ -1,4 +1,4 @@
-package cs571.mukhar;
+package edu.uccs.ecgs;
 
 public interface Player {
 	void getRent(int amount);

@@ -1,4 +1,4 @@
-package cs571.mukhar;
+package edu.uccs.ecgs;
 
 import java.util.logging.Logger;
 
@@ -9,7 +9,7 @@ public enum CommunityChest {
   COLLECT_25, REPAIR_PROPERTY, COLLECT_10, INHERIT_100, STOCK_50,
   HOLIDAY_FUND;
 
-  static Logger logger = Logger.getLogger("cs571.mukhar");
+  static Logger logger = Logger.getLogger("edu.uccs.ecgs");
 
   public void processCard(AbstractPlayer player) throws BankruptcyException {
     logger.info("Processing Community Chest Card '" + toString()
@@ -109,19 +109,19 @@ public enum CommunityChest {
     case ADVANCE_TO_GO:
       return "Advance to Go (Collect $200)";
     case COLLECT_200:
-      return "Bank error in your favor – collect $200";
+      return "Bank error in your favor ï¿½ collect $200";
     case PAY_50:
-      return "Doctor's fees – Pay $50";
+      return "Doctor's fees ï¿½ Pay $50";
     case GET_OUT_OF_JAIL:
-      return "Get out of jail free – this card may be kept until needed, or sold";
+      return "Get out of jail free ï¿½ this card may be kept until needed, or sold";
     case GO_TO_JAIL:
-      return "Go to jail – go directly to jail – Do not pass Go, do not collect $200";
+      return "Go to jail ï¿½ go directly to jail ï¿½ Do not pass Go, do not collect $200";
     case COLLECT_10_FROM_ALL: 
       return "It is your birthday Collect $10 from each player";
     case COLLECT_20:
-      return "Income Tax refund – collect $20";
+      return "Income Tax refund ï¿½ collect $20";
     case COLLECT_100:
-      return "Life Insurance Matures – collect $100";
+      return "Life Insurance Matures ï¿½ collect $100";
     case PAY_100:
       return "Pay Hospital Fees of $100";
     case PAY_SCHOOL_50:
@@ -129,9 +129,9 @@ public enum CommunityChest {
     case COLLECT_25:
       return "Receive $25 Consultancy Fee";
     case REPAIR_PROPERTY:
-      return "You are assessed for street repairs – $40 per house, $115 per hotel";
+      return "You are assessed for street repairs ï¿½ $40 per house, $115 per hotel";
     case COLLECT_10:
-      return "You have won second prize in a beauty contest – collect $10";
+      return "You have won second prize in a beauty contest ï¿½ collect $10";
     case INHERIT_100:
       return "You inherit $100";
     case STOCK_50:

@@ -1,9 +1,9 @@
-package cs571.mukhar.states;
+package edu.uccs.ecgs.states;
 
-import cs571.mukhar.Actions;
-import cs571.mukhar.BankruptcyException;
-import cs571.mukhar.Location;
-import cs571.mukhar.Monopoly;
+import edu.uccs.ecgs.Actions;
+import edu.uccs.ecgs.BankruptcyException;
+import edu.uccs.ecgs.Location;
+import edu.uccs.ecgs.Monopoly;
 
 public class PayRentState extends PlayerState {
 

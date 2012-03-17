@@ -1,4 +1,4 @@
-package cs571.mukhar;
+package edu.uccs.ecgs;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +28,7 @@ public class PropertyFactory {
     if (properties == null) {
       properties = new Properties();
 
-      Class<cs571.mukhar.PropertyFactory> c = PropertyFactory.class;
+      Class<edu.uccs.ecgs.PropertyFactory> c = PropertyFactory.class;
       InputStream fis = c.getResourceAsStream("/locations.properties");
 
       try {

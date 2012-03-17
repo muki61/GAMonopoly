@@ -1,6 +1,6 @@
-package cs571.mukhar.states;
+package edu.uccs.ecgs.states;
 
-import cs571.mukhar.Actions;
+import edu.uccs.ecgs.Actions;
 
 public class InactiveState extends PlayerState {
 

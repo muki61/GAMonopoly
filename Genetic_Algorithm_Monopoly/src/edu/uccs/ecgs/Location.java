@@ -1,4 +1,4 @@
-package cs571.mukhar;
+package edu.uccs.ecgs;
 
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -18,7 +18,7 @@ public abstract class Location implements Comparable<Location> {
   protected boolean isMortgaged = false;
   protected int multiple = 1;
 
-  static Logger logger = Logger.getLogger("cs571.mukhar");
+  static Logger logger = Logger.getLogger("edu.uccs.ecgs");
 
   public Location(String key2, Properties properties) {
     key = key2;

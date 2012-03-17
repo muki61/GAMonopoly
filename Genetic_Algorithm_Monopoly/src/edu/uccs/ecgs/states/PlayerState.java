@@ -1,19 +1,19 @@
-package cs571.mukhar.states;
+package edu.uccs.ecgs.states;
 
 import java.util.Random;
 import java.util.logging.Logger;
 
-import cs571.mukhar.AbstractPlayer;
-import cs571.mukhar.Actions;
-import cs571.mukhar.Dice;
-import cs571.mukhar.Location;
-import cs571.mukhar.Main;
-import cs571.mukhar.PropertyFactory;
-import cs571.mukhar.PropertyGroups;
+import edu.uccs.ecgs.AbstractPlayer;
+import edu.uccs.ecgs.Actions;
+import edu.uccs.ecgs.Dice;
+import edu.uccs.ecgs.Location;
+import edu.uccs.ecgs.Main;
+import edu.uccs.ecgs.PropertyFactory;
+import edu.uccs.ecgs.PropertyGroups;
 
 public class PlayerState {
 
-  protected static Logger logger = Logger.getLogger("cs571.mukhar");
+  protected static Logger logger = Logger.getLogger("edu.uccs.ecgs");
 
   protected static AbstractPlayer player;
   protected static AbstractPlayer[] otherPlayers;

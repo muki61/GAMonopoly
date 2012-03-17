@@ -1,4 +1,4 @@
-package cs571.mukhar;
+package edu.uccs.ecgs;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -124,7 +124,7 @@ public class PlayerPanel extends JPanel implements ListSelectionListener {
     
     table.setModel(m);
     table.getSelectionModel().addListSelectionListener(this);
-    table.setDefaultRenderer(Object.class, new cs571.mukhar.MCellRenderer());
+    table.setDefaultRenderer(Object.class, new edu.uccs.ecgs.MCellRenderer());
     layout.setConstraints(table, gbc);
     add(scrollPane, gbc);
 

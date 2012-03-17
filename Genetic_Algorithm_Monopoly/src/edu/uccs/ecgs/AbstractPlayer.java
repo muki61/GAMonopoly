@@ -9,8 +9,8 @@ import java.util.logging.Logger;
 
 //import org.junit.Assert;
 
-import cs571.mukhar.states.Events;
-import cs571.mukhar.states.PlayerState;
+import edu.uccs.ecgs.states.Events;
+import edu.uccs.ecgs.states.PlayerState;
 
 public abstract class AbstractPlayer 
   implements Comparable<AbstractPlayer>, Cloneable
@@ -26,7 +26,7 @@ public abstract class AbstractPlayer
   protected Location location;
   public int playerIndex;
 
-  Logger logger = Logger.getLogger("cs571.mukhar");
+  Logger logger = Logger.getLogger("edu.uccs.ecgs");
 
   public GameState currentState = GameState.INACTIVE;
 

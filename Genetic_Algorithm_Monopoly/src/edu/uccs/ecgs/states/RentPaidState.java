@@ -1,4 +1,4 @@
-package cs571.mukhar.states;
+package edu.uccs.ecgs.states;
 
 public class RentPaidState extends PlayerState {
 

@@ -1,4 +1,4 @@
-package cs571.mukhar;
+package edu.uccs.ecgs;
 
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
@@ -19,11 +19,11 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import cs571.mukhar.states.Events;
+import edu.uccs.ecgs.states.Events;
 
 public class Monopoly implements Runnable {
 
-  static Logger logger = Logger.getLogger("cs571.mukhar");
+  static Logger logger = Logger.getLogger("edu.uccs.ecgs");
   static Formatter formatter;
   FileHandler fh;
 

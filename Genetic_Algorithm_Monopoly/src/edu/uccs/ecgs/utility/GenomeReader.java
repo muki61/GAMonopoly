@@ -1,4 +1,4 @@
-package cs571.utility;
+package edu.uccs.ecgs.utility;
 
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
@@ -9,8 +9,8 @@ import java.util.BitSet;
 
 import javax.swing.JFileChooser;
 
-import cs571.mukhar.BitSetUtility;
-import cs571.mukhar.PropertyFactory;
+import edu.uccs.ecgs.BitSetUtility;
+import edu.uccs.ecgs.PropertyFactory;
 
 public class GenomeReader {
 	public static void main(String[] args) {

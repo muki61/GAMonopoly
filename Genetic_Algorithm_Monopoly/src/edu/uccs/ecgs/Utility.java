@@ -1,4 +1,4 @@
-package cs571.mukhar;
+package edu.uccs.ecgs;
 
 public class Utility {
   public static StringBuilder getDirForGen(int generation) {

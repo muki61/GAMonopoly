@@ -1,4 +1,4 @@
-package cs571.mukhar;
+package edu.uccs.ecgs;
 
 import java.util.Random;
 import java.util.logging.Logger;
@@ -11,7 +11,7 @@ public class Dice {
   
   private static Dice _dice = new Dice();
 
-  static Logger logger = Logger.getLogger("cs571.mukhar");
+  static Logger logger = Logger.getLogger("edu.uccs.ecgs");
 
   private Dice() {
     long seed = 1241722060907L;
