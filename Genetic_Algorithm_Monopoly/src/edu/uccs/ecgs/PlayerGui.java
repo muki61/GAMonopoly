@@ -6,8 +6,8 @@ import java.awt.Insets;
 
 import javax.swing.JFrame;
 
+@SuppressWarnings("serial")
 public class PlayerGui extends JFrame {
-
   public static void main(String[] args) {
     new PlayerGui();
   }

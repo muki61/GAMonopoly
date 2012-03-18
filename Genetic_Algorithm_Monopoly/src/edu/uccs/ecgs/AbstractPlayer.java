@@ -25,6 +25,7 @@ public abstract class AbstractPlayer
   private int locationIndex = 0;
   protected Location location;
   public int playerIndex;
+  public int initialGeneration;
 
   Logger logger = Logger.getLogger("edu.uccs.ecgs");
 

@@ -8,6 +8,7 @@ import java.util.TreeSet;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
+@SuppressWarnings("serial")
 public class MComboBoxModel extends DefaultComboBoxModel implements ActionListener {
   TreeSet<Location> data = new TreeSet<Location>();
   Location selected = PropertyFactory.getPropertyFactory().getLocationAt(0);

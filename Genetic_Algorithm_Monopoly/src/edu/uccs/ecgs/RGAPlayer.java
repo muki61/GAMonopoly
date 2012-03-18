@@ -77,9 +77,13 @@ public class RGAPlayer extends CGPlayer {
     this.chrJail = chrJail;
   }
 
-  // Predicate asking whether or not player wishes to pay bail
-  // True --> player wishes to pay bail
-  // False --> player wishes to attempt to roll doubles
+  /**
+   * Predicate asking whether or not player wishes to pay bail 
+   * 
+   * True --> player wishes to pay bail 
+   * 
+   * False --> player wishes to attempt to roll doubles
+   */
   @Override
   public boolean payBailP() {
     if (!hasAtLeastCash(50) && !canRaiseCash(50) && !hasGetOutOfJailCard()) {
@@ -93,6 +97,10 @@ public class RGAPlayer extends CGPlayer {
     return r.nextDouble() < chrJail[idx1][idx2];
   }
 
+  /**
+   * Dump the players genome out to a data file (which can be read later in the
+   * case of restart or to analyze the player).
+   */
   @Override
   public void dumpGenome(DataOutputStream out) throws IOException {
     out.writeChars("RGA");

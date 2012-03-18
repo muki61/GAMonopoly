@@ -8,52 +8,74 @@ public abstract class CGPlayer extends AbstractPlayer {
   protected int jailLength = 0;       //num of entries in chrJailArray
   protected final int lotLength = 40; //num of entries in any lot array
   
-  // Chromosome used when no players own the property in the group
-  // where the player is currently located
+  /**
+   * Chromosome used when no players own the property in the group where the
+   * player is currently located
+   */
   double[] chrNoOwners;
 
-  // Chromosome used when the player owns one or two properties in the
-  // group where the player is currently located, and no other player
-  // owns properties in that group
+  /**
+   * Chromosome used when the player owns one or two properties in the group
+   * where the player is currently located, and no other player owns properties
+   * in that group
+   */
   double[] chrPlayerOwns;
 
-  // Chromosome used when at least one opposing player owns property
-  // in the group where the player is currently located
+  /**
+   * Chromosome used when at least one opposing player owns property in the
+   * group where the player is currently located
+   */
   double[] chrOpponentOwns;
 
-  // Chromosome used when at two or more opposing players own property
-  // in the group where the player is currently located
+  /**
+   * Chromosome used when at two or more opposing players own property in the
+   * group where the player is currently located
+   */
   double[] chrTwoOpponentOwns;
 
-  // Chromosome to determine when to pay to get out of jail
-  // Use the 8 properties on East to create an 8-bit number
-  // Use the 8 properties on North to create an 8-bit number
-  // Use those two numbers as an index into the array
-  // Assume that each time the player must choose, this choice is
-  // determined independently of the previous choice. Thus, based on
-  // chance, the player could make different choices for the same index
-  // on different turns
+  /**
+   * Chromosome to determine when to pay to get out of jail
+   * 
+   * Use the properties on East to create a number
+   * 
+   * Use the properties on North to create a number
+   * 
+   * Use those two numbers as an index into the array
+   * 
+   * Assume that each time the player must choose, this choice is determined
+   * independently of the previous choice. Thus, based on chance, the player
+   * could make different choices for the same index on different turns
+   */
   public double[][] chrJail;
 
-  // todo Chromosome to determine when and how to trade properties?
+  // TODO Chromosome to determine when and how to trade properties?
   // Or use some other technique???
 
   public CGPlayer(int index) {
     super(index);
   }
 
-  // If player wants to buy current location -->
-  // return true
-  // Otherwise -->
-  // return false
-  // Player will buy property if random double is less than chromosome
-  // value; in other words, a higher chromosome value means a higher
-  // likelihood of buying a property
+  /**
+   * If player wants to buy current location --> return true Otherwise -->
+   * return false.
+   * 
+   * Player will buy property if random double is less than chromosome value; in
+   * other words, a higher chromosome value means a higher likelihood of buying
+   * a property
+   */
   @Override
   public boolean buyProperty() {
     return buyProperty (location);
   }  
 
+  /**
+   * If player wants to buy the given location --> return true Otherwise -->
+   * return false.
+   * 
+   * Player will buy property if random double is less than chromosome value; in
+   * other words, a higher chromosome value means a higher likelihood of buying
+   * a property.
+   */
   @Override
   public boolean buyProperty(Location aLocation) {
     PropertyFactory pf = PropertyFactory.getPropertyFactory();

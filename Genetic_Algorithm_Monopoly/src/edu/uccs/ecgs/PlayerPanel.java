@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+@SuppressWarnings("serial")
 public class PlayerPanel extends JPanel implements ListSelectionListener {
   public AbstractPlayer player;
   int index = 0;

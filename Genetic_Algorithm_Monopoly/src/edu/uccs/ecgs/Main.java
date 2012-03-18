@@ -2,7 +2,6 @@ package edu.uccs.ecgs;
 
 import java.util.Properties;
 
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 public class Main {
@@ -84,7 +83,7 @@ public class Main {
   public static boolean useRandomSeed = true;
 
   /**
-   * Whether the program is paused or not. for internal use.
+   * Whether the program is paused or not. For use by Gui.java
    */
   public static boolean paused; 
 
@@ -139,21 +138,11 @@ public class Main {
       }
 
       gui.dispose();
-//      JOptionPane.showMessageDialog(null, "Monopoly simulation is complete");
-      JOptionPane pane = new JOptionPane("Monopoly simulation is complete",
-          JOptionPane.INFORMATION_MESSAGE);
-      JDialog dialog = new JDialog();
-      dialog.getContentPane().add(pane);
-      dialog.pack();
-      dialog.setVisible(true);
-      try {
-        Thread.sleep(1800000);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+
+      JOptionPane.showMessageDialog(null, "Monopoly simulation is complete", "Simulation Complete", JOptionPane.INFORMATION_MESSAGE);
       System.exit(0);
     } else {
-      //use gui
+      //do not use gui
     }
   }
 }

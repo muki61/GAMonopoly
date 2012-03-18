@@ -27,7 +27,6 @@ public class Monopoly implements Runnable {
   static Formatter formatter;
   FileHandler fh;
 
-  private int delayRate;
   private boolean done = false;
   // All the players in a generation
   private Vector<AbstractPlayer> playerPool = new Vector<AbstractPlayer>(Main.maxPlayers);
@@ -417,21 +416,9 @@ public class Monopoly implements Runnable {
       playerPool.clear();
       playerPool.addAll(newPopulation);      
     } else {
+      // Create new population of players
       for (int i = 0; i < Main.maxPlayers; i++) {
-        AbstractPlayer player = null;
-        
-        switch (Main.chromoType) {
-        case RGA:
-          player = new RGAPlayer(i);
-          break;
-        case SGA:
-          player = new SGAPlayer(i);
-          break;
-        case TGA:
-          player = new TGAPlayer(i);
-          break;
-        }
-
+        AbstractPlayer player = PlayerFactory.getPlayer(i, Main.chromoType);
         player.initCash(1500);
         playerPool.add(player);
       }

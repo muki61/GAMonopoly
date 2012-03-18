@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 
 import edu.uccs.ecgs.Utility;
 
+@SuppressWarnings("serial")
 public class FitnessReader extends JFrame implements ActionListener {
   JTextField t2;
   JTextField t1;

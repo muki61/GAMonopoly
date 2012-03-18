@@ -5,6 +5,7 @@ import java.util.TreeSet;
 
 import javax.swing.table.AbstractTableModel;
 
+@SuppressWarnings("serial")
 public class MTableModel extends AbstractTableModel {
   TreeSet<Location> data = new TreeSet<Location>();
 
