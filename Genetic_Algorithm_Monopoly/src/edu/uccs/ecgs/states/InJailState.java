@@ -14,7 +14,7 @@ public class InJailState extends PlayerState {
   }
 
   @Override
-  public PlayerState processEvent(Events event) {
+  public PlayerState processEvent(Events event, Monopoly game) {
     logger.info("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
         "; event " + event.name());
     switch (event) {
@@ -44,7 +44,7 @@ public class InJailState extends PlayerState {
               player.getCash(50);
             } catch (BankruptcyException e) {
               //e.printStackTrace();
-              Monopoly.processBankruptcy(player, null);
+              game.processBankruptcy(player, null);
               player.nextAction = Actions.DONE;
               return inactiveState;
             }
@@ -72,7 +72,7 @@ public class InJailState extends PlayerState {
           player.getCash(50);
         } catch (BankruptcyException e) {
           //e.printStackTrace();
-          Monopoly.processBankruptcy(player, null);
+          game.processBankruptcy(player, null);
           player.nextAction = Actions.DONE;
           return inactiveState;
         }

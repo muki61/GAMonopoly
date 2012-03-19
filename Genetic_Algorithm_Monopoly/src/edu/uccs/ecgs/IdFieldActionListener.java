@@ -19,7 +19,7 @@ public class IdFieldActionListener implements ActionListener {
       pp.cashField.setEditable(true);
       pp.cashField.addFocusListener(new CashFieldFocusListener(pp));
       pp.cashField.addActionListener(new CashFieldActionListener(pp));
-      pp.addPlayer();
+      // TODO pp.addPlayer();
       pp.disableLoadButton();
     }
   }

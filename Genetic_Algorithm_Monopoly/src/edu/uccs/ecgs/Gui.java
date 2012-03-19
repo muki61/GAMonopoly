@@ -25,12 +25,11 @@ public class Gui extends JFrame {
         if (Main.paused) {
           //button currently says Run Monopoly
           button.setText("Pause Monopoly");
-          Main.paused = false;
-          Monopoly.getMonopolyGame().unpause();
+          Main.resume();
         } else {
           //button currently says Pause Monopoly
           button.setText("Run Monopoly");
-          Main.paused = true;
+          Main.pause();
         }
       }});
     

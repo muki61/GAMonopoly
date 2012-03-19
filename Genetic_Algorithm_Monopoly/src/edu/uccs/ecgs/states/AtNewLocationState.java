@@ -18,7 +18,7 @@ public class AtNewLocationState extends PlayerState {
   }
 
   @Override
-  public PlayerState processEvent(Events event) {
+  public PlayerState processEvent(Events event, Monopoly game) {
     logger.info("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
         "; event " + event.name());
     Location location = player.getCurrentLocation();
@@ -44,10 +44,10 @@ public class AtNewLocationState extends PlayerState {
         CommunityChest ccCard = Cards.getCards().getNextCommunityChestCard();
 
         try {
-          ccCard.processCard(player);
+          ccCard.processCard(player, game);
         } catch (BankruptcyException e) {
           //e.printStackTrace();
-          Monopoly.processBankruptcy(player, null);
+          game.processBankruptcy(player, null);
           player.nextAction = Actions.DONE;
           return inactiveState;
         }
@@ -93,10 +93,10 @@ public class AtNewLocationState extends PlayerState {
         Chance chanceCard = Cards.getCards().getNextChanceCard();
 
         try {
-          chanceCard.processChance(player);
+          chanceCard.processChance(player, game);
         } catch (BankruptcyException e) {
           //e.printStackTrace();
-          Monopoly.processBankruptcy(player, null);
+          game.processBankruptcy(player, null);
           player.nextAction = Actions.DONE;
           return inactiveState;
         }
@@ -145,7 +145,7 @@ public class AtNewLocationState extends PlayerState {
           player.getCash(200);
         } catch (BankruptcyException e) {
           //e.printStackTrace();
-          Monopoly.processBankruptcy(player, null);
+          game.processBankruptcy(player, null);
           player.nextAction = Actions.DONE;
           return inactiveState;
         }
@@ -164,7 +164,7 @@ public class AtNewLocationState extends PlayerState {
           player.getCash(100);
         } catch (BankruptcyException e) {
           //e.printStackTrace();
-          Monopoly.processBankruptcy(player, null);
+          game.processBankruptcy(player, null);
           player.nextAction = Actions.DONE;
           return inactiveState;
         }

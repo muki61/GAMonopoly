@@ -150,9 +150,6 @@ public class PlayerPanel extends JPanel implements ListSelectionListener {
     buyButton.addActionListener(new BuyButtonListener(this, lotComboBox));
     layout.setConstraints(buyButton, gbc);
     add(buyButton, gbc);
-
-
-    
     
     gbc.gridwidth = GridBagConstraints.RELATIVE;
     JLabel d4 = new JLabel();
@@ -168,9 +165,10 @@ public class PlayerPanel extends JPanel implements ListSelectionListener {
     setVisible(true);
   }
 
-  public void addPlayer() {
-    GamePlayers.players[index] = player;
-  }
+  //TODO Is this method needed??
+  // public void addPlayer() {
+  // GamePlayers.players[index] = player;
+  // }
 
   public void disableLoadButton() {
     System.out.println("disabling");

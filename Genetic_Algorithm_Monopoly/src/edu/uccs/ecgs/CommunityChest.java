@@ -11,7 +11,7 @@ public enum CommunityChest {
 
   static Logger logger = Logger.getLogger("edu.uccs.ecgs");
 
-  public void processCard(AbstractPlayer player) throws BankruptcyException {
+  public void processCard(AbstractPlayer player, Monopoly game) throws BankruptcyException {
     logger.info("Processing Community Chest Card '" + toString()
         + "' for player " + player.playerIndex);
 
@@ -42,17 +42,7 @@ public enum CommunityChest {
       break;
     
     case COLLECT_10_FROM_ALL:
-      for (AbstractPlayer p : GamePlayers.players) {
-        if (p != player && !p.bankrupt()) {
-          try {
-            getCashFromPlayer(p, 10);
-            player.receiveCash(10);
-          } catch (BankruptcyException e) {
-            //e.printStackTrace();
-            Monopoly.processBankruptcy(p, player);
-          }
-        }
-      }
+      game.collect10FromAll(player);
       break;
 
     case COLLECT_20:

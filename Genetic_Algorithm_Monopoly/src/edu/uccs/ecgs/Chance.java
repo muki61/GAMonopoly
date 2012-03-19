@@ -12,7 +12,7 @@ public enum Chance {
 
   static Logger logger = Logger.getLogger("edu.uccs.ecgs");
 
-  public void processChance(AbstractPlayer player) throws BankruptcyException {
+  public void processChance(AbstractPlayer player, Monopoly game) throws BankruptcyException {
     int locationIndex = 0;
     int spacesToAdvance = 0;
     Location location = null;
@@ -107,20 +107,7 @@ public enum Chance {
       break;
 
     case PAY_EACH_PLAYER_50:
-      int numPlayersToPay = 0;
-      for (AbstractPlayer p : GamePlayers.players) {
-        if (p != player && !p.bankrupt()) {
-          ++numPlayersToPay;
-        }
-      }
-
-      int amount = numPlayersToPay * 50;
-      getCashFromPlayer(player, amount);
-      for (AbstractPlayer p : GamePlayers.players) {
-        if (p != player && !p.bankrupt()) {
-          p.receiveCash(50);
-        }
-      }
+      game.payEachPlayer50(player);
       break;
 
     case GET_OUT_OF_JAIL:

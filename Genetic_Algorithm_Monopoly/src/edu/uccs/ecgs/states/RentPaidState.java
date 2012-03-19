@@ -1,5 +1,7 @@
 package edu.uccs.ecgs.states;
 
+import edu.uccs.ecgs.Monopoly;
+
 public class RentPaidState extends PlayerState {
 
   @Override
@@ -8,7 +10,7 @@ public class RentPaidState extends PlayerState {
   }
 
   @Override
-  public PlayerState processEvent(Events event) {
+  public PlayerState processEvent(Events event, Monopoly game) {
     logger.info("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
         "; event " + event.name());
     switch (event) {

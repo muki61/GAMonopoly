@@ -8,8 +8,6 @@ public class Cards {
   Vector<Chance> chanceCards = new Vector<Chance>(16);
   Vector<CommunityChest> ccCards = new Vector<CommunityChest>(16);
 
-  private static Cards _this = new Cards();
-
   Random random = new Random();
 
   private Cards() {
@@ -25,16 +23,9 @@ public class Cards {
   }
 
   public static Cards getCards() {
-    return _this;
+    return new Cards();
   }
   
-  public void resetCards() {
-    chanceCards.clear();
-    ccCards.clear();
-    shuffleChance();
-    shuffleCC();
-  }
-
   public Chance getNextChanceCard() {
     Chance c = chanceCards.remove(0);
     if (c != Chance.GET_OUT_OF_JAIL) {

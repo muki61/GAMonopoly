@@ -28,7 +28,7 @@ public class LoadButtonListener implements ActionListener {
       playerPanel.cashField.setEditable(true);
       playerPanel.cashField.addFocusListener(new CashFieldFocusListener(playerPanel));
       playerPanel.cashField.addActionListener(new CashFieldActionListener(playerPanel));
-      playerPanel.addPlayer();
+      // TODO playerPanel.addPlayer();
       playerPanel.disableLoadButton();
     }
   }

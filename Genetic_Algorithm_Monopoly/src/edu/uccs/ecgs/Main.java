@@ -82,10 +82,9 @@ public class Main {
    */
   public static boolean useRandomSeed = true;
 
-  /**
-   * Whether the program is paused or not. For use by Gui.java
-   */
-  public static boolean paused; 
+  private static GAEngine gaEngine;
+
+  public static boolean paused = false; 
 
   public static void main(String[] args) {
     boolean useGui = true;
@@ -126,9 +125,9 @@ public class Main {
     if (useGui) {
       gui = new Gui();
       
-      Monopoly game = Monopoly.getMonopolyGame();
+      gaEngine = new GAEngine();
 
-      Thread t = new Thread(game);
+      Thread t = new Thread(gaEngine);
       t.start();
 
       try {
@@ -144,5 +143,15 @@ public class Main {
     } else {
       //do not use gui
     }
+  }
+  
+  public static void pause() {
+    paused  = true;
+    gaEngine.pause();
+  }
+  
+  public static void resume() {
+    paused=false;
+    gaEngine.resume();
   }
 }

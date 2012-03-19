@@ -1,22 +1,12 @@
 package edu.uccs.ecgs;
 
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Random;
 import java.util.TreeMap;
-import java.util.Vector;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import edu.uccs.ecgs.states.Events;
@@ -28,26 +18,28 @@ public class Monopoly implements Runnable {
   FileHandler fh;
 
   private boolean done = false;
-  // All the players in a generation
-  private Vector<AbstractPlayer> playerPool = new Vector<AbstractPlayer>(Main.maxPlayers);
-  private Vector<AbstractPlayer> playersDone = new Vector<AbstractPlayer>(Main.maxPlayers);
+
+  private int generation;
+  private int match;
+  private int game;
+
   int playerIndex = 0;
   Dice dice = Dice.getDice();
   int turnCounter = 0;
   Random r;
   
-  int generation = 0;
-  int matches = 0;
-  int gameNumber = 0;
-  private int minEliteScore;
+  private AbstractPlayer[] players;
   private static int bankruptCount;
 
   private static int numHouses;
   private static int numHotels;
 
-  private static Monopoly _this = new Monopoly();
+  public Monopoly(int generation, int match, int gameNumber, AbstractPlayer[] players) {
+    this.generation = generation;
+    this.match = match;
+    this.game = gameNumber;
+    this.players = players;
 
-  private Monopoly() {
     r = new Random();
     long seed = 1241797664697L;
     if (Main.useRandomSeed) {
@@ -55,212 +47,21 @@ public class Monopoly implements Runnable {
     }
     System.out.println("Monopoly seed      : " + seed);
     r.setSeed(seed);
-    createPlayers();
-  }
-
-  public static Monopoly getMonopolyGame() {
-    return _this;
-  }
-
-  public void runGame() {
-    if (Main.loadFromDisk) {
-      generation = Main.lastGeneration + 1;
-    }
-
-    while (generation < Main.numGenerations) {
-      matches = 0;
-      while (matches < Main.numMatches) {
-        gameNumber = 0;
-        while (!playerPool.isEmpty()) {
-          turnCounter = 0;
-          PropertyFactory.getPropertyFactory().reset();
-          numHouses = 32;
-          numHotels = 12;
-          logFileSetup();
-
-          // logger.info("Lots at start of game");
-          // for (Location location :
-          // PropertyFactory.getPropertyFactory().locations) {
-          // logger.info(location.toString());
-          // logger.info("  owner        : " + location.owner);
-          // assert location.owner == null : "Owner not null for " +
-          // location.name;
-          // logger.info("");
-          // }
-
-          runGame2();
-          Cards.getCards().resetCards();
-          resetPlayers();
-          ++gameNumber;
-        }
-        ++matches;
-
-        playerPool.addAll(playersDone);
-        playersDone.removeAllElements();
-        initializeAllPlayers();
-      }
-
-      dumpGenome();
-      dumpPlayerFitness();
-      
-      Vector<AbstractPlayer> newPopulation = PopulationPropagator.evolve(playerPool, minEliteScore);
-      playerPool.clear();
-      playerPool.addAll(newPopulation);
-      
-      generation++;
-//      if (generation == 1) {
-//        logger.setLevel(Level.OFF);
-//      }
-    }
-  }
-
-  private void resetPlayers() {
-    for (AbstractPlayer p : GamePlayers.players) {
-      p.clearAllProperties();
-    }
-  }
-
-  private void initializeAllPlayers() {
-    for (AbstractPlayer p : playerPool) {
-      p.initCash(1500);
-      p.resetAll();
-    }
-  }
-
-  private void dumpPlayerFitness() {
-    //create a map sorted by score, where the value is the number of 
-    //players with that score
-    TreeMap<Integer, Integer> scores = new TreeMap<Integer, Integer>();
-    //the set is used to dump a list of each player with the player's individual score
-    ArrayList<AbstractPlayer> fitness = new ArrayList<AbstractPlayer>(Main.maxPlayers);
     
-    for (AbstractPlayer player : playerPool) {
-      fitness.add(player);
-
-      Integer val = scores.get(player.fitnessScore);
-      if (val == null) {
-        scores.put(player.fitnessScore, 1);
-      } else {
-       Integer newVal = val.intValue() + 1; 
-       scores.put(player.fitnessScore, newVal);
-      }
-    }
-
-    //determine the minimum elite score
-    minEliteScore = 0;
-    int playerCount = 0;
-    int maxPlayerCount = (int)(0.1 * Main.maxPlayers);
-    for (Integer key : scores.descendingKeySet()) {
-      playerCount += scores.get(key).intValue();
-      if (playerCount >= maxPlayerCount) {
-        break;
-      }
-      minEliteScore = key.intValue();
-    }
-
-    StringBuilder dir = Utility.getDirForGen(generation);
-
-    File file = new File(dir.toString());
-    if (!file.exists()) {
-      file.mkdir();
-    }
+    turnCounter = 0;
+    PropertyFactory.getPropertyFactory().reset();
+    numHouses = 32;
+    numHotels = 12;
+    logFileSetup();
     
-    //dump the score counts
-    BufferedWriter bw = null; 
-    try {
-      FileWriter fw = new FileWriter(dir.toString() + "/fitness_scores.csv");
-      bw = new BufferedWriter(fw); 
-
-      //all scores
-      int maxScore = Main.numMatches * 3;
-      
-      for (int i = 0; i <= maxScore; i++) {
-        if (scores.containsKey(i)) {
-          bw.write(i + "," + scores.get(i).intValue());
-          bw.newLine();
-        } else {
-          bw.write(i + ",0");
-          bw.newLine();
-        }
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
-    } finally {
-      if (bw != null) {
-        try {
-          bw.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-
-    Collections.sort(fitness);
-
-    //dump individual fitness scores
-    try {
-      FileWriter fw = new FileWriter(dir.toString() + "/player_fitness.csv");
-      bw = new BufferedWriter(fw);
-
-      for (AbstractPlayer player : fitness) {
-        bw.write(player.fitnessScore + "," + player.playerIndex);
-        bw.newLine();
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
-    } finally {
-      if (bw != null) {
-        try {
-          bw.close();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-  }
-
-  private void dumpGenome() {
-    for (AbstractPlayer player : playerPool) {
-      StringBuilder fn1 = new StringBuilder(32);
-      fn1.append("0000").append(player.playerIndex);
-      String fn2 = fn1.reverse().substring(0, 4);
-      StringBuilder fn3 = new StringBuilder(fn2).append("rylp").reverse();
-      fn3.append(".dat");
-
-      StringBuilder dir = Utility.getDirForGen(generation);
-      
-      File file = new File(dir.toString());
-      if (!file.exists()) {
-        file.mkdir();
-      }
-
-      DataOutputStream dos = null;
-      try {
-        FileOutputStream fos = new FileOutputStream(dir.toString() + "/" + fn3.toString());
-        dos = new DataOutputStream(fos);
-        player.dumpGenome(dos);
-      } catch (FileNotFoundException e) {
-        e.printStackTrace();
-      } catch (IOException e) {
-        e.printStackTrace();
-      } finally {
-        if (dos != null) {
-          try {
-            dos.close();
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-        }
-      }
-    }
+    Cards.getCards();
   }
 
   public void runGame2() {
     done = false;
-    getFourPlayers();
 
-    logger.info("Started game " + gameNumber + " with players: ");
-    for (AbstractPlayer p : GamePlayers.players) {
+    logger.info("Started game " + game + " with players: ");
+    for (AbstractPlayer p : players) {
       logger.info("Player " + p.playerIndex);
     }
 
@@ -365,7 +166,7 @@ public class Monopoly implements Runnable {
     }
     
     TreeMap<Integer, AbstractPlayer> sortedPlayers = new TreeMap<Integer, AbstractPlayer>();
-    for (AbstractPlayer p : GamePlayers.players) {
+    for (AbstractPlayer p : players) {
       if (p.getTotalWorth() == 0) {
         sortedPlayers.put(p.getBankruptIndex(), p);
       } else {
@@ -388,41 +189,15 @@ public class Monopoly implements Runnable {
     }
   }
 
-  private void getFourPlayers() {
-    for (int i = 0; i < GamePlayers.players.length; i++) {
-      GamePlayers.players[i] = null;
-      AbstractPlayer player = playerPool.remove(r.nextInt(playerPool.size()));
-      GamePlayers.players[i] = player;
-      playersDone.add(player);
-      assert !playerPool.contains(player);
-    }
-  }
-
   private AbstractPlayer getNextPlayer() {
-    while (GamePlayers.players[playerIndex].bankrupt()) {
+    while (players[playerIndex].bankrupt()) {
       playerIndex = ++playerIndex % 4;
     }
 
-    AbstractPlayer p = GamePlayers.players[playerIndex];
+    AbstractPlayer p = players[playerIndex];
     playerIndex = ++playerIndex % 4;
 
     return p;
-  }
-
-  private void createPlayers() {
-    if (Main.loadFromDisk) {
-      playerPool.addAll(PopulationPropagator.loadPlayers(Main.lastGeneration));
-      Vector<AbstractPlayer> newPopulation = PopulationPropagator.evolve(playerPool, minEliteScore);
-      playerPool.clear();
-      playerPool.addAll(newPopulation);      
-    } else {
-      // Create new population of players
-      for (int i = 0; i < Main.maxPlayers; i++) {
-        AbstractPlayer player = PlayerFactory.getPlayer(i, Main.chromoType);
-        player.initCash(1500);
-        playerPool.add(player);
-      }
-    }
   }
 
   public static void payRent(AbstractPlayer from, AbstractPlayer to, int amount)
@@ -432,40 +207,31 @@ public class Monopoly implements Runnable {
     to.receiveCash(amount);
   }
 
-  // public void setDelay(int rate) {
-  // delayRate = rate * 1000;
-  // if (delayRate > 0) {
-  // delay = true;
-  // } else {
-  // delay = false;
-  // }
-  // }
+//  public void run() {
+//    try {
+//      initLogger();
+////      runGame();
+//    } catch (Throwable t) {
+//      t.printStackTrace();
+//      logger.log(Level.SEVERE, "", t);
+//    }
+//  }
 
-  public void run() {
-    try {
-      initLogger();
-      runGame();
-    } catch (Throwable t) {
-      t.printStackTrace();
-      logger.log(Level.SEVERE, "", t);
-    }
-  }
-
-  public void initLogger() {
-    // This block configures the logger with handler and formatter
-    formatter = new Formatter() {
-      @Override
-      public String format(LogRecord record) {
-        return record.getMessage() + "\n";
-      }
-    };
-
-    if (Main.debug) {
-      logger.setLevel(Level.INFO);
-    } else {
-      logger.setLevel(Level.OFF);
-    }
-  }
+//  public void initLogger() {
+//    // This block configures the logger with handler and formatter
+//    formatter = new Formatter() {
+//      @Override
+//      public String format(LogRecord record) {
+//        return record.getMessage() + "\n";
+//      }
+//    };
+//
+//    if (Main.debug) {
+//      logger.setLevel(Level.INFO);
+//    } else {
+//      logger.setLevel(Level.OFF);
+//    }
+//  }
 
   public void logFileSetup() {
     if (!Main.debug) {
@@ -513,7 +279,7 @@ public class Monopoly implements Runnable {
   }
 
   private StringBuilder getMatchString() {
-    StringBuilder result = new StringBuilder("" + matches);
+    StringBuilder result = new StringBuilder("" + match);
 
     while (result.length() < 3) {
       result.insert(0, 0);
@@ -525,7 +291,7 @@ public class Monopoly implements Runnable {
   }
 
   private StringBuilder getGameString() {
-    StringBuilder result = new StringBuilder("" + gameNumber);
+    StringBuilder result = new StringBuilder("" + game);
 
     while (result.length() < 3) {
       result.insert(0, 0);
@@ -764,7 +530,7 @@ public class Monopoly implements Runnable {
     }
   }
 
-  public static void processBankruptcy(AbstractPlayer player, AbstractPlayer gainingPlayer) {
+  public void processBankruptcy(AbstractPlayer player, AbstractPlayer gainingPlayer) {
     
     logger.info("Player " + player.playerIndex + " is bankrupt");
     player.setBankruptIndex(bankruptCount);
@@ -824,7 +590,7 @@ public class Monopoly implements Runnable {
     player.setBankrupt();
   }
 
-  public static void auctionLots(TreeMap<Integer, Location> lotsToAuction) {
+  public void auctionLots(TreeMap<Integer, Location> lotsToAuction) {
     // logger.setLevel(Level.INFO);
 
     //set owner to null for all lots
@@ -841,7 +607,7 @@ public class Monopoly implements Runnable {
       AbstractPlayer highBidPlayer = null;
       int secondHighestBid = 0;
 
-      for (AbstractPlayer p : GamePlayers.players) {
+      for (AbstractPlayer p : players) {
         int bid = p.getBidForLocation(location);
         logger.info("Player " + p.playerIndex + " has " + p.cash + " dollars and bids " + bid);
 
@@ -913,5 +679,42 @@ public class Monopoly implements Runnable {
 
   public synchronized void unpause() {
     notify();
+  }
+
+  @Override
+  public void run() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  public void payEachPlayer50(AbstractPlayer player) throws BankruptcyException {
+    int numPlayersToPay = 0;
+    for (AbstractPlayer p : players) {
+      if (p != player && !p.bankrupt()) {
+        ++numPlayersToPay;
+      }
+    }
+
+    int amount = numPlayersToPay * 50;
+    player.getCash(amount);
+
+    for (AbstractPlayer p : players) {
+      if (p != player && !p.bankrupt()) {
+        p.receiveCash(50);
+      }
+    }
+  }
+
+  public void collect10FromAll(AbstractPlayer player) {
+    for (AbstractPlayer p : players) {
+      if (p != player && !p.bankrupt()) {
+        try {
+          p.getCash(10);
+          player.receiveCash(10);
+        } catch (BankruptcyException e) {
+          processBankruptcy(p, player);
+        }
+      }
+    }
   }
 }

@@ -13,7 +13,7 @@ public class AuctionState extends PlayerState {
   }
 
   @Override
-  public PlayerState processEvent(Events event) {
+  public PlayerState processEvent(Events event, Monopoly game) {
     logger.info("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
         "; event " + event.name());
     switch (event) {
@@ -24,7 +24,7 @@ public class AuctionState extends PlayerState {
       Location location = player.getCurrentLocation();
       lotsToAuction.put(location.index, location);
       
-      Monopoly.auctionLots(lotsToAuction);
+      game.auctionLots(lotsToAuction);
 
       if (location.owner == player) {
         player.nextAction = Actions.AUCTION_WON;

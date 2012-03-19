@@ -53,6 +53,7 @@ public abstract class AbstractPlayer
   
   private boolean isBankrupt = false;
   private int bankruptIndex = 0;
+  private Monopoly game;
 
   public AbstractPlayer(int index) {
     playerIndex = index;
@@ -65,7 +66,6 @@ public abstract class AbstractPlayer
     if (owned != null) {
       owned.clear();
     }
-    //owned = new TreeMap<Integer, Location>();
   }
 
   public boolean hasAtLeastCash(int amount) {
@@ -113,7 +113,7 @@ public abstract class AbstractPlayer
   }
 
   public Actions getNextActionEnum(Events event) {
-    playerState = playerState.processEvent(event);
+    playerState = playerState.processEvent(event, game);
     return nextAction;
   }
 
@@ -734,12 +734,13 @@ public abstract class AbstractPlayer
     int totalnet = 0;
     int count = 0;
 
-    for (AbstractPlayer p : GamePlayers.players) {
-      if (p != this) {
-        ++count;
-        totalnet += p.getTotalWorth();
-      }
-    }
+    //TODO fix this
+//    for (AbstractPlayer p : GamePlayers.players) {
+//      if (p != this) {
+//        ++count;
+//        totalnet += p.getTotalWorth();
+//      }
+//    }
     
     int avgnet = totalnet / count;
     result += (int) (totalnet * 0.01);

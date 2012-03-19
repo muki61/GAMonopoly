@@ -16,7 +16,7 @@ public class BuyPropertyState extends PlayerState {
   }
 
   @Override
-  public PlayerState processEvent(Events event) {
+  public PlayerState processEvent(Events event, Monopoly game) {
     logger.info("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
         "; event " + event.name());
     switch (event) {
@@ -39,7 +39,7 @@ public class BuyPropertyState extends PlayerState {
         //but just in case this happens...
         TreeMap<Integer, Location> lotsToAuction = new TreeMap<Integer,Location>();
         lotsToAuction.put(location.index, location);
-        Monopoly.auctionLots(lotsToAuction);
+        game.auctionLots(lotsToAuction);
       }
 
       if (player.rolledDoubles()) {

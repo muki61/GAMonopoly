@@ -13,7 +13,7 @@ public class PayRentState extends PlayerState {
   }
 
   @Override
-  public PlayerState processEvent(Events event) {
+  public PlayerState processEvent(Events event, Monopoly game) {
     logger.info("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
         "; event " + event.name());
     switch (event) {
@@ -30,7 +30,7 @@ public class PayRentState extends PlayerState {
             Monopoly.payRent(player, location.owner, amount);
           } catch (BankruptcyException e) {
             //e.printStackTrace();
-            Monopoly.processBankruptcy(player, location.owner);
+            game.processBankruptcy(player, location.owner);
             player.nextAction = Actions.DONE;
             return inactiveState;
           }

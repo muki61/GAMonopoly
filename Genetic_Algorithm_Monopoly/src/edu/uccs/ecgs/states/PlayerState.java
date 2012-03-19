@@ -8,6 +8,7 @@ import edu.uccs.ecgs.Actions;
 import edu.uccs.ecgs.Dice;
 import edu.uccs.ecgs.Location;
 import edu.uccs.ecgs.Main;
+import edu.uccs.ecgs.Monopoly;
 import edu.uccs.ecgs.PropertyFactory;
 import edu.uccs.ecgs.PropertyGroups;
 
@@ -48,7 +49,7 @@ public class PlayerState {
   PlayerState() {
   }
 
-  public PlayerState processEvent(Events event) {
+  public PlayerState processEvent(Events event, Monopoly game) {
     throw new IllegalAccessError();
   }
 

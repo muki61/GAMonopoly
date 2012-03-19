@@ -215,15 +215,15 @@ public class PropertyFactory {
     return result;
   }
 
-  public int getTotalNumMonopolies() {
-    int result = 0;
-    
-    for (AbstractPlayer player : GamePlayers.players) {
-      result += getNumMonopolies(player);
-    }
-
-    return result;
-  }
+//  public int getTotalNumMonopolies() {
+//    int result = 0;
+//    
+//    for (AbstractPlayer player : GamePlayers.players) {
+//      result += getNumMonopolies(player);
+//    }
+//
+//    return result;
+//  }
 
   public int getNumMonopolies(AbstractPlayer player) {
     Hashtable<PropertyGroups, Boolean> h = new Hashtable<PropertyGroups, Boolean>();
