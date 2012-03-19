@@ -2,7 +2,6 @@ package edu.uccs.ecgs.states;
 
 import edu.uccs.ecgs.Actions;
 import edu.uccs.ecgs.BankruptcyException;
-import edu.uccs.ecgs.Cards;
 import edu.uccs.ecgs.Chance;
 import edu.uccs.ecgs.CommunityChest;
 import edu.uccs.ecgs.Location;
