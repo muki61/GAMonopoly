@@ -14,7 +14,7 @@ public class Dice {
   static Logger logger = Logger.getLogger("edu.uccs.ecgs");
 
   private Dice() {
-    long seed = 1241722060907L;
+    long seed = 1241797664697L;
     if (Main.useRandomSeed) {
       seed = System.currentTimeMillis();
     }

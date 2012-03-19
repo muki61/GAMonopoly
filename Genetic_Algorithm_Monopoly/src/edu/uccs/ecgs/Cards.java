@@ -11,7 +11,7 @@ public class Cards {
   Random random = new Random();
 
   private Cards() {
-    long seed = 1241722061064L;
+    long seed = 1241797664697L;
     if (Main.useRandomSeed) {
       seed = System.currentTimeMillis();
     }

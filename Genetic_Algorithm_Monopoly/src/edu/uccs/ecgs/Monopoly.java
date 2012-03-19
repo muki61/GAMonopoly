@@ -63,6 +63,8 @@ public class Monopoly implements Runnable {
     PropertyFactory.getPropertyFactory().reset();
     numHouses = 32;
     numHotels = 12;
+    
+    initLogger();
     logFileSetup();
 
     cards = Cards.getCards();

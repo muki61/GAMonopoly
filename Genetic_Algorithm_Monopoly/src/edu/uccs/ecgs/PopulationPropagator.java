@@ -14,7 +14,7 @@ public class PopulationPropagator {
   private static PopulationPropagator _this = new PopulationPropagator();
 
   private PopulationPropagator() {
-    long seed = 1241798257650L;
+    long seed = 1241797664697L;
     if (Main.useRandomSeed) {
       seed = System.currentTimeMillis();
     }

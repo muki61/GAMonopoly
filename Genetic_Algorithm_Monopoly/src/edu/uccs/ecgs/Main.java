@@ -119,6 +119,8 @@ public class Main {
         useGui = Boolean.parseBoolean(value);
       } else if (key.equals("debug")) {
         debug = Boolean.parseBoolean(value);
+      } else if (key.equals("useRandomSeed")) {
+        useRandomSeed = Boolean.parseBoolean(value);
       }
     }
 
