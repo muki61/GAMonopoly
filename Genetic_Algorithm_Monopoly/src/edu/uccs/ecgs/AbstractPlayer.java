@@ -234,10 +234,10 @@ public abstract class AbstractPlayer
 
   public void useGetOutOfJailCard() {
     if (chanceGOOJ != null) {
-      Cards.getCards().returnChanceGetOutOfJail();
+      game.getCards().returnChanceGetOutOfJail();
       chanceGOOJ = null;
     } else if (ccGOOJ != null) {
-      Cards.getCards().returnCCGetOutOfJail();
+      game.getCards().returnCCGetOutOfJail();
       ccGOOJ = null;
     } else {
       throw new IllegalArgumentException("Illegal attempt to use Get Out Of Jail Card");

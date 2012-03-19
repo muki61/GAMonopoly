@@ -41,7 +41,7 @@ public class AtNewLocationState extends PlayerState {
       //If paid fee, then decide between roll again or eval
       //If get out of jail card, then decide between roll or eval
       if (location.name.equals("Community Chest")) {
-        CommunityChest ccCard = Cards.getCards().getNextCommunityChestCard();
+        CommunityChest ccCard = game.getCards().getNextCommunityChestCard();
 
         try {
           ccCard.processCard(player, game);
@@ -90,7 +90,7 @@ public class AtNewLocationState extends PlayerState {
           }
         }
       } else if (location.name.equals("Chance")) {
-        Chance chanceCard = Cards.getCards().getNextChanceCard();
+        Chance chanceCard = game.getCards().getNextChanceCard();
 
         try {
           chanceCard.processChance(player, game);

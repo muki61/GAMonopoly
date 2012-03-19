@@ -147,7 +147,6 @@ public class Main {
   
   public static void pause() {
     paused  = true;
-    gaEngine.pause();
   }
   
   public static void resume() {

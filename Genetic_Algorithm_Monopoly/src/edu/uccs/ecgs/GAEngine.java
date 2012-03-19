@@ -48,6 +48,7 @@ public class GAEngine implements Runnable {
       Main.maxPlayers);
 
   Random r;
+  private ArrayList<Monopoly> games;
 
   public GAEngine() {
     r = new Random();
@@ -110,11 +111,14 @@ public class GAEngine implements Runnable {
       while (matches < Main.numMatches) {
         gameNumber = 0;
 
+        games = new ArrayList<Monopoly>();
         ArrayList<Thread> gameThreads = new ArrayList<Thread>();
 
         while (!playerPool.isEmpty()) {
           Monopoly game = new Monopoly(generation, matches, gameNumber,
               getFourPlayers());
+
+          games.add(game);
 
           Thread t = new Thread(game);
           gameThreads.add(t);
@@ -308,11 +312,9 @@ public class GAEngine implements Runnable {
     }
   }
 
-  public void pause() {
-    // TODO Auto-generated method stub
-  }
-
   public void resume() {
-    // TODO Auto-generated method stub    
+    for (Monopoly game : games) {
+      game.resume();
+    }
   }
 }

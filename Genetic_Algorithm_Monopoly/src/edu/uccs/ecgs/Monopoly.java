@@ -7,6 +7,8 @@ import java.util.Random;
 import java.util.TreeMap;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import edu.uccs.ecgs.states.Events;
@@ -27,14 +29,23 @@ public class Monopoly implements Runnable {
   Dice dice = Dice.getDice();
   int turnCounter = 0;
   Random r;
-  
+
+  /**
+   * The players for this game.
+   */
   private AbstractPlayer[] players;
+
+  /**
+   * The Chance and Community Chest cards.
+   */
+  private Cards cards;
   private static int bankruptCount;
 
   private static int numHouses;
   private static int numHotels;
 
-  public Monopoly(int generation, int match, int gameNumber, AbstractPlayer[] players) {
+  public Monopoly(int generation, int match, int gameNumber,
+      AbstractPlayer[] players) {
     this.generation = generation;
     this.match = match;
     this.game = gameNumber;
@@ -47,17 +58,17 @@ public class Monopoly implements Runnable {
     }
     System.out.println("Monopoly seed      : " + seed);
     r.setSeed(seed);
-    
+
     turnCounter = 0;
     PropertyFactory.getPropertyFactory().reset();
     numHouses = 32;
     numHotels = 12;
     logFileSetup();
-    
-    Cards.getCards();
+
+    cards = Cards.getCards();
   }
 
-  public void runGame2() {
+  public void playGame() {
     done = false;
 
     logger.info("Started game " + game + " with players: ");
@@ -78,7 +89,7 @@ public class Monopoly implements Runnable {
           }
         }
       }
-      
+
       ++turnCounter;
       if (turnCounter == Main.maxTurns * Main.numPlayers) {
         done = true;
@@ -153,18 +164,17 @@ public class Monopoly implements Runnable {
           break;
         case NULL:
           break;
-          
+
         default:
-          throw new IllegalArgumentException ("Unhandled action "+
-              action);
+          throw new IllegalArgumentException("Unhandled action " + action);
         }
       }
-      
+
       if (bankruptCount == 3) {
         done = true;
       }
     }
-    
+
     TreeMap<Integer, AbstractPlayer> sortedPlayers = new TreeMap<Integer, AbstractPlayer>();
     for (AbstractPlayer p : players) {
       if (p.getTotalWorth() == 0) {
@@ -173,10 +183,10 @@ public class Monopoly implements Runnable {
         sortedPlayers.put(p.getTotalWorth(), p);
       }
     }
-    
-    logger.info('\f'+"GAME OVER");
-    
-    //In order from loser to winner, add score points to player
+
+    logger.info('\f' + "GAME OVER");
+
+    // In order from loser to winner, add score points to player
     int score = 0;
     for (AbstractPlayer p : sortedPlayers.values()) {
       p.addToScore(score);
@@ -201,37 +211,26 @@ public class Monopoly implements Runnable {
   }
 
   public static void payRent(AbstractPlayer from, AbstractPlayer to, int amount)
-      throws BankruptcyException 
-  {
+      throws BankruptcyException {
     from.getCash(amount);
     to.receiveCash(amount);
   }
 
-//  public void run() {
-//    try {
-//      initLogger();
-////      runGame();
-//    } catch (Throwable t) {
-//      t.printStackTrace();
-//      logger.log(Level.SEVERE, "", t);
-//    }
-//  }
+  public void initLogger() {
+    // This block configures the logger with handler and formatter
+    formatter = new Formatter() {
+      @Override
+      public String format(LogRecord record) {
+        return record.getMessage() + "\n";
+      }
+    };
 
-//  public void initLogger() {
-//    // This block configures the logger with handler and formatter
-//    formatter = new Formatter() {
-//      @Override
-//      public String format(LogRecord record) {
-//        return record.getMessage() + "\n";
-//      }
-//    };
-//
-//    if (Main.debug) {
-//      logger.setLevel(Level.INFO);
-//    } else {
-//      logger.setLevel(Level.OFF);
-//    }
-//  }
+    if (Main.debug) {
+      logger.setLevel(Level.INFO);
+    } else {
+      logger.setLevel(Level.OFF);
+    }
+  }
 
   public void logFileSetup() {
     if (!Main.debug) {
@@ -243,30 +242,23 @@ public class Monopoly implements Runnable {
       fh.close();
       logger.removeHandler(fh);
     }
-    
+
     StringBuilder dir = Utility.getDirForGen(generation);
-    
+
     File file = new File(dir.toString());
     if (!file.exists()) {
       file.mkdir();
     }
-    
+
     dir.append("/").append(getMatchString());
     file = new File(dir.toString());
     if (!file.exists()) {
       file.mkdir();
     }
-    
+
     StringBuilder fileName = new StringBuilder(getGameString().append(".rtf"));
 
     try {
-      // Handler[] handlers = Logger.getLogger("").getHandlers();
-      // for (Handler h : handlers) {
-      // if (h.getClass() == java.util.logging.ConsoleHandler.class) {
-      // h.setFormatter(formatter);
-      // }
-      // }
-
       fh = new FileHandler(dir + "/" + fileName, false);
       logger.addHandler(fh);
       fh.setFormatter(formatter);
@@ -304,18 +296,24 @@ public class Monopoly implements Runnable {
 
   public static void sellHouse(AbstractPlayer player, Location location) {
     location.sellHouse();
-    player.receiveCash(location.getHouseCost()/2);
+    player.receiveCash(location.getHouseCost() / 2);
     ++numHouses;
     assert numHouses < 33 : "Invalid number of houses: " + numHouses;
   }
 
-  public static void sellHotel(AbstractPlayer player, Location location, Collection<Location> owned) {
-    int numHotelsInGroup = PropertyFactory.getPropertyFactory().getNumHotelsInGroup(location);
-    int numHousesInGroup = PropertyFactory.getPropertyFactory().getNumHousesInGroup(location);
+  public static void sellHotel(AbstractPlayer player, Location location,
+      Collection<Location> owned) {
+    int numHotelsInGroup = PropertyFactory.getPropertyFactory()
+        .getNumHotelsInGroup(location);
+    int numHousesInGroup = PropertyFactory.getPropertyFactory()
+        .getNumHousesInGroup(location);
 
-    int numHousesToSell1 = 0; //number of houses to sell on 1st property in group
-    int numHousesToSell2 = 0; //number of houses to sell on 2nd property in group
-    int numHousesToSell3 = 0; //number of houses to sell on 3rd property in group
+    int numHousesToSell1 = 0; // number of houses to sell on 1st property in
+                              // group
+    int numHousesToSell2 = 0; // number of houses to sell on 2nd property in
+                              // group
+    int numHousesToSell3 = 0; // number of houses to sell on 3rd property in
+                              // group
 
     switch (numHouses) {
     case 4:
@@ -327,8 +325,9 @@ public class Monopoly implements Runnable {
       ++numHotels;
       assert numHotels <= 12 : "Invalid number of hotels: " + numHotels;
       numHouses = numHouses - 4;
-      //return rather than break because we don't want to call the sell method at the
-      //end of the case block, since that method sells all hotels.
+      // return rather than break because we don't want to call the sell method
+      // at the
+      // end of the case block, since that method sells all hotels.
       return;
 
     case 3:
@@ -349,13 +348,21 @@ public class Monopoly implements Runnable {
         numHousesToSell1 = 3;
         numHousesToSell2 = 2;
         numHousesToSell3 = 4;
-        
+
       } else {
         logger
             .severe("Invalid number of hotels/houses in property group for location "
-                + location + "; hotels/houses: " + numHotelsInGroup + "/" + numHousesInGroup);        
+                + location
+                + "; hotels/houses: "
+                + numHotelsInGroup
+                + "/"
+                + numHousesInGroup);
         assert false : "Invalid number of hotels/houses in property group for location "
-            + location + "; hotels/houses: " + numHotelsInGroup + "/" + numHousesInGroup; 
+            + location
+            + "; hotels/houses: "
+            + numHotelsInGroup
+            + "/"
+            + numHousesInGroup;
       }
       break;
 
@@ -377,13 +384,21 @@ public class Monopoly implements Runnable {
         numHousesToSell1 = 3;
         numHousesToSell2 = 3;
         numHousesToSell3 = 4;
-        
+
       } else {
         logger
-        .severe("Invalid number of hotels/houses in property group for location "
-            + location + "; hotels/houses: " + numHotelsInGroup + "/" + numHousesInGroup);        
+            .severe("Invalid number of hotels/houses in property group for location "
+                + location
+                + "; hotels/houses: "
+                + numHotelsInGroup
+                + "/"
+                + numHousesInGroup);
         assert false : "Invalid number of hotels/houses in property group for location "
-            + location + "; hotels/houses: " + numHotelsInGroup + "/" + numHousesInGroup; 
+            + location
+            + "; hotels/houses: "
+            + numHotelsInGroup
+            + "/"
+            + numHousesInGroup;
       }
       break;
 
@@ -408,13 +423,21 @@ public class Monopoly implements Runnable {
 
       } else {
         logger
-        .severe("Invalid number of hotels/houses in property group for location "
-            + location + "; hotels/houses: " + numHotelsInGroup + "/" + numHousesInGroup);        
+            .severe("Invalid number of hotels/houses in property group for location "
+                + location
+                + "; hotels/houses: "
+                + numHotelsInGroup
+                + "/"
+                + numHousesInGroup);
         assert false : "Invalid number of hotels/houses in property group for location "
-            + location + "; hotels/houses: " + numHotelsInGroup + "/" + numHousesInGroup; 
+            + location
+            + "; hotels/houses: "
+            + numHotelsInGroup
+            + "/"
+            + numHousesInGroup;
       }
       break;
-      
+
     case 0:
       numHousesToSell1 = 4;
       numHousesToSell2 = 4;
@@ -427,14 +450,15 @@ public class Monopoly implements Runnable {
     numHouses = 0;
   }
 
-  //change the location of the number of houses to sell based on the property group
+  // change the location of the number of houses to sell based on the property
+  // group
   private static void swapHousesToSell(Location location, int[] numHousesToSell) {
     switch (location.getGroup()) {
     case PURPLE:
     case RED:
     case YELLOW:
     case GREEN:
-      //for these properties, ensure first property has any 2nd extra house
+      // for these properties, ensure first property has any 2nd extra house
       if (numHousesToSell[0] < numHousesToSell[1]) {
         int temp = numHousesToSell[1];
         numHousesToSell[1] = numHousesToSell[0];
@@ -442,26 +466,23 @@ public class Monopoly implements Runnable {
       }
       break;
     default:
-      //for everything else, no change
+      // for everything else, no change
     }
   }
 
-  private static void sell(AbstractPlayer player,
-                           Location location,
-                           Collection<Location> owned,
-                           int numHousesToSell1,
-                           int numHousesToSell2,
-                           int numHousesToSell3) 
-  {
-    
-    //change the order of the houses to sell based on property group
-    swapHousesToSell(location, new int[] {numHousesToSell1, numHousesToSell2, numHousesToSell3});
+  private static void sell(AbstractPlayer player, Location location,
+      Collection<Location> owned, int numHousesToSell1, int numHousesToSell2,
+      int numHousesToSell3) {
+
+    // change the order of the houses to sell based on property group
+    swapHousesToSell(location, new int[] { numHousesToSell1, numHousesToSell2,
+        numHousesToSell3 });
 
     int count = 0;
 
     for (Location loc : owned) {
       if (loc.getGroup() == location.getGroup()) {
-        ++count;        
+        ++count;
 
         loc.sellHotel();
         ++numHotels;
@@ -481,11 +502,11 @@ public class Monopoly implements Runnable {
           sellCount = numHousesToSell3;
           break;
         }
-        
+
         for (; sellCount > 0; sellCount--) {
           loc.sellHouse();
-          //in this method, don't increment the number of houses
-          //because the houses at the location are virtual houses 
+          // in this method, don't increment the number of houses
+          // because the houses at the location are virtual houses
           player.receiveCash(loc.getHouseCost() / 2);
         }
       }
@@ -494,10 +515,11 @@ public class Monopoly implements Runnable {
 
   public static void buyHouse(AbstractPlayer player, Location location) {
     if (numHouses == 0) {
-      logger.info("Player " + player.playerIndex + " wanted to buy house, but none are available");
+      logger.info("Player " + player.playerIndex
+          + " wanted to buy house, but none are available");
       return;
     }
-    
+
     try {
       assert player.canRaiseCash(location.getHouseCost()) : "Player tried to buy house with insufficient cash";
       player.getCash(location.getHouseCost());
@@ -520,7 +542,7 @@ public class Monopoly implements Runnable {
       player.getCash(location.getHotelCost());
       assert numHotels >= 0 : "Invalid number of hotels: " + numHotels;
 
-      //add the houses back to the bank
+      // add the houses back to the bank
       numHouses += 4;
       assert numHouses < 33 : "Invalid number of houses: " + numHouses;
     } catch (BankruptcyException ignored) {
@@ -530,8 +552,9 @@ public class Monopoly implements Runnable {
     }
   }
 
-  public void processBankruptcy(AbstractPlayer player, AbstractPlayer gainingPlayer) {
-    
+  public void processBankruptcy(AbstractPlayer player,
+      AbstractPlayer gainingPlayer) {
+
     logger.info("Player " + player.playerIndex + " is bankrupt");
     player.setBankruptIndex(bankruptCount);
     ++bankruptCount;
@@ -547,7 +570,7 @@ public class Monopoly implements Runnable {
       logger.info("Gaining player is bank");
     }
 
-    //return any get out of jail cards to the stack
+    // return any get out of jail cards to the stack
     while (player.hasGetOutOfJailCard()) {
       player.useGetOutOfJailCard();
     }
@@ -577,11 +600,11 @@ public class Monopoly implements Runnable {
     } else {
       player.sellAllHousesHotels();
 
-      //give all cash to gaining player
+      // give all cash to gaining player
       gainingPlayer.receiveCash(player.getAllCash());
 
-      //give all property
-      //mortgaged properties are handled in the addProperties method
+      // give all property
+      // mortgaged properties are handled in the addProperties method
       gainingPlayer.addProperties(player.getAllProperties(), gameOver);
 
       player.clearAllProperties();
@@ -593,7 +616,7 @@ public class Monopoly implements Runnable {
   public void auctionLots(TreeMap<Integer, Location> lotsToAuction) {
     // logger.setLevel(Level.INFO);
 
-    //set owner to null for all lots
+    // set owner to null for all lots
     for (Location location : lotsToAuction.values()) {
       location.owner = null;
     }
@@ -609,7 +632,8 @@ public class Monopoly implements Runnable {
 
       for (AbstractPlayer p : players) {
         int bid = p.getBidForLocation(location);
-        logger.info("Player " + p.playerIndex + " has " + p.cash + " dollars and bids " + bid);
+        logger.info("Player " + p.playerIndex + " has " + p.cash
+            + " dollars and bids " + bid);
 
         if (bid > highBid) {
           secondHighestBid = highBid;
@@ -635,17 +659,17 @@ public class Monopoly implements Runnable {
 
       assert finalBid > 0 : "Final bid is invalid: " + finalBid;
       assert highBidPlayer != null : "High bid player is null";
-      assert highBidPlayer.canRaiseCash(finalBid) : "Player " + highBidPlayer.playerIndex +
-                                                    " cannot raise cash " + finalBid;
+      assert highBidPlayer.canRaiseCash(finalBid) : "Player "
+          + highBidPlayer.playerIndex + " cannot raise cash " + finalBid;
 
       try {
         processAuction(highBidPlayer, location, finalBid);
       } catch (BankruptcyException e) {
         // assume player cannot win auction unless they have enough cash
         e.printStackTrace();
-      }      
+      }
     }
-    
+
     logger.info("Auction has ended " + msg);
     boolean printHead = true;
     for (Location location : lotsToAuction.values()) {
@@ -660,10 +684,11 @@ public class Monopoly implements Runnable {
     // logger.setLevel(Level.OFF);
   }
 
-  private static void processAuction(AbstractPlayer aPlayer, Location aLocation,
-      int amount) throws BankruptcyException {
+  private static void processAuction(AbstractPlayer aPlayer,
+      Location aLocation, int amount) throws BankruptcyException {
     aPlayer.getCash(amount);
-    logger.fine("Player " + aPlayer.playerIndex + " won auction for " + aLocation.name);
+    logger.fine("Player " + aPlayer.playerIndex + " won auction for "
+        + aLocation.name);
     aLocation.setOwner(aPlayer);
     aPlayer.addProperty(aLocation);
     PropertyFactory.getPropertyFactory().checkForMonopoly();
@@ -677,14 +702,14 @@ public class Monopoly implements Runnable {
     return numHouses;
   }
 
-  public synchronized void unpause() {
+  public synchronized void resume() {
     notify();
   }
 
   @Override
   public void run() {
     // TODO Auto-generated method stub
-    
+
   }
 
   public void payEachPlayer50(AbstractPlayer player) throws BankruptcyException {
@@ -716,5 +741,9 @@ public class Monopoly implements Runnable {
         }
       }
     }
+  }
+
+  public Cards getCards() {
+    return cards;
   }
 }
