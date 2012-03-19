@@ -63,11 +63,15 @@ public class Monopoly implements Runnable {
     PropertyFactory.getPropertyFactory().reset();
     numHouses = 32;
     numHotels = 12;
-    
+
     initLogger();
     logFileSetup();
 
     cards = Cards.getCards();
+
+    for (AbstractPlayer player : players) {
+      player.joinGame(this);
+    }
   }
 
   public void playGame() {
@@ -613,6 +617,7 @@ public class Monopoly implements Runnable {
     }
 
     player.setBankrupt();
+    assert player.cash == 0;
   }
 
   public void auctionLots(TreeMap<Integer, Location> lotsToAuction) {
@@ -710,8 +715,7 @@ public class Monopoly implements Runnable {
 
   @Override
   public void run() {
-    // TODO Auto-generated method stub
-
+    playGame();
   }
 
   public void payEachPlayer50(AbstractPlayer player) throws BankruptcyException {
@@ -747,5 +751,26 @@ public class Monopoly implements Runnable {
 
   public Cards getCards() {
     return cards;
+  }
+
+  /**
+   * Return the total net worth of all players in the game.
+   * 
+   * @return The total net worth of all players in the game.
+   */
+  public int getTotalNetWorth() {
+    int result = 0;
+    for (AbstractPlayer player : players) {
+      result += player.getTotalWorth();
+    }
+    return result;
+  }
+
+  /**
+   * Return the number of players in the game that are not bankrupt.
+   * @return The number of players in the game that are not bankrupt.
+   */
+  public int getNumActivePlayers() {
+    return players.length - bankruptCount;
   }
 }

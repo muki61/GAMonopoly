@@ -35,7 +35,7 @@ public class PlayerState {
 
   static Random r = new Random();
   static {
-    long seed = 1241797664978L;
+    long seed = 1241797664697L;
     if (Main.useRandomSeed) {
       seed = System.currentTimeMillis();
     }

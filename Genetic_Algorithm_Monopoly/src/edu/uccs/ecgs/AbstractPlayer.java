@@ -727,20 +727,14 @@ public abstract class AbstractPlayer
   }
 
   private int getMinimumCash() {
-    //Frayn: Keep a minimum of 200 pounds in cash,
+    //Frayn: Keep a minimum of 200 pounds (dollars) in cash,
     int result = 200;
     
     //plus 1% of the total and average opponent net worth,
-    int totalnet = 0;
-    int count = 0;
-
-    //TODO fix this
-//    for (AbstractPlayer p : GamePlayers.players) {
-//      if (p != this) {
-//        ++count;
-//        totalnet += p.getTotalWorth();
-//      }
-//    }
+    int totalnet = game.getTotalNetWorth();
+    totalnet -= getTotalWorth();
+    
+    int count = game.getNumActivePlayers() - 1;
     
     int avgnet = totalnet / count;
     result += (int) (totalnet * 0.01);
@@ -972,4 +966,8 @@ public abstract class AbstractPlayer
 
   @Override
   protected abstract Object clone() throws CloneNotSupportedException;
+
+  public void joinGame(Monopoly game) {
+    this.game = game;
+  }
 }
