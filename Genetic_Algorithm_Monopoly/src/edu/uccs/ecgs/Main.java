@@ -9,21 +9,24 @@ public class Main {
   /**
    * The number of individual players in a population. Can be overridden by
    * passing maxPlayers=nnn (where n is the max number of players desired) in
-   * the command line args
+   * the command line args.
    */
   public static int maxPlayers = 1000;
 
   /**
    * The number of generations to propagate the genetic algorithm. Can be
    * overridden by passing numGenerations=nnn (where n is the number of desired
-   * generations) in the command line args
+   * generations) in the command line args.
    */
   public static int numGenerations = 1000;
   
   /**
-   * The number of matches (games) per generation. Each individual in the
-   * population plays this many games before the fitness of the player
-   * is evaluated.
+   * The number of matches per generation. The individuals in the population are
+   * divided into subgroups and each subgroup plays a game. The set of all games
+   * played by the subgroups is a single match. The number of games in a match
+   * is maxPlayers/numPlayers. Since each individual plays one game per match,
+   * numMatches is also the number of games played by each individual in the
+   * population before the fitness of the players is evaluated.
    */
   public static int numMatches = 100;
   
@@ -53,11 +56,6 @@ public class Main {
   public static int lastGeneration = 417;
 
   /**
-   * 
-   */
-  public static int delay = 0;
-
-  /**
    * Whether or not to output debug information.
    */
   public static boolean debug = false;
@@ -84,67 +82,96 @@ public class Main {
 
   private static GAEngine gaEngine;
 
-  public static boolean paused = false; 
+  private Gui gui = null;
+
+  private boolean useGui = false;
+
+  public static boolean paused = true;
+  
+  public static boolean started = false;
 
   public static void main(String[] args) {
-    boolean useGui = true;
-    Gui gui = null;
-
-    Properties args2 = new Properties();
-
-    for (int i = 0; i < args.length; i++) {
-      String[] kv = args[i].split("=");
-      args2.setProperty(kv[0].trim(), kv[1].trim());
-    }
-
-    for (String key : args2.keySet().toArray(new String[args2.size()])) {
-      
-      String value = args2.getProperty(key);
-      
-      if (key.equals("maxPlayers")) {
-        maxPlayers = Integer.parseInt(value);
-      } else if (key.equals("numGenerations")) {
-        numGenerations = Integer.parseInt(value);
-      } else if (key.equals("numMatches")) {  
-        numMatches = Integer.parseInt(value);
-      } else if (key.equals("maxTurns")) {
-        maxTurns = Integer.parseInt(value);
-      } else if (key.equals("loadFromDisk")) {
-        loadFromDisk = Boolean.parseBoolean(value);
-      } else if (key.equals("lastGeneration")) {
-        lastGeneration = Integer.parseInt(value);
-      } else if (key.equals("delay")) {
-        delay = Integer.parseInt(value);
-      } else if (key.equals("useGui")) {
-        useGui = Boolean.parseBoolean(value);
-      } else if (key.equals("debug")) {
-        debug = Boolean.parseBoolean(value);
-      } else if (key.equals("useRandomSeed")) {
-        useRandomSeed = Boolean.parseBoolean(value);
-      }
+    Main main = new Main();
+    main.start(args);
+  }
+  
+  public void start(String[] args) {
+    if (args.length == 0 || !args[0].equalsIgnoreCase("gui")) {
+      useGui  = false;
+    } else {
+      useGui = true;
     }
 
     if (useGui) {
-      gui = new Gui();
+      String[][] fields = new String[][] { 
+          { "Number of generations", "1000" }, 
+          { "Number of matches per generation", "100" },
+          { "Max number of turns per game", "50" }, 
+          { "Number of players in population", "1000" },
+          { "Number of players per game", "4" },
+          { "Load players from disk", "false" }, 
+          { "Generation to load", "0" },
+          { "Debug", "false" }, 
+          { "Chromosome Type (RGA, SGA, TGA)", "TGA" },
+          { "Mutation Rate", "0.01" } };
+
+      gui = new Gui(this, fields);
       
-      gaEngine = new GAEngine();
+    } else {
+      Properties args2 = new Properties();
 
-      Thread t = new Thread(gaEngine);
-      t.start();
-
-      try {
-        t.join();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
+      for (int i = 0; i < args.length; i++) {
+        String[] kv = args[i].split("=");
+        args2.setProperty(kv[0].trim(), kv[1].trim());
       }
 
-      gui.dispose();
-
-      JOptionPane.showMessageDialog(null, "Monopoly simulation is complete", "Simulation Complete", JOptionPane.INFORMATION_MESSAGE);
-      System.exit(0);
-    } else {
-      //do not use gui
+      for (String key : args2.keySet().toArray(new String[args2.size()])) {
+        
+        String value = args2.getProperty(key);
+        
+        if (key.equals("maxPlayers")) {
+          maxPlayers = Integer.parseInt(value);
+        } else if (key.equals("numGenerations")) {
+          numGenerations = Integer.parseInt(value);
+        } else if (key.equals("numMatches")) {  
+          numMatches = Integer.parseInt(value);
+        } else if (key.equals("maxTurns")) {
+          maxTurns = Integer.parseInt(value);
+        } else if (key.equals("loadFromDisk")) {
+          loadFromDisk = Boolean.parseBoolean(value);
+        } else if (key.equals("lastGeneration")) {
+          lastGeneration = Integer.parseInt(value);
+        } else if (key.equals("useGui")) {
+          useGui = Boolean.parseBoolean(value);
+        } else if (key.equals("debug")) {
+          debug = Boolean.parseBoolean(value);
+        } else if (key.equals("useRandomSeed")) {
+          useRandomSeed = Boolean.parseBoolean(value);
+        }
+      }
+      
+      startSimulation();
     }
+  }
+
+  public void startSimulation() {
+    started = true;
+    paused = false;
+    gaEngine = new GAEngine();
+
+    Thread t = new Thread(gaEngine);
+    t.start();
+
+    try {
+      t.join();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+//    gui.dispose();
+
+    JOptionPane.showMessageDialog(null, "Monopoly simulation is complete", "Simulation Complete", JOptionPane.INFORMATION_MESSAGE);
+    System.exit(0);
   }
   
   public static void pause() {

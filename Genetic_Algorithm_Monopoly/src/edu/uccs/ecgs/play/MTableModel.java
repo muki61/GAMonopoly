@@ -1,9 +1,11 @@
-package edu.uccs.ecgs;
+package edu.uccs.ecgs.play;
 
 import java.util.Iterator;
 import java.util.TreeSet;
 
 import javax.swing.table.AbstractTableModel;
+
+import edu.uccs.ecgs.Location;
 
 @SuppressWarnings("serial")
 public class MTableModel extends AbstractTableModel {

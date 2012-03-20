@@ -122,7 +122,7 @@ public class SGAPlayer extends AbstractPlayer {
       return false;
     }
 
-    PropertyFactory pf = PropertyFactory.getPropertyFactory();
+    PropertyFactory pf = PropertyFactory.getPropertyFactory(game.gamekey);
     int idx1 = pf.getIndexFromProperties(Edges.WEST, this);
     int idx2 = pf.getIndexFromProperties(Edges.NORTH, this);
 
@@ -142,7 +142,7 @@ public class SGAPlayer extends AbstractPlayer {
   
   @Override
   public boolean buyProperty(Location aLocation) {
-    PropertyFactory pf = PropertyFactory.getPropertyFactory();
+    PropertyFactory pf = PropertyFactory.getPropertyFactory(game.gamekey);
     GroupOwners flag = pf.getOwnerInformationForGroup(aLocation, this);
 
     switch (flag) {
@@ -183,15 +183,15 @@ public class SGAPlayer extends AbstractPlayer {
 
   @Override
   public void printGenome() {
-    logger.info("Chromosome chrNoOwners (property group has no owners");
+//    game.logger.info("Chromosome chrNoOwners (property group has no owners"); TODO logging
     printChromo(chrNoOwners, numLots);
-    logger.info("Chromosome chrPlayerOwns (player owns property in property group");
+//    game.logger.info("Chromosome chrPlayerOwns (player owns property in property group");
     printChromo(chrPlayerOwns, numLots);
-    logger.info("Chromosome chrOpponentOwns (opponent owns property in property group");
+//    game.logger.info("Chromosome chrOpponentOwns (opponent owns property in property group");
     printChromo(chrOpponentOwns, numLots);
-    logger.info("Chromosome chrTwoOpponentOwns (two opponents own property in property group");
+//    game.logger.info("Chromosome chrTwoOpponentOwns (two opponents own property in property group");
     printChromo(chrTwoOpponentOwns, numLots);
-    logger.info("Chromosome chrJail");
+//    game.logger.info("Chromosome chrJail");
     printChromo(chrJail, numJailCombos);
   }
 
@@ -203,7 +203,7 @@ public class SGAPlayer extends AbstractPlayer {
       b.append(BitSetUtility.to6BitBinary(r)).append(" ");
     }
 
-    logger.info(b.toString());
+//    game.logger.info(b.toString());
   }
 
   @Override

@@ -1,10 +1,12 @@
-package edu.uccs.ecgs;
+package edu.uccs.ecgs.play;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JTable;
+
+import edu.uccs.ecgs.Location;
 
 public class MortButtonListener implements ActionListener {
   JTable table;

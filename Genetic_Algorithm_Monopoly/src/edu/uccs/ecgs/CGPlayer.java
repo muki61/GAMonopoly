@@ -78,7 +78,7 @@ public abstract class CGPlayer extends AbstractPlayer {
    */
   @Override
   public boolean buyProperty(Location aLocation) {
-    PropertyFactory pf = PropertyFactory.getPropertyFactory();
+    PropertyFactory pf = PropertyFactory.getPropertyFactory(game.gamekey);
     GroupOwners flag = pf.getOwnerInformationForGroup(aLocation, this);
 
     switch (flag) {
@@ -124,15 +124,15 @@ public abstract class CGPlayer extends AbstractPlayer {
 
   @Override
   public void printGenome() {
-    logger.info("Chromosome chrNoOwners (property group has no owners");
+//    game.logger.info("Chromosome chrNoOwners (property group has no owners"); TODO logging
     printChromo(chrNoOwners);
-    logger.info("Chromosome chrPlayerOwns (player owns property in property group");
+//    game.logger.info("Chromosome chrPlayerOwns (player owns property in property group");
     printChromo(chrPlayerOwns);
-    logger.info("Chromosome chrOpponentOwns (opponent owns property in property group");
+//    game.logger.info("Chromosome chrOpponentOwns (opponent owns property in property group");
     printChromo(chrOpponentOwns);
-    logger.info("Chromosome chrTwoOpponentOwns (two opponents own property in property group");
+//    game.logger.info("Chromosome chrTwoOpponentOwns (two opponents own property in property group");
     printChromo(chrTwoOpponentOwns);
-    logger.info("Chromosome chrJail");
+//    game.logger.info("Chromosome chrJail");
     for (double[] a : chrJail) {
       printChromo(a);
     }    
@@ -151,7 +151,7 @@ public abstract class CGPlayer extends AbstractPlayer {
       }
     }
     
-    logger.info(b.toString());
+//    game.logger.info(b.toString());
   }
 
   @Override

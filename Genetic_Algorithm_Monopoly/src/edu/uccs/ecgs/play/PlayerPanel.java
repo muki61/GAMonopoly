@@ -1,4 +1,4 @@
-package edu.uccs.ecgs;
+package edu.uccs.ecgs.play;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,6 +16,10 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import edu.uccs.ecgs.AbstractPlayer;
+import edu.uccs.ecgs.Location;
+import edu.uccs.ecgs.PropertyFactory;
 
 @SuppressWarnings("serial")
 public class PlayerPanel extends JPanel implements ListSelectionListener {
@@ -89,7 +93,7 @@ public class PlayerPanel extends JPanel implements ListSelectionListener {
     lotComboBox = new JComboBox();
     MComboBoxModel model = new MComboBoxModel(this); 
     lotComboBox.setModel(model);
-    for (Location lot : PropertyFactory.getPropertyFactory().locations) {
+    for (Location lot : PropertyFactory.getPropertyFactory(PlayerGui.factoryKey).getLocations()) {
       model.addElement(lot);
     }
     gbc.gridwidth = GridBagConstraints.REMAINDER;

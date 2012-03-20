@@ -95,7 +95,6 @@ public class GenomeReader {
 	}
 
 	private void dumpSimpleGenome(String dir, String playerIndex) {
-		// TODO Auto-generated method stub
 		StringBuilder outfileName = new StringBuilder(dir);
 		outfileName.append("/").append("genome" + playerIndex + ".csv");
 
@@ -107,10 +106,9 @@ public class GenomeReader {
 			bw.write("Fitness," + fitnessScore);
 			bw.newLine();
 
-			// bw.write(",");
 			for (int i = 0; i < 40; i++) {
 				if (!skipIndex(i)) {
-					bw.write("," + PropertyFactory.getPropertyFactory().getLocationAt(i).name);
+					bw.write("," + PropertyFactory.getPropertyFactory("edu.uccs.ecgs.utility.GenomeReader").getLocationAt(i).name);
 				}
 			}
 			bw.newLine();
@@ -194,7 +192,7 @@ public class GenomeReader {
 			// bw.write(",");
 			for (int i = 0; i < 40; i++) {
 				if (!skipIndex(i)) {
-					bw.write("," + PropertyFactory.getPropertyFactory().getLocationAt(i).name);
+					bw.write("," + PropertyFactory.getPropertyFactory("edu.uccs.ecgs.utility.GenomeReader").getLocationAt(i).name);
 				}
 			}
 			bw.newLine();

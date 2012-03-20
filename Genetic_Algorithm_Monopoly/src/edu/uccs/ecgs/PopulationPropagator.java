@@ -18,7 +18,7 @@ public class PopulationPropagator {
     if (Main.useRandomSeed) {
       seed = System.currentTimeMillis();
     }
-    System.out.println("PopProp seed       : " + seed);
+    System.out.println("New Population seed: " + seed);
     r.setSeed(seed);
   }
   
@@ -29,7 +29,12 @@ public class PopulationPropagator {
   public static Vector<AbstractPlayer> evolve (Vector<AbstractPlayer> population, int minEliteScore) 
   {
     Vector<AbstractPlayer> newPopulation = new Vector<AbstractPlayer>(Main.maxPlayers);
-    Vector<AbstractPlayer> roulette = new Vector<AbstractPlayer>(150000);
+    // Total fitness available in one generation is 
+    //      (6 points per game) * (number of games per match) * (number of Matches) 
+    int totalFitness = 6 * (Main.maxPlayers / Main.numPlayers) * Main.numMatches;
+    // Each player gets one entry in the roulette for each point of fitness, so make the
+    // roulette have has many slots as the total fitness in a generation
+    Vector<AbstractPlayer> roulette = new Vector<AbstractPlayer>(totalFitness);
     TreeSet<AbstractPlayer> elites = new TreeSet<AbstractPlayer>();
 
     for (AbstractPlayer player : population) {
@@ -45,12 +50,6 @@ public class PopulationPropagator {
       }
     }
 
-    //reduce elites to min number of elites 
-    int eliteSize = (int)(0.1 * Main.maxPlayers);
-    while (elites.size() > eliteSize) {
-      elites.remove(elites.first());
-    }
-    
     newPopulation.addAll(elites);
 
     AbstractPlayer parent1 = null;
@@ -101,7 +100,7 @@ public class PopulationPropagator {
 
     //now create the rest of the population by reproduction
     while (newPopulation.size() < Main.maxPlayers) {
-      //pick two parents, no replacement so parents are distinct 
+      //pick two parents 
       parent1 = population.remove(r.nextInt(population.size()));
       parent2 = population.remove(r.nextInt(population.size()));
 

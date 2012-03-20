@@ -1,5 +1,6 @@
 package edu.uccs.ecgs.states;
 
+import edu.uccs.ecgs.AbstractPlayer;
 import edu.uccs.ecgs.Monopoly;
 
 public class ActiveState extends PlayerState {
@@ -10,15 +11,15 @@ public class ActiveState extends PlayerState {
   }
 
   @Override
-  public PlayerState processEvent(Events event, Monopoly game) {
-    logger.info("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
+  public PlayerState processEvent(Monopoly game, AbstractPlayer player, Events event) {
+    game.logger.info("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
         "; event " + event.name());
 
     switch (event) {
     case ROLL_DICE_EVENT:
       // nextAction is set by rollDice method
-      rollDice();
-      return determineNextState();
+      rollDice(game, player);
+      return determineNextState(player);
 
     default:
       String msg = "Unexpected event " + event;

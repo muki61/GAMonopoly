@@ -1,7 +1,6 @@
 package edu.uccs.ecgs;
 
 import java.util.Properties;
-import java.util.logging.Logger;
 
 public abstract class Location implements Comparable<Location> {
   final String key;
@@ -18,8 +17,6 @@ public abstract class Location implements Comparable<Location> {
   protected boolean isMortgaged = false;
   protected int multiple = 1;
 
-  static Logger logger = Logger.getLogger("edu.uccs.ecgs");
-
   public Location(String key2, Properties properties) {
     key = key2;
 
@@ -32,7 +29,7 @@ public abstract class Location implements Comparable<Location> {
     try {
       return Integer.parseInt(properties.getProperty(aKey));
     } catch (NumberFormatException e) {
-      logger.info("Key: " + aKey);
+//      game.logger.info("Key: " + aKey); TODO logging
       e.printStackTrace();
     }
     return 0;
@@ -98,18 +95,18 @@ public abstract class Location implements Comparable<Location> {
   public void sellHouse() {
     assert numHouses > 0 : "Illegal house count: " + numHouses;
     --numHouses;
-    logger.info("Sold house at " + name + "; property now has " + numHouses + " houses");
+//    game.logger.info("Sold house at " + name + "; property now has " + numHouses + " houses"); TODO logging
   }
 
   public void addHouse() {
     ++numHouses;
-    logger.info("Bought house for property group " + getGroup());
+//    game.logger.info("Bought house for property group " + getGroup());
     assert numHouses < 5 : "Illegal house count: " + numHouses;
   }
   
   public void sellHotel() {
     --numHotels;
-    logger.info("Sold hotel at " + name + "; property now has 4 houses");
+//    game.logger.info("Sold hotel at " + name + "; property now has 4 houses");
     assert numHotels == 0 : "Illegal hotel count: " + numHotels;
     numHouses = 4;
   }
@@ -117,7 +114,7 @@ public abstract class Location implements Comparable<Location> {
   public void addHotel() {
     assert numHouses == 4 : "Not enough houses to buy hotel: " + numHouses;
     ++numHotels;
-    logger.info("Bought hotel at " + name);
+//    game.logger.info("Bought hotel at " + name);
     assert numHotels == 1 : "Illegal hotel count: " + numHotels;
     numHouses = 0;
   }

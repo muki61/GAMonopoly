@@ -57,9 +57,9 @@ public class RailroadLocation extends Location {
     }
 
     if (isMortgaged) {
-      logger.info("Lot is mortgaged, rent: 0");
+//      game.logger.info("Lot is mortgaged, rent: 0");
     } else {
-      logger.info("Rent for " + name + ": " + rent);
+//      game.logger.info("Rent for " + name + ": " + rent);
     }
     resetMultiple();
     return rent;

@@ -15,7 +15,6 @@ public class Utility {
       int returnVal = JFileChooser.CANCEL_OPTION;
       while (returnVal != JFileChooser.APPROVE_OPTION) {
         returnVal = fc.showDialog(null, "Select");
-        System.out.println(returnVal);
       }
 
       try {

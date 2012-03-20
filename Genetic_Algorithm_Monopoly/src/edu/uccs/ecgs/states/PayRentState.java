@@ -1,5 +1,6 @@
 package edu.uccs.ecgs.states;
 
+import edu.uccs.ecgs.AbstractPlayer;
 import edu.uccs.ecgs.Actions;
 import edu.uccs.ecgs.BankruptcyException;
 import edu.uccs.ecgs.Location;
@@ -13,8 +14,8 @@ public class PayRentState extends PlayerState {
   }
 
   @Override
-  public PlayerState processEvent(Events event, Monopoly game) {
-    logger.info("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
+  public PlayerState processEvent(Monopoly game, AbstractPlayer player, Events event) {
+    game.logger.info("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
         "; event " + event.name());
     switch (event) {
 
@@ -27,7 +28,7 @@ public class PayRentState extends PlayerState {
             + amount;
         if (amount > 0) {
           try {
-            Monopoly.payRent(player, location.owner, amount);
+            game.payRent(player, location.owner, amount);
           } catch (BankruptcyException e) {
             //e.printStackTrace();
             game.processBankruptcy(player, location.owner);
@@ -46,7 +47,7 @@ public class PayRentState extends PlayerState {
       }
 
     case ROLL_DICE_EVENT:
-      rollDice();
+      rollDice(game, player);
       if (player.nextAction == Actions.MAKE_BUILD_DECISION) {
         developPropertyState.enter();
         return developPropertyState;

@@ -1,7 +1,5 @@
 package edu.uccs.ecgs;
 
-import java.util.logging.Logger;
-
 public enum Chance {
 
   ADVANCE_TO_GO, ADVANCE_TO_ILLINOIS, ADVANCE_TO_UTILITY, 
@@ -10,14 +8,15 @@ public enum Chance {
   BANK_PAYS_50, BANK_PAYS_150, REPAIR_PROPERTY, PAY_15, 
   PAY_EACH_PLAYER_50, GET_OUT_OF_JAIL;
 
-  static Logger logger = Logger.getLogger("edu.uccs.ecgs");
+  private Monopoly game;
 
   public void processChance(AbstractPlayer player, Monopoly game) throws BankruptcyException {
     int locationIndex = 0;
     int spacesToAdvance = 0;
     Location location = null;
+    this.game = game;
 
-    logger.info("Processing Chance Card '" + toString() + "' for player "
+    game.logger.info("Processing Chance Card '" + toString() + "' for player "
         + player.playerIndex);
 
     switch (this) {
@@ -36,10 +35,10 @@ public enum Chance {
       if (player.getLocationIndex() > 12 && player.getLocationIndex() < 28) {
         locationIndex = 28;
       }
-      location = PropertyFactory.getPropertyFactory().getLocationAt(locationIndex);
+      location = PropertyFactory.getPropertyFactory(game.gamekey).getLocationAt(locationIndex);
       ((UtilityLocation) location).arrivedFromChance = true;
-      logger.info("Rolling dice...");
-      Dice.getDice().roll();
+      game.logger.info("Rolling dice...");
+      game.logDiceRoll(Dice.getDice().roll());
       advancePlayer(player, locationIndex);
 
       break;
@@ -80,7 +79,7 @@ public enum Chance {
       break;
 
     case GO_TO_JAIL:
-      PropertyFactory pf = PropertyFactory.getPropertyFactory();
+      PropertyFactory pf = PropertyFactory.getPropertyFactory(game.gamekey);
       location = pf.getLocationAt(10);
       player.enteredJail();
       player.setLocationIndex(location.index);
@@ -123,7 +122,7 @@ public enum Chance {
 
   private void movePlayer(AbstractPlayer player, int spacesToAdvance) {
     int newLocation = player.advance(spacesToAdvance);
-    PropertyFactory pf = PropertyFactory.getPropertyFactory();
+    PropertyFactory pf = PropertyFactory.getPropertyFactory(game.gamekey);
     Location location = pf.getLocationAt(newLocation);
     player.setCurrentLocation(location);
     if (player.passedGo()) {

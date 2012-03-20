@@ -1,7 +1,6 @@
 package edu.uccs.ecgs.states;
 
 import java.util.Random;
-import java.util.logging.Logger;
 
 import edu.uccs.ecgs.AbstractPlayer;
 import edu.uccs.ecgs.Actions;
@@ -13,11 +12,6 @@ import edu.uccs.ecgs.PropertyFactory;
 import edu.uccs.ecgs.PropertyGroups;
 
 public class PlayerState {
-
-  protected static Logger logger = Logger.getLogger("edu.uccs.ecgs");
-
-  protected static AbstractPlayer player;
-  protected static AbstractPlayer[] otherPlayers;
 
   public static PlayerState activeState = new ActiveState();
   public static PlayerState atNewLocationState = new AtNewLocationState();
@@ -33,23 +27,22 @@ public class PlayerState {
   public static PlayerState playerState = new PlayerState();
   public static PlayerState payoffMortgageState = new PayoffMortgageState();
 
-  static Random r = new Random();
-  static {
+  Random r = new Random();
+
+  Dice dice = Dice.getDice();
+  int numDoubles = 0;
+
+  PlayerState() {
     long seed = 1241797664697L;
     if (Main.useRandomSeed) {
       seed = System.currentTimeMillis();
     }
     System.out.println("PlayerState seed   : " + seed);
+
     r.setSeed(seed);
   }
 
-  Dice dice = Dice.getDice();
-  static int numDoubles = 0;
-
-  PlayerState() {
-  }
-
-  public PlayerState processEvent(Events event, Monopoly game) {
+  public PlayerState processEvent(Monopoly game, AbstractPlayer player, Events event) {
     throw new IllegalAccessError();
   }
 
@@ -60,13 +53,14 @@ public class PlayerState {
     return r.nextDouble();
   }
 
-  protected void rollDice() {
+  protected void rollDice(Monopoly game, AbstractPlayer player) {
     int[] roll = dice.roll();
+    game.logDiceRoll(roll);
 
     player.setDoubles(dice.rolledDoubles());
     if (dice.rolledDoubles()) {
       numDoubles += 1;
-      logger.info("numDoubles : " + numDoubles);
+      game.logger.info("numDoubles : " + numDoubles);
     }
 
     Location location;
@@ -74,17 +68,17 @@ public class PlayerState {
 
     if (numDoubles == 3) {
       // send to jail
-      PropertyFactory pf = PropertyFactory.getPropertyFactory();
+      PropertyFactory pf = PropertyFactory.getPropertyFactory(game.gamekey);
       location = pf.getLocationAt(10);
       player.enteredJail();
       player.setLocationIndex(location.index);
       player.setCurrentLocation(location);
-      logger.info("Player " + player.playerIndex
+      game.logger.info("Player " + player.playerIndex
           + " rolled doubles 3 times in a row. Player sent to jail.");
       player.nextAction = Actions.MAKE_BUILD_DECISION;
 
     } else {
-      movePlayer (currentRoll);
+      movePlayer (currentRoll, game, player);
 
       if (player.passedGo()) {
         payPlayer(player, 200);
@@ -92,10 +86,10 @@ public class PlayerState {
     }
   }
 
-  protected void movePlayer(int currentRoll) {
+  protected void movePlayer(int currentRoll, Monopoly game, AbstractPlayer player) {
     int newLocation = player.advance(currentRoll);
 
-    PropertyFactory pf = PropertyFactory.getPropertyFactory();
+    PropertyFactory pf = PropertyFactory.getPropertyFactory(game.gamekey);
     Location location = pf.getLocationAt(newLocation);
     
     player.setCurrentLocation(location);
@@ -120,7 +114,7 @@ public class PlayerState {
     }
   }
 
-  protected PlayerState determineNextState() {
+  protected PlayerState determineNextState(AbstractPlayer player) {
     switch (player.nextAction) {
     case MAKE_BUILD_DECISION:
       //player has landed on go, jail, or free parking
@@ -150,20 +144,5 @@ public class PlayerState {
 
   void payPlayer(AbstractPlayer player, int amount) {
     player.receiveCash(amount);
-  }
-
-  public void setActivePlayer(AbstractPlayer abstractPlayer) {
-    player = abstractPlayer;
-    numDoubles = 0;
-    // logger.info("SET NUM DOUBLES = 0");
-    // logger.info("numDoubles : " + numDoubles);
-  }
-
-  public void setOtherPlayers(AbstractPlayer[] others) {
-    otherPlayers = new AbstractPlayer[others.length];
-    int index = 0;
-    for (AbstractPlayer player : others) {
-      otherPlayers[index++] = player;
-    }
   }
 }

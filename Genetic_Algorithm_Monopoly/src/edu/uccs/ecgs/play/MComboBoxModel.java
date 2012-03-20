@@ -1,4 +1,4 @@
-package edu.uccs.ecgs;
+package edu.uccs.ecgs.play;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,10 +8,14 @@ import java.util.TreeSet;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
+import edu.uccs.ecgs.Location;
+import edu.uccs.ecgs.PropertyFactory;
+import edu.uccs.ecgs.PropertyGroups;
+
 @SuppressWarnings("serial")
 public class MComboBoxModel extends DefaultComboBoxModel implements ActionListener {
   TreeSet<Location> data = new TreeSet<Location>();
-  Location selected = PropertyFactory.getPropertyFactory().getLocationAt(0);
+  Location selected = PropertyFactory.getPropertyFactory(PlayerGui.factoryKey).getLocationAt(0);
   boolean buttonClicked = false;
   PlayerPanel pp;
   

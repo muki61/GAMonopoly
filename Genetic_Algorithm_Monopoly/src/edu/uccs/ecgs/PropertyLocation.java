@@ -112,10 +112,11 @@ public class PropertyLocation extends Location {
     }
     
     if (isMortgaged) {
-      logger.info("Lot is mortgaged, rent: 0");
+      //TODO  logging
+//      game.logger.info("Lot is mortgaged, rent: 0");
     } else {
-      logger.info("Rent for " + name + " with " + getNumHouses() + 
-          " houses: " + rent);
+//      game.logger.info("Rent for " + name + " with " + getNumHouses() + 
+//          " houses: " + rent);
     }
 
     resetMultiple();

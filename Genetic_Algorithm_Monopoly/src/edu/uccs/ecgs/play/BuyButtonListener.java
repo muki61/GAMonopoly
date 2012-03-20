@@ -1,10 +1,13 @@
-package edu.uccs.ecgs;
+package edu.uccs.ecgs.play;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+
+import edu.uccs.ecgs.Location;
+import edu.uccs.ecgs.PropertyGroups;
 
 public class BuyButtonListener implements ActionListener {
   JComboBox list;

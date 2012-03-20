@@ -1,4 +1,4 @@
-package edu.uccs.ecgs;
+package edu.uccs.ecgs.play;
 
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;

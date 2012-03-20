@@ -1,7 +1,6 @@
 package edu.uccs.ecgs;
 
 import java.util.Random;
-import java.util.logging.Logger;
 
 public class Dice {
   Random dice = new Random();
@@ -9,10 +8,6 @@ public class Dice {
   private boolean doubles;
   private int currentRoll = 0;
   
-  private static Dice _dice = new Dice();
-
-  static Logger logger = Logger.getLogger("edu.uccs.ecgs");
-
   private Dice() {
     long seed = 1241797664697L;
     if (Main.useRandomSeed) {
@@ -23,10 +18,10 @@ public class Dice {
   }
 
   public static Dice getDice() {
-    return _dice;
+    return new Dice();
   }
 
-  public int[] roll() {
+  public synchronized int[] roll() {
     doubles = false;
 
     result[0] = dice.nextInt(6) + 1;
@@ -34,11 +29,7 @@ public class Dice {
 
     currentRoll = result[0] + result[1];
 
-    logger.info("Dice 1: " + result[0]);
-    logger.info("Dice 2: " + result[1]);
-
     if (result[0] == result[1]) {
-      logger.info("Doubles!!");
       doubles = true;
     }
     return result;

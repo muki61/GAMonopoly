@@ -1,10 +1,12 @@
-package edu.uccs.ecgs;
+package edu.uccs.ecgs.play;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import javax.swing.JFrame;
+
+import edu.uccs.ecgs.Location;
 
 @SuppressWarnings("serial")
 public class PlayerGui extends JFrame {
@@ -16,6 +18,7 @@ public class PlayerGui extends JFrame {
   static PlayerPanel pp2 = new PlayerPanel(1); 
   static PlayerPanel pp3 = new PlayerPanel(2); 
   static PlayerPanel pp4 = new PlayerPanel(3); 
+  static String factoryKey = "edu.uccs.ecgs.play";
 
   public PlayerGui() {
     setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -24,13 +27,11 @@ public class PlayerGui extends JFrame {
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.fill = GridBagConstraints.BOTH;
     gbc.weightx = 1.0;
-//    gbc.gridwidth = GridBagConstraints.RELATIVE;
     gbc.insets = new Insets(2,2,2,2);
 
     getContentPane().add(pp1,gbc);
     getContentPane().add(pp2,gbc);
     getContentPane().add(pp3,gbc);
-//    gbc.gridwidth = GridBagConstraints.REMAINDER;
     getContentPane().add(pp4,gbc);
 
     pack();

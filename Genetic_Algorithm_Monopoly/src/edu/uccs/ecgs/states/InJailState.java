@@ -2,6 +2,7 @@ package edu.uccs.ecgs.states;
 
 //import org.junit.Assert;
 
+import edu.uccs.ecgs.AbstractPlayer;
 import edu.uccs.ecgs.Actions;
 import edu.uccs.ecgs.BankruptcyException;
 import edu.uccs.ecgs.Monopoly;
@@ -14,13 +15,14 @@ public class InJailState extends PlayerState {
   }
 
   @Override
-  public PlayerState processEvent(Events event, Monopoly game) {
-    logger.info("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
+  public PlayerState processEvent(Monopoly game, AbstractPlayer player, Events event) {
+    game.logger.info("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
         "; event " + event.name());
     switch (event) {
     
     case ROLL_DICE_EVENT:
       int[] roll = dice.roll();
+      game.logDiceRoll(roll);
       int currentRoll = roll[0] + roll[1];
 
       //even though player rolled doubles, they do not get to roll again
@@ -28,10 +30,10 @@ public class InJailState extends PlayerState {
 
       if (dice.rolledDoubles()) {
         player.paidBail();
-        movePlayer(currentRoll);
+        movePlayer(currentRoll, game, player);
         assert player.nextAction != Actions.ROLL_DICE : "Invalid action: ";
         atNewLocationState.enter();
-        return determineNextState();
+        return determineNextState(player);
       } else {
         //did not roll doubles
         player.setDoubles(false);
@@ -50,9 +52,9 @@ public class InJailState extends PlayerState {
             }
           }
           player.paidBail();
-          movePlayer(currentRoll);
+          movePlayer(currentRoll, game, player);
           assert player.nextAction != Actions.ROLL_DICE : "Invalid action: ";
-          return determineNextState();
+          return determineNextState(player);
         }
         player.nextAction = Actions.MAKE_BUILD_DECISION;
         developPropertyState.enter();
@@ -64,11 +66,11 @@ public class InJailState extends PlayerState {
       //use a Get Out Of Jail Card first, if they have one
       if (player.hasGetOutOfJailCard()) {
         player.useGetOutOfJailCard();
-        logger.info("Player used Get Out of Jail Free card");
+        game.logger.info("Player used Get Out of Jail Free card");
       } else {
         //actually pay bail
         try {
-          logger.info("Player will pay $50 to get out of jail");
+          game.logger.info("Player will pay $50 to get out of jail");
           player.getCash(50);
         } catch (BankruptcyException e) {
           //e.printStackTrace();

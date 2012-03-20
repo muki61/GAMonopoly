@@ -1,7 +1,5 @@
 package edu.uccs.ecgs;
 
-import java.util.logging.Logger;
-
 public enum CommunityChest {
 
   ADVANCE_TO_GO, COLLECT_200, PAY_50, GET_OUT_OF_JAIL, GO_TO_JAIL,
@@ -9,16 +7,14 @@ public enum CommunityChest {
   COLLECT_25, REPAIR_PROPERTY, COLLECT_10, INHERIT_100, STOCK_50,
   HOLIDAY_FUND;
 
-  static Logger logger = Logger.getLogger("edu.uccs.ecgs");
-
   public void processCard(AbstractPlayer player, Monopoly game) throws BankruptcyException {
-    logger.info("Processing Community Chest Card '" + toString()
+    game.logger.info("Processing Community Chest Card '" + toString()
         + "' for player " + player.playerIndex);
 
     switch (this) {
     case ADVANCE_TO_GO:
       int locationIndex = 0;
-      advancePlayer(player, locationIndex);
+      advancePlayer(player, locationIndex, game);
       break;
 
     case COLLECT_200:
@@ -34,7 +30,7 @@ public enum CommunityChest {
       break;
 
     case GO_TO_JAIL:
-      PropertyFactory pf = PropertyFactory.getPropertyFactory();
+      PropertyFactory pf = PropertyFactory.getPropertyFactory(game.gamekey);
       Location location = pf.getLocationAt(10);
       player.enteredJail();
       player.setLocationIndex(location.index);
@@ -133,9 +129,9 @@ public enum CommunityChest {
     }    
   }
 
-  private void movePlayer(AbstractPlayer player, int spacesToAdvance) {
+  private void movePlayer(AbstractPlayer player, int spacesToAdvance, Monopoly game) {
     int newLocation = player.advance(spacesToAdvance);
-    PropertyFactory pf = PropertyFactory.getPropertyFactory();
+    PropertyFactory pf = PropertyFactory.getPropertyFactory(game.gamekey);
     Location location = pf.getLocationAt(newLocation);
     player.setCurrentLocation(location);
     if (player.passedGo()) {
@@ -143,13 +139,13 @@ public enum CommunityChest {
     }
   }
 
-  private void advancePlayer(AbstractPlayer player, int locationIndex) {
+  private void advancePlayer(AbstractPlayer player, int locationIndex, Monopoly game) {
     int spacesToAdvance = locationIndex - player.getLocationIndex();
     if (spacesToAdvance < 0) {
       //adjust if locationIndex < player location
       spacesToAdvance += 40;
     }
-    movePlayer (player, spacesToAdvance);
+    movePlayer (player, spacesToAdvance, game);
 
   }  
 }

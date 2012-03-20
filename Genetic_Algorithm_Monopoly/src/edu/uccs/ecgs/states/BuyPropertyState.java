@@ -2,6 +2,7 @@ package edu.uccs.ecgs.states;
 
 import java.util.TreeMap;
 
+import edu.uccs.ecgs.AbstractPlayer;
 import edu.uccs.ecgs.Actions;
 import edu.uccs.ecgs.BankruptcyException;
 import edu.uccs.ecgs.Location;
@@ -16,8 +17,8 @@ public class BuyPropertyState extends PlayerState {
   }
 
   @Override
-  public PlayerState processEvent(Events event, Monopoly game) {
-    logger.info("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
+  public PlayerState processEvent(Monopoly game, AbstractPlayer player, Events event) {
+    game.logger.info("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
         "; event " + event.name());
     switch (event) {
     
@@ -28,9 +29,9 @@ public class BuyPropertyState extends PlayerState {
         player.getCash(location.getCost());
         location.setOwner(player);
         player.addProperty(location);
-        PropertyFactory.getPropertyFactory().checkForMonopoly();
+        PropertyFactory.getPropertyFactory(game.gamekey).checkForMonopoly();
         if (location.partOfMonopoly) {
-          logger.info("Player " + player.playerIndex
+          game.logger.info("Player " + player.playerIndex
               + " acquired monopoly with " + location.name);
         }
       } catch (BankruptcyException e) {
@@ -62,8 +63,8 @@ public class BuyPropertyState extends PlayerState {
       return this;
 
     case ROLL_DICE_EVENT:
-      rollDice();
-      return determineNextState();
+      rollDice(game, player);
+      return determineNextState(player);
 
     default:
       String msg = "Unexpected event " + event;

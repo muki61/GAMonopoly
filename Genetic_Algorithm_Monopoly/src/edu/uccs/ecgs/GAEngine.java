@@ -13,9 +13,7 @@ import java.util.Random;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.logging.Formatter;
-import java.util.logging.Level;
 import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 /**
  * The Genetic Algorithm Engine. Create and manage the population of players.
@@ -23,7 +21,6 @@ import java.util.logging.Logger;
  * population.
  */
 public class GAEngine implements Runnable {
-  static Logger logger = Logger.getLogger("edu.uccs.ecgs");
   static Formatter formatter;
 
   private int generation = 0;
@@ -97,7 +94,7 @@ public class GAEngine implements Runnable {
       runGame();
     } catch (Throwable t) {
       t.printStackTrace();
-      logger.log(Level.SEVERE, "", t);
+//      game.logger.log(Level.SEVERE, "", t); TODO logging
     }
   }
 
@@ -148,12 +145,14 @@ public class GAEngine implements Runnable {
       dumpGenome();
       dumpPlayerFitness();
 
-      Vector<AbstractPlayer> newPopulation = PopulationPropagator.evolve(
-          playerPool, minEliteScore);
-      playerPool.clear();
-      playerPool.addAll(newPopulation);
-
       generation++;
+
+      if (generation < Main.numGenerations) {
+        Vector<AbstractPlayer> newPopulation = PopulationPropagator.evolve(
+            playerPool, minEliteScore);
+        playerPool.clear();
+        playerPool.addAll(newPopulation);
+      }
     }
   }
 
@@ -167,9 +166,9 @@ public class GAEngine implements Runnable {
     };
 
     if (Main.debug) {
-      logger.setLevel(Level.INFO);
+//      game.logger.setLevel(Level.INFO); TODO logging
     } else {
-      logger.setLevel(Level.OFF);
+//      game.logger.setLevel(Level.OFF);
     }
   }
 
@@ -181,10 +180,14 @@ public class GAEngine implements Runnable {
     }
   }
 
+  /**
+   * Output files with player fitness data
+   */
   private void dumpPlayerFitness() {
     // create a map sorted by score, where the value is the number of
     // players with that score
     TreeMap<Integer, Integer> scores = new TreeMap<Integer, Integer>();
+
     // the set is used to dump a list of each player with the player's
     // individual score
     ArrayList<AbstractPlayer> fitness = new ArrayList<AbstractPlayer>(
@@ -206,12 +209,17 @@ public class GAEngine implements Runnable {
     minEliteScore = 0;
     int playerCount = 0;
     int maxPlayerCount = (int) (0.1 * Main.maxPlayers);
+    // Ensure at least 1 player move to next generation based on eliteness
+    if (maxPlayerCount < 1) {
+      maxPlayerCount = 1;
+    }
+
     for (Integer key : scores.descendingKeySet()) {
       playerCount += scores.get(key).intValue();
       if (playerCount >= maxPlayerCount) {
+        minEliteScore = key.intValue();
         break;
       }
-      minEliteScore = key.intValue();
     }
 
     StringBuilder dir = Utility.getDirForGen(generation);

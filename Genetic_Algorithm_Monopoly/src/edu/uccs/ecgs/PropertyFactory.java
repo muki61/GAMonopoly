@@ -4,16 +4,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Properties;
+import java.util.TreeMap;
 
 public class PropertyFactory {
 
-  protected Location[] locations;
-  Properties properties = null;
+  private Location[] locations;
+  private Properties properties = null;
 
-  private static PropertyFactory _this = new PropertyFactory();
+  static TreeMap<String, PropertyFactory> factories = new TreeMap<String, PropertyFactory>();
+  
+  public static PropertyFactory getPropertyFactory(String gamekey) {
+    PropertyFactory pf = factories.get(gamekey);
 
-  public static PropertyFactory getPropertyFactory() {
-    return _this;
+    if (pf == null) {
+      pf = new PropertyFactory(gamekey);
+      factories.put(gamekey, pf);
+    }
+    return pf;
   }
 
   public void reset () {
@@ -22,7 +29,7 @@ public class PropertyFactory {
     }
   }
 
-  private PropertyFactory() {
+  private PropertyFactory(String gamekey) {
     locations = new Location[40];
 
     if (properties == null) {
@@ -38,14 +45,14 @@ public class PropertyFactory {
       }
     }
 
-    createLocations(properties);
+    createLocations(properties, gamekey);
   }
 
   public Location getLocationAt(int index) {
     return locations[index];
   }
 
-  private void createLocations(Properties properties) {
+  private void createLocations(Properties properties, String gamekey) {
     String props = properties.getProperty("names");
     String[] keys = props.split(",");
     for (int i = 0; i < keys.length; i++) {
@@ -274,5 +281,9 @@ public class PropertyFactory {
     }
 
     return result;
+  }
+
+  public Location[] getLocations() {
+    return locations;
   }
 }

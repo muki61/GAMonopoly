@@ -2,6 +2,7 @@ package edu.uccs.ecgs.states;
 
 import java.util.TreeMap;
 
+import edu.uccs.ecgs.AbstractPlayer;
 import edu.uccs.ecgs.Actions;
 import edu.uccs.ecgs.Location;
 import edu.uccs.ecgs.Monopoly;
@@ -13,8 +14,8 @@ public class AuctionState extends PlayerState {
   }
 
   @Override
-  public PlayerState processEvent(Events event, Monopoly game) {
-    logger.info("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
+  public PlayerState processEvent(Monopoly game, AbstractPlayer player, Events event) {
+    game.logger.info("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
         "; event " + event.name());
     switch (event) {
     

@@ -1,5 +1,6 @@
 package edu.uccs.ecgs.states;
 
+import edu.uccs.ecgs.AbstractPlayer;
 import edu.uccs.ecgs.Actions;
 import edu.uccs.ecgs.BankruptcyException;
 import edu.uccs.ecgs.Chance;
@@ -17,8 +18,8 @@ public class AtNewLocationState extends PlayerState {
   }
 
   @Override
-  public PlayerState processEvent(Events event, Monopoly game) {
-    logger.info("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
+  public PlayerState processEvent(Monopoly game, AbstractPlayer player, Events event) {
+    game.logger.info("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
         "; event " + event.name());
     Location location = player.getCurrentLocation();
 
@@ -177,9 +178,9 @@ public class AtNewLocationState extends PlayerState {
           return developPropertyState;
         }
       } else if (location.name.equals("Go To Jail")) {
-        logger.info("Player " + player.playerIndex + " landed on Go To Jail.");
+        game.logger.info("Player " + player.playerIndex + " landed on Go To Jail.");
 
-        PropertyFactory pf = PropertyFactory.getPropertyFactory();
+        PropertyFactory pf = PropertyFactory.getPropertyFactory(game.gamekey);
         player.enteredJail();
         player.setLocationIndex(10);
         player.setCurrentLocation(pf.getLocationAt(10));
@@ -188,9 +189,9 @@ public class AtNewLocationState extends PlayerState {
         developPropertyState.enter();
         return developPropertyState;
       } else {
-        logger.info("****************************************************");
-        logger.info("Location : " + location.name);
-        logger.info("****************************************************");
+        game.logger.info("****************************************************");
+        game.logger.info("Location : " + location.name);
+        game.logger.info("****************************************************");
         System.exit(1);
       }
       return this;
@@ -200,5 +201,4 @@ public class AtNewLocationState extends PlayerState {
       throw new IllegalArgumentException(msg);
     }
   }
-
 }
