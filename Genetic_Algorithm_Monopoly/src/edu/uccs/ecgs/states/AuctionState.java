@@ -2,10 +2,10 @@ package edu.uccs.ecgs.states;
 
 import java.util.TreeMap;
 
-import edu.uccs.ecgs.AbstractPlayer;
-import edu.uccs.ecgs.Actions;
-import edu.uccs.ecgs.Location;
-import edu.uccs.ecgs.Monopoly;
+import edu.uccs.ecgs.ga.AbstractPlayer;
+import edu.uccs.ecgs.ga.Actions;
+import edu.uccs.ecgs.ga.Location;
+import edu.uccs.ecgs.ga.Monopoly;
 
 public class AuctionState extends PlayerState {
   @Override

@@ -6,8 +6,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 
-import edu.uccs.ecgs.Location;
-import edu.uccs.ecgs.PropertyFactory;
+import edu.uccs.ecgs.ga.Location;
+import edu.uccs.ecgs.ga.PropertyFactory;
 
 public class RemoveLotActionListener implements ActionListener {
   JTable table;

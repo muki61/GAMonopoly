@@ -18,7 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import edu.uccs.ecgs.Utility;
+import edu.uccs.ecgs.ga.Utility;
 
 @SuppressWarnings("serial")
 public class FitnessReader extends JFrame implements ActionListener {

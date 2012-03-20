@@ -17,9 +17,9 @@ import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import edu.uccs.ecgs.AbstractPlayer;
-import edu.uccs.ecgs.Location;
-import edu.uccs.ecgs.PropertyFactory;
+import edu.uccs.ecgs.ga.AbstractPlayer;
+import edu.uccs.ecgs.ga.Location;
+import edu.uccs.ecgs.ga.PropertyFactory;
 
 @SuppressWarnings("serial")
 public class PlayerPanel extends JPanel implements ListSelectionListener {
@@ -129,7 +129,7 @@ public class PlayerPanel extends JPanel implements ListSelectionListener {
     
     table.setModel(m);
     table.getSelectionModel().addListSelectionListener(this);
-    table.setDefaultRenderer(Object.class, new edu.uccs.ecgs.MCellRenderer());
+    table.setDefaultRenderer(Object.class, new edu.uccs.ecgs.ga.MCellRenderer());
     layout.setConstraints(table, gbc);
     add(scrollPane, gbc);
 

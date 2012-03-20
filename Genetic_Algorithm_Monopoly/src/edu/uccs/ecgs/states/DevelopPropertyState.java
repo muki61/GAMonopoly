@@ -1,8 +1,8 @@
 package edu.uccs.ecgs.states;
 
-import edu.uccs.ecgs.AbstractPlayer;
-import edu.uccs.ecgs.Actions;
-import edu.uccs.ecgs.Monopoly;
+import edu.uccs.ecgs.ga.AbstractPlayer;
+import edu.uccs.ecgs.ga.Actions;
+import edu.uccs.ecgs.ga.Monopoly;
 
 public class DevelopPropertyState extends PlayerState {
 

@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JTable;
 
-import edu.uccs.ecgs.Location;
+import edu.uccs.ecgs.ga.Location;
 
 public class MortButtonListener implements ActionListener {
   JTable table;

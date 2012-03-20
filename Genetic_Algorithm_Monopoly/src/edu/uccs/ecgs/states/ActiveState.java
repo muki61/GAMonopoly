@@ -1,7 +1,7 @@
 package edu.uccs.ecgs.states;
 
-import edu.uccs.ecgs.AbstractPlayer;
-import edu.uccs.ecgs.Monopoly;
+import edu.uccs.ecgs.ga.AbstractPlayer;
+import edu.uccs.ecgs.ga.Monopoly;
 
 public class ActiveState extends PlayerState {
 

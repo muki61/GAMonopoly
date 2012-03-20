@@ -9,8 +9,8 @@ import java.util.BitSet;
 
 import javax.swing.JFileChooser;
 
-import edu.uccs.ecgs.BitSetUtility;
-import edu.uccs.ecgs.PropertyFactory;
+import edu.uccs.ecgs.ga.BitSetUtility;
+import edu.uccs.ecgs.ga.PropertyFactory;
 
 public class GenomeReader {
 	public static void main(String[] args) {

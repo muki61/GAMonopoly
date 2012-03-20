@@ -5,7 +5,7 @@ import java.util.TreeSet;
 
 import javax.swing.table.AbstractTableModel;
 
-import edu.uccs.ecgs.Location;
+import edu.uccs.ecgs.ga.Location;
 
 @SuppressWarnings("serial")
 public class MTableModel extends AbstractTableModel {

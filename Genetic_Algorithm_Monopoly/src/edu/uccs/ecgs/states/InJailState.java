@@ -2,10 +2,10 @@ package edu.uccs.ecgs.states;
 
 //import org.junit.Assert;
 
-import edu.uccs.ecgs.AbstractPlayer;
-import edu.uccs.ecgs.Actions;
-import edu.uccs.ecgs.BankruptcyException;
-import edu.uccs.ecgs.Monopoly;
+import edu.uccs.ecgs.ga.AbstractPlayer;
+import edu.uccs.ecgs.ga.Actions;
+import edu.uccs.ecgs.ga.BankruptcyException;
+import edu.uccs.ecgs.ga.Monopoly;
 
 public class InJailState extends PlayerState {
 

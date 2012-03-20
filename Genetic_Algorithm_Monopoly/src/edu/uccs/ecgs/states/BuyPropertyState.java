@@ -2,12 +2,12 @@ package edu.uccs.ecgs.states;
 
 import java.util.TreeMap;
 
-import edu.uccs.ecgs.AbstractPlayer;
-import edu.uccs.ecgs.Actions;
-import edu.uccs.ecgs.BankruptcyException;
-import edu.uccs.ecgs.Location;
-import edu.uccs.ecgs.Monopoly;
-import edu.uccs.ecgs.PropertyFactory;
+import edu.uccs.ecgs.ga.AbstractPlayer;
+import edu.uccs.ecgs.ga.Actions;
+import edu.uccs.ecgs.ga.BankruptcyException;
+import edu.uccs.ecgs.ga.Location;
+import edu.uccs.ecgs.ga.Monopoly;
+import edu.uccs.ecgs.ga.PropertyFactory;
 
 public class BuyPropertyState extends PlayerState {
 

@@ -6,7 +6,7 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import edu.uccs.ecgs.PopulationPropagator;
+import edu.uccs.ecgs.ga.PopulationPropagator;
 
 public class LoadButtonListener implements ActionListener {
 

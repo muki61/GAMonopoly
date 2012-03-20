@@ -6,7 +6,7 @@ import java.awt.Insets;
 
 import javax.swing.JFrame;
 
-import edu.uccs.ecgs.Location;
+import edu.uccs.ecgs.ga.Location;
 
 @SuppressWarnings("serial")
 public class PlayerGui extends JFrame {
