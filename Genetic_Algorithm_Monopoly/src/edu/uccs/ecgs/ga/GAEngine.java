@@ -90,13 +90,7 @@ public class GAEngine implements Runnable {
 
   @Override
   public void run() {
-    try {
-      initLogger();
-      runGame();
-    } catch (Throwable t) {
-      t.printStackTrace();
-//      game.logger.log(Level.SEVERE, "", t); TODO logging
-    }
+    runGame();
   }
 
   public void runGame() {
@@ -154,22 +148,6 @@ public class GAEngine implements Runnable {
         playerPool.clear();
         playerPool.addAll(newPopulation);
       }
-    }
-  }
-
-  public void initLogger() {
-    // This block configures the logger with handler and formatter
-    formatter = new Formatter() {
-      @Override
-      public String format(LogRecord record) {
-        return record.getMessage() + "\n";
-      }
-    };
-
-    if (Main.debug) {
-//      game.logger.setLevel(Level.INFO); TODO logging
-    } else {
-//      game.logger.setLevel(Level.OFF);
     }
   }
 

@@ -206,11 +206,7 @@ public class Monopoly implements Runnable {
     for (AbstractPlayer p : sortedPlayers.values()) {
       logger.info("");
       p.printTotalWorth();
-    }
-    
-    fh.flush();
-    fh.close();
-    logger = null;
+    }    
   }
 
   private AbstractPlayer getNextPlayer() {
@@ -230,22 +226,30 @@ public class Monopoly implements Runnable {
     to.receiveCash(amount);
   }
 
+  /**
+   * Create a formatter and set logging on or off depending on state of
+   * {@link edu.uccs.ecgs.ga.Main#debug}. If Main.debug is true, then logging is
+   * turned on; if debug is false, logging is turned off.
+   */
   public void initLogger() {
-    // This block configures the logger with handler and formatter
-    formatter = new Formatter() {
-      @Override
-      public String format(LogRecord record) {
-        return record.getMessage() + "\n";
-      }
-    };
-
     if (Main.debug) {
       logger.setLevel(Level.INFO);
+
+      formatter = new Formatter() {
+        @Override
+        public String format(LogRecord record) {
+          return record.getMessage() + "\n";
+        }
+      };
     } else {
       logger.setLevel(Level.OFF);
     }
   }
 
+  /**
+   * Create the log file based on generation, match, and game number, and add
+   * the formatter to the logger.
+   */
   public void logFileSetup() {
     if (!Main.debug) {
       return;
@@ -284,6 +288,11 @@ public class Monopoly implements Runnable {
     }
   }
 
+  /**
+   * Create a string of the form "Match_nnn" where nnn is the match number.
+   * 
+   * @return A string of the form "Match_nnn" where nnn is the match number.
+   */
   private StringBuilder getMatchString() {
     StringBuilder result = new StringBuilder("" + match);
 
@@ -296,6 +305,11 @@ public class Monopoly implements Runnable {
     return result;
   }
 
+  /**
+   * Create a string of the form "Game_nnn" where nnn is the game number.
+   * 
+   * @return A string of the form "Game_nnn" where nnn is the game number.
+   */
   private StringBuilder getGameString() {
     StringBuilder result = new StringBuilder("" + game);
 
@@ -312,9 +326,40 @@ public class Monopoly implements Runnable {
     location.sellHouse();
     player.receiveCash(location.getHouseCost() / 2);
     ++numHouses;
+    
+    logger.info("Sold house at " + location.toString() + "; property now has " + location.getNumHouses() + " houses");
+    
     assert numHouses < 33 : "Invalid number of houses: " + numHouses;
   }
 
+  /**
+   * Sell a hotel from the given location. According to the rules of Monopoly,
+   * the player must be able to put four houses on the location when the hotel
+   * is sold. If 4 houses are not available, the player is forced to sell as
+   * many hotels and (virtual) houses until the player can put any real houses
+   * on the property group in accordance with the rules.
+   * 
+   * For example, if 4 real houses are available, the player simply sells the
+   * hotel and puts 4 houses on the location.
+   * 
+   * However, if only 3 real houses are available and the player has more than
+   * one hotel (H) on the property group, the player is not allowed to put only
+   * 3 houses (h) on a location while one or two other locations in the group
+   * still have hotels (building must always be balanced). Thus, when selling a
+   * hotel, the only allowed configurations after selling are H/H/4h, H/4h/4h,
+   * 4h/4h/4h, or 3h/4h/4h. If the player has 3 or 2 hotels (H/H/H or H/H/4h)
+   * and only 3 houses are available, selling a hotel would result in H/H/3h or
+   * H/4h/3h, both of which are illegal since they are unbalanced. Thus the
+   * player is required to sell as many hotels and houses, until the number of
+   * houses and hotels on the location are balanced. So for example, if a player
+   * has H/H/H and only 3 houses remain unsold in the game, the player would be
+   * required to sell all the hotels and 9 virtual houses, and they place 1
+   * house on each location.
+   * 
+   * @param player
+   * @param location
+   * @param owned
+   */
   public void sellHotel(AbstractPlayer player, Location location,
       Collection<Location> owned) {
     int numHotelsInGroup = PropertyFactory.getPropertyFactory(gamekey)
@@ -335,13 +380,13 @@ public class Monopoly implements Runnable {
     default:
       // more than 4 houses
       location.sellHotel();
+      logger.info("Sold hotel at " + location.toString() + "; property now has 4 houses");
       player.receiveCash(location.getHotelCost() / 2);
       ++numHotels;
       assert numHotels <= 12 : "Invalid number of hotels: " + numHotels;
       numHouses = numHouses - 4;
       // return rather than break because we don't want to call the sell method
-      // at the
-      // end of the case block, since that method sells all hotels.
+      // at the end of the case block, since that method sells all hotels.
       return;
 
     case 3:
@@ -352,12 +397,14 @@ public class Monopoly implements Runnable {
         numHousesToSell3 = 3;
 
       } else if (numHotelsInGroup == 2 && numHousesInGroup == 4) {
+        // location must be 3 property group
         // must sell both hotels and then arrange houses as 2/2/3
         numHousesToSell1 = 2;
         numHousesToSell2 = 2;
         numHousesToSell3 = 1;
 
       } else if (numHotelsInGroup == 2 && numHousesInGroup == 0) {
+        // location must be 2 property group (Baltic/Med or Park Place/Boardwalk)
         // must sell both hotels and then arrange houses as 1/2
         numHousesToSell1 = 3;
         numHousesToSell2 = 2;
@@ -464,8 +511,20 @@ public class Monopoly implements Runnable {
     numHouses = 0;
   }
 
-  // change the location of the number of houses to sell based on the property
-  // group
+  /**
+   * Change the location of the number of houses to sell based on the property
+   * group. In certain property groups, any extra house should go on the first
+   * property in the group. In other groups, any extra house goes on the second
+   * property. This method adjusts the numHousesToSell array so the extra house
+   * is on the correct property.
+   * 
+   * @param location
+   *          The property the identifies the group.
+   * @param numHousesToSell
+   *          A 3-element array containing the number of houses to sell. This array
+   *          is modified so that if there is an uneven number of houses to sell, the
+   *          correct property gets the extra house.
+   */
   private void swapHousesToSell(Location location, int[] numHousesToSell) {
     switch (location.getGroup()) {
     case PURPLE:
@@ -484,6 +543,26 @@ public class Monopoly implements Runnable {
     }
   }
 
+  /**
+   * Sell all hotels in the property group to which the location belongs, and
+   * then sell the houses given by each of the numHouses params.
+   * 
+   * @param player
+   *          The player who owns the properties and who will receive the money
+   *          from the sale.
+   * @param location
+   *          The property that identifies the group from which hotels and
+   *          houses will be sold.
+   * @param owned
+   *          The collection of properties owned by the player.
+   * @param numHousesToSell1
+   *          The number of houses to sell from the first property in the group.
+   * @param numHousesToSell2
+   *          The number of houses to sell from the second property in the
+   *          group.
+   * @param numHousesToSell3
+   *          The number of houses to sell from the third property in the group.
+   */
   private void sell(AbstractPlayer player, Location location,
       Collection<Location> owned, int numHousesToSell1, int numHousesToSell2,
       int numHousesToSell3) {
@@ -499,6 +578,7 @@ public class Monopoly implements Runnable {
         ++count;
 
         loc.sellHotel();
+        logger.info("Sold hotel at " + loc.toString());
         ++numHotels;
         assert numHotels < 13 : "Invalid number hotels: " + numHotels;
 
@@ -539,6 +619,7 @@ public class Monopoly implements Runnable {
       player.getCash(location.getHouseCost());
       location.addHouse();
       --numHouses;
+      logger.info("Bought house for property group " + location.getGroup());
       assert numHouses >= 0 : "Invalid number of houses: " + numHouses;
       logger.info("Bank now has " + numHouses + " houses");
     } catch (BankruptcyException ignored) {
@@ -554,6 +635,7 @@ public class Monopoly implements Runnable {
       location.addHotel();
       --numHotels;
       player.getCash(location.getHotelCost());
+      logger.info("Bought hotel at " + location.toString());
       assert numHotels >= 0 : "Invalid number of hotels: " + numHotels;
 
       // add the houses back to the bank
@@ -723,7 +805,17 @@ public class Monopoly implements Runnable {
 
   @Override
   public void run() {
-    playGame();
+    try {
+      playGame();
+    } catch (Throwable t) {
+      t.printStackTrace();
+      logger.log(Level.SEVERE, "", t);
+    } finally {
+      fh.flush();
+      fh.close();
+      PropertyFactory.releasePropertyFactory(gamekey);
+      logger = null;
+    }
   }
 
   public void payEachPlayer50(AbstractPlayer player) throws BankruptcyException {

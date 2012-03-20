@@ -223,16 +223,6 @@ public class PropertyFactory {
     return result;
   }
 
-//  public int getTotalNumMonopolies() {
-//    int result = 0;
-//    
-//    for (AbstractPlayer player : GamePlayers.players) {
-//      result += getNumMonopolies(player);
-//    }
-//
-//    return result;
-//  }
-
   public int getNumMonopolies(AbstractPlayer player) {
     Hashtable<PropertyGroups, Boolean> h = new Hashtable<PropertyGroups, Boolean>();
     
@@ -286,5 +276,10 @@ public class PropertyFactory {
 
   public Location[] getLocations() {
     return locations;
+  }
+
+  public static void releasePropertyFactory(String gamekey) {
+    factories.remove(gamekey);
+    System.out.println("factory size: " + factories.size());
   }
 }

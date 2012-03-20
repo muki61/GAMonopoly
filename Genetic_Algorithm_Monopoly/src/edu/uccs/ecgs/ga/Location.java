@@ -2,7 +2,12 @@ package edu.uccs.ecgs.ga;
 
 import java.util.Properties;
 
-
+/**
+ * Class the implements a location (property or special location) in the game.
+ * Location can be an actual property like Vermont or Marvin Gardens, a utility,
+ * a railroad, or a special location like Go or Chance.
+ * 
+ */
 public abstract class Location implements Comparable<Location> {
   final String key;
   public final String name;
@@ -27,13 +32,7 @@ public abstract class Location implements Comparable<Location> {
   }
 
   protected int getInteger(String aKey, Properties properties) {
-    try {
-      return Integer.parseInt(properties.getProperty(aKey));
-    } catch (NumberFormatException e) {
-//      game.logger.info("Key: " + aKey); TODO logging
-      e.printStackTrace();
-    }
-    return 0;
+    return Integer.parseInt(properties.getProperty(aKey));
   }
 
   public String toString() {
@@ -96,18 +95,15 @@ public abstract class Location implements Comparable<Location> {
   public void sellHouse() {
     assert numHouses > 0 : "Illegal house count: " + numHouses;
     --numHouses;
-//    game.logger.info("Sold house at " + name + "; property now has " + numHouses + " houses"); TODO logging
   }
 
   public void addHouse() {
     ++numHouses;
-//    game.logger.info("Bought house for property group " + getGroup());
     assert numHouses < 5 : "Illegal house count: " + numHouses;
   }
   
   public void sellHotel() {
     --numHotels;
-//    game.logger.info("Sold hotel at " + name + "; property now has 4 houses");
     assert numHotels == 0 : "Illegal hotel count: " + numHotels;
     numHouses = 4;
   }
@@ -115,7 +111,6 @@ public abstract class Location implements Comparable<Location> {
   public void addHotel() {
     assert numHouses == 4 : "Not enough houses to buy hotel: " + numHouses;
     ++numHotels;
-//    game.logger.info("Bought hotel at " + name);
     assert numHotels == 1 : "Illegal hotel count: " + numHotels;
     numHouses = 0;
   }

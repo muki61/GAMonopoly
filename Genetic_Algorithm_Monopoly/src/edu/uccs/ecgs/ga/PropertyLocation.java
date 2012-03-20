@@ -107,18 +107,10 @@ public class PropertyLocation extends Location {
         break;
       }
     } else {
-    // else not part of monopoly (and this means 0 houses or hotels)
+      // else not part of monopoly (and this means 0 houses or hotels)
       rent = rentUnimproved * multiple;
     }
     
-    if (isMortgaged) {
-      //TODO  logging
-//      game.logger.info("Lot is mortgaged, rent: 0");
-    } else {
-//      game.logger.info("Rent for " + name + " with " + getNumHouses() + 
-//          " houses: " + rent);
-    }
-
     resetMultiple();
     return rent;
   }

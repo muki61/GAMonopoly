@@ -23,17 +23,25 @@ public class PayRentState extends PlayerState {
       Location location = player.getCurrentLocation();
 
       if (location.owner != player) {
-        int amount = location.getRent();
-        assert amount >= 0 : "Invalid rent: " + location.name + "; rent: "
-            + amount;
-        if (amount > 0) {
-          try {
-            game.payRent(player, location.owner, amount);
-          } catch (BankruptcyException e) {
-            //e.printStackTrace();
-            game.processBankruptcy(player, location.owner);
-            player.nextAction = Actions.DONE;
-            return inactiveState;
+        if (location.isMortgaged()) {
+            game.logger.info("Lot is mortgaged, rent: 0");
+        } else {
+          int amount = location.getRent();
+          assert amount >= 0 : "Invalid rent: " + location.name + "; rent: "
+              + amount;
+
+          game.logger.info("Rent for " + location.toString() + " with "
+              + location.getNumHouses() + " houses: " + amount);
+          
+          if (amount > 0) {
+            try {
+              game.payRent(player, location.owner, amount);
+            } catch (BankruptcyException e) {
+              // e.printStackTrace();
+              game.processBankruptcy(player, location.owner);
+              player.nextAction = Actions.DONE;
+              return inactiveState;
+            }
           }
         }
       }
