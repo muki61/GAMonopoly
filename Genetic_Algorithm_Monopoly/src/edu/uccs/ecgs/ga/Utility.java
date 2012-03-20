@@ -1,33 +1,45 @@
 package edu.uccs.ecgs.ga;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JFileChooser;
 
 public class Utility {
   private static String rootDir;
-  
+
   public static StringBuilder getDirForGen(int generation) {
+    File f = null;
     if (rootDir == null || rootDir.equals("")) {
-      JFileChooser fc = new JFileChooser();
-      fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-      fc.setDialogTitle("Select directory to save data files");
-      int returnVal = JFileChooser.CANCEL_OPTION;
-      while (returnVal != JFileChooser.APPROVE_OPTION) {
-        returnVal = fc.showDialog(null, "Select");
+      if (Main.useGui) {
+        JFileChooser fc = new JFileChooser();
+        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fc.setDialogTitle("Select directory to save data files");
+        int returnVal = JFileChooser.CANCEL_OPTION;
+        while (returnVal != JFileChooser.APPROVE_OPTION) {
+          returnVal = fc.showDialog(null, "Select");
+        }
+
+        f = fc.getSelectedFile();
+      } else {
+        // not using gui
+        f = new File(".\\data");
+        if (!f.exists()) {
+          f.mkdir();
+        }
       }
 
       try {
-        rootDir = fc.getSelectedFile().getCanonicalPath();
+        rootDir = f.getCanonicalPath();
       } catch (IOException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
+        rootDir = ".";
       }
     }
-   
+
     StringBuilder dir = new StringBuilder(rootDir);
-    dir.append("/");
-    
+    dir.append("\\");
+
     if (generation < 10) {
       dir.append("Generation_0000" + generation);
     } else if (generation < 100) {

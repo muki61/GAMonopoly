@@ -268,7 +268,7 @@ public class Monopoly implements Runnable {
       file.mkdir();
     }
 
-    dir.append("/").append(getMatchString());
+    dir.append("\\").append(getMatchString());
     file = new File(dir.toString());
     if (!file.exists()) {
       file.mkdir();
@@ -277,7 +277,7 @@ public class Monopoly implements Runnable {
     StringBuilder fileName = new StringBuilder(getGameString().append(".rtf"));
 
     try {
-      fh = new FileHandler(dir + "/" + fileName, false);
+      fh = new FileHandler(dir + "\\" + fileName, false);
       logger.addHandler(fh);
       fh.setFormatter(formatter);
 

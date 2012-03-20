@@ -259,6 +259,9 @@ public class GAEngine implements Runnable {
     }
   }
 
+  /**
+   * Output data files with the chromosome for each player.
+   */
   private void dumpGenome() {
     for (AbstractPlayer player : playerPool) {
       StringBuilder fn1 = new StringBuilder(32);

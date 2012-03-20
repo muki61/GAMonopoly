@@ -84,7 +84,7 @@ public class Main {
 
   private Gui gui = null;
 
-  private boolean useGui = false;
+  public static boolean useGui = false;
 
   public static boolean paused = true;
   
