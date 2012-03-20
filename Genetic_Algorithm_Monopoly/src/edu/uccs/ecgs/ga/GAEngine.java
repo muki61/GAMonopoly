@@ -13,8 +13,6 @@ import java.util.Random;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.logging.Formatter;
-import java.util.logging.LogRecord;
-
 
 /**
  * The Genetic Algorithm Engine. Create and manage the population of players.
