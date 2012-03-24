@@ -1,5 +1,7 @@
 package edu.uccs.ecgs.ga;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 import javax.swing.JOptionPane;
 
@@ -98,39 +100,12 @@ public class Main {
 
   public void start(String[] args)
   {
-    if (args.length == 0 || !args[0].equalsIgnoreCase("gui")) {
-      useGui = false;
-    } else {
-      useGui = true;
-    }
-
-    if (useGui) {
-      String[][] fields = new String[][] { 
-          { "Number of generations", "1000" },
-          { "Number of matches per generation", "100" },
-          { "Max number of turns per game", "50" },
-          { "Number of players in population", "1000" },
-          { "Number of players per game", "4" },
-          { "Load players from disk", "false" }, 
-          { "Generation to load", "0" },
-          { "Debug", "false" }, 
-          { "Chromosome Type (RGA, SGA, TGA)", "TGA" },
-          { "Mutation Rate", "0.01" } };
-
-      gui = new Gui(this, fields);
-
-    } else {
-      Properties args2 = new Properties();
-
-      for (int i = 0; i < args.length; i++) {
-        String[] kv = args[i].split("=");
-        args2.setProperty(kv[0].trim(), kv[1].trim());
-      }
-
-      for (String key : args2.keySet().toArray(new String[args2.size()])) {
-
-        String value = args2.getProperty(key);
-
+    InputStream inStream = this.getClass().getResourceAsStream("Main.properties");
+    Properties props = new Properties();
+    try {
+      props.load(inStream);
+      for(String key : props.stringPropertyNames()) {
+        String value = props.getProperty(key);
         if (key.equals("maxPlayers")) {
           maxPlayers = Integer.parseInt(value);
         } else if (key.equals("numGenerations")) {
@@ -139,6 +114,8 @@ public class Main {
           numMatches = Integer.parseInt(value);
         } else if (key.equals("maxTurns")) {
           maxTurns = Integer.parseInt(value);
+        } else if (key.equals("numPlayers")) {
+          numPlayers = Integer.parseInt(value);
         } else if (key.equals("loadFromDisk")) {
           loadFromDisk = Boolean.parseBoolean(value);
         } else if (key.equals("lastGeneration")) {
@@ -147,11 +124,36 @@ public class Main {
           useGui = Boolean.parseBoolean(value);
         } else if (key.equals("debug")) {
           debug = Boolean.parseBoolean(value);
+        } else if (key.equals("chromoType")) {
+          chromoType = ChromoTypes.valueOf(value);
+        } else if (key.equals("mutationRate")) {
+          mutationRate = Double.parseDouble(value);
         } else if (key.equals("useRandomSeed")) {
           useRandomSeed = Boolean.parseBoolean(value);
         }
       }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    
+    if (useGui) {
+      String[][] fields = new String[][] { 
+          { "Number of generations", "" + numGenerations },
+          { "Number of matches per generation", "" + numMatches },
+          { "Max number of turns per game", "" + maxTurns },
+          { "Number of players in population", "" + maxPlayers },
+          { "Number of players per game", "" + numPlayers },
+          { "Load players from disk", "" + loadFromDisk }, 
+          { "Generation to load", "" + lastGeneration },
+          { "Debug", "" + debug }, 
+          { "Chromosome Type (RGA, SGA, TGA)", "" + ChromoTypes.TGA.toString() },
+          { "Mutation Rate", "" + mutationRate },
+          { "Use random seed for games", "" + useRandomSeed} };
 
+      gui = new Gui(this);
+      gui.init(fields);
+      
+    } else {
       startSimulation();
     }
   }

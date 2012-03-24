@@ -19,7 +19,7 @@ public class PopulationPropagator {
     if (Main.useRandomSeed) {
       seed = System.currentTimeMillis();
     }
-    System.out.println("New Population seed: " + seed);
+//    System.out.println("New Population seed: " + seed);
     r.setSeed(seed);
   }
   

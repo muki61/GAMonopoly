@@ -279,6 +279,10 @@ public class PropertyFactory {
   }
 
   public static void releasePropertyFactory(String gamekey) {
+    assert factories != null;
+    assert gamekey != null;
+    assert factories.containsKey(gamekey);
+
     factories.remove(gamekey);
     System.out.println("factory size: " + factories.size());
   }

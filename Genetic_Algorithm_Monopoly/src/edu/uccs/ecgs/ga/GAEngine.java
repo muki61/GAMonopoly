@@ -52,7 +52,7 @@ public class GAEngine implements Runnable {
     if (Main.useRandomSeed) {
       seed = System.currentTimeMillis();
     }
-    System.out.println("Monopoly seed      : " + seed);
+//    System.out.println("Monopoly seed      : " + seed);
     r.setSeed(seed);
     createPlayers();
   }
@@ -126,6 +126,13 @@ public class GAEngine implements Runnable {
             e.printStackTrace();
           }
         }
+
+        for (Monopoly game : games) {
+          game.endGame();
+        }
+
+        games.clear();
+        gameThreads.clear();
 
         ++matches;
 

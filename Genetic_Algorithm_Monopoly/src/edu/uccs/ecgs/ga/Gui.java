@@ -32,11 +32,15 @@ public class Gui extends JFrame {
         { "Chromosome Type (RGA, SGA, TGA)", "TGA" },
         { "Mutation Rate", "0.01" } };
 
-    new Gui(null, fields);
+    Gui gui = new Gui(null);
+    gui.init(fields);
   }
 
-  public Gui(Main main, String[][] fields) {
+  public Gui(Main main) {
     this.program = main;
+  }
+  
+  public void init(String[][] fields) {
     setDefaultCloseOperation(EXIT_ON_CLOSE);
     setTitle("Simulation with chromosome type " + Main.chromoType);
 
@@ -83,8 +87,13 @@ public class Gui extends JFrame {
       public void actionPerformed(ActionEvent arg0) {
         if (!Main.started) {
           button.setText("Pause All Games");
-          setExecutionValues();
-          startSimulation();
+          Thread t = new Thread(new Runnable(){
+            @Override
+            public void run() {
+              setExecutionValues();
+              startSimulation();
+            }});
+          t.start();
         } else if (Main.paused) {
           // button currently says Run Monopoly
           button.setText("Pause All Games");
@@ -95,19 +104,21 @@ public class Gui extends JFrame {
           Main.pause();
         }
       }
-
-      private void setExecutionValues()
-      {
-        int i = 0;
-        for (JTextField text : textFields) {
-          Main.setExecutionValue(i++, text.getText());
-        }
-      }
     });
 
     return panel;
   }
-  
+
+  private void setExecutionValues()
+  {
+    int i = 0;
+    for (JTextField text : textFields) {
+      text.setEditable(false);
+      Main.setExecutionValue(i++, text.getText());
+    }
+    startSimulation();
+  }
+
   private void startSimulation() {
     assert program!= null;
     program.startSimulation();

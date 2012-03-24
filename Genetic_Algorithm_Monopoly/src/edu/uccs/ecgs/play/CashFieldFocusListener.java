@@ -23,7 +23,7 @@ public class CashFieldFocusListener implements FocusListener {
     JTextField source = (JTextField) arg0.getSource();
     pp.player.cash = Integer.parseInt(source.getText());
     source.setText(""+pp.player.cash);
-    System.out.println(""+pp.player.cash);
+//    System.out.println(""+pp.player.cash);
   }
 
 }

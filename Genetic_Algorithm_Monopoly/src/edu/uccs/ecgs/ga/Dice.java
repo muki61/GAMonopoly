@@ -13,7 +13,7 @@ public class Dice {
     if (Main.useRandomSeed) {
       seed = System.currentTimeMillis();
     }
-    System.out.println("Dice seed          : " + seed);
+//    System.out.println("Dice seed          : " + seed);
     dice.setSeed(seed);
   }
 

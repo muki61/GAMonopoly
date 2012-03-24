@@ -15,7 +15,7 @@ public class Cards {
     if (Main.useRandomSeed) {
       seed = System.currentTimeMillis();
     }
-    System.out.println("Cards seed         : " + seed);
+//    System.out.println("Cards seed         : " + seed);
     random.setSeed(seed);
 
     shuffleChance();

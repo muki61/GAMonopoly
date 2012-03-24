@@ -1,8 +1,6 @@
 package edu.uccs.ecgs.ga;
 
 import java.io.File;
-import java.io.IOException;
-
 import javax.swing.JFileChooser;
 
 public class Utility {
@@ -23,22 +21,17 @@ public class Utility {
         f = fc.getSelectedFile();
       } else {
         // not using gui
-        f = new File(".\\data");
+        f = new File("data");
         if (!f.exists()) {
           f.mkdir();
         }
       }
 
-      try {
-        rootDir = f.getCanonicalPath();
-      } catch (IOException e) {
-        e.printStackTrace();
-        rootDir = ".";
-      }
+      rootDir = f.getAbsolutePath();
     }
 
     StringBuilder dir = new StringBuilder(rootDir);
-    dir.append("\\");
+    dir.append("/");
 
     if (generation < 10) {
       dir.append("Generation_0000" + generation);

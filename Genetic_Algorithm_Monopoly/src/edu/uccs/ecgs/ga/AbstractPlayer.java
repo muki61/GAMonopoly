@@ -38,7 +38,7 @@ public abstract class AbstractPlayer
     if (Main.useRandomSeed) {
       seed = System.currentTimeMillis();
     }
-    System.out.println("AbstractPlayer seed: " + seed);
+//    System.out.println("AbstractPlayer seed: " + seed);
     r.setSeed(seed);
   }
 
@@ -888,6 +888,7 @@ public abstract class AbstractPlayer
       case RED:
       case YELLOW:
       case GREEN:
+        assert lots.size() == 3 : "Bad lot size: " + lots.elementAt(0).toString() + "/" + lots.elementAt(1).toString();
         // extra houses on third and first property
         lots.elementAt(2).assignHouse();
         --houseCount;
@@ -900,6 +901,7 @@ public abstract class AbstractPlayer
 
       case LIGHT_BLUE:
       case ORANGE:
+        assert lots.size() == 3 : "Bad lot size: " + lots.elementAt(0).toString() + "/" + lots.elementAt(1).toString();
         // extra houses on third and second property
         lots.elementAt(2).assignHouse();
         --houseCount;
@@ -912,6 +914,7 @@ public abstract class AbstractPlayer
 
       case BROWN:
       case DARK_BLUE:
+        assert lots.size() == 2 : "Bad lot size: " + lots.elementAt(0).toString();
         lots.elementAt(1).assignHouse();
         --houseCount;
         break;

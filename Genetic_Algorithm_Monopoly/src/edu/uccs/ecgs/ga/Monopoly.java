@@ -52,7 +52,7 @@ public class Monopoly implements Runnable {
     this.game = gameNumber;
     this.players = players;
 
-    gamekey = "edu.uccs.ecgs." + generation + "." + match + "." + game;
+    gamekey = "edu.uccs.ecgs.ga." + this.generation + "." + this.match + "." + game;
     logger = Logger.getLogger(gamekey);
 
     r = new Random();
@@ -60,7 +60,7 @@ public class Monopoly implements Runnable {
     if (Main.useRandomSeed) {
       seed = System.currentTimeMillis();
     }
-    System.out.println("Monopoly seed      : " + seed);
+//    System.out.println("Monopoly seed      : " + seed);
     r.setSeed(seed);
 
     turnCounter = 0;
@@ -82,6 +82,7 @@ public class Monopoly implements Runnable {
     done = false;
 
     logger.info("Started game " + game + " with players: ");
+//    System.out.println("Started game " + this.generation + "." + this.match + "." + this.game);
     for (AbstractPlayer p : players) {
       logger.info("Player " + p.playerIndex);
     }
@@ -268,7 +269,7 @@ public class Monopoly implements Runnable {
       file.mkdir();
     }
 
-    dir.append("\\").append(getMatchString());
+    dir.append("/").append(getMatchString());
     file = new File(dir.toString());
     if (!file.exists()) {
       file.mkdir();
@@ -277,7 +278,7 @@ public class Monopoly implements Runnable {
     StringBuilder fileName = new StringBuilder(getGameString().append(".rtf"));
 
     try {
-      fh = new FileHandler(dir + "\\" + fileName, false);
+      fh = new FileHandler(dir + "/" + fileName, false);
       logger.addHandler(fh);
       fh.setFormatter(formatter);
 
@@ -810,12 +811,17 @@ public class Monopoly implements Runnable {
     } catch (Throwable t) {
       t.printStackTrace();
       logger.log(Level.SEVERE, "", t);
-    } finally {
+    }
+  }
+
+  public void endGame() {
+    if (fh != null) {
       fh.flush();
       fh.close();
-      PropertyFactory.releasePropertyFactory(gamekey);
-      logger = null;
     }
+    PropertyFactory.releasePropertyFactory(gamekey);
+    logger = null;
+//    System.out.println("Ended game " + this.generation + "." + this.match + "." + this.game);
   }
 
   public void payEachPlayer50(AbstractPlayer player) throws BankruptcyException {
