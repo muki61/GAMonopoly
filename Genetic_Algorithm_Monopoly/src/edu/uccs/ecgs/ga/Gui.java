@@ -5,6 +5,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -16,6 +17,7 @@ public class Gui extends JFrame {
 
   JButton button = null;
   private Main program;
+  private ArrayList<JTextField> textFields = new ArrayList<JTextField>();
 
   public static void main(String[] args) {
     String[][] fields = new String[][] { 
@@ -55,7 +57,8 @@ public class Gui extends JFrame {
     for (String[] field : fields) {
       JLabel label = new JLabel(field[0]);
       JTextField text = new JTextField(field[1], 3);
-
+      textFields.add(text);
+      
       gbc.gridx = 0;
       gbc.anchor = GridBagConstraints.EAST;
       gbc.ipadx = 0;
@@ -80,6 +83,7 @@ public class Gui extends JFrame {
       public void actionPerformed(ActionEvent arg0) {
         if (!Main.started) {
           button.setText("Pause All Games");
+          setExecutionValues();
           startSimulation();
         } else if (Main.paused) {
           // button currently says Run Monopoly
@@ -89,6 +93,14 @@ public class Gui extends JFrame {
           // button currently says Pause Monopoly
           button.setText("Restart All Games");
           Main.pause();
+        }
+      }
+
+      private void setExecutionValues()
+      {
+        int i = 0;
+        for (JTextField text : textFields) {
+          Main.setExecutionValue(i++, text.getText());
         }
       }
     });

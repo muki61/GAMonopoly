@@ -1,7 +1,6 @@
 package edu.uccs.ecgs.ga;
 
 import java.util.Properties;
-
 import javax.swing.JOptionPane;
 
 public class Main {
@@ -19,7 +18,7 @@ public class Main {
    * generations) in the command line args.
    */
   public static int numGenerations = 1000;
-  
+
   /**
    * The number of matches per generation. The individuals in the population are
    * divided into subgroups and each subgroup plays a game. The set of all games
@@ -29,25 +28,26 @@ public class Main {
    * population before the fitness of the players is evaluated.
    */
   public static int numMatches = 100;
-  
+
   /**
    * The number of turns in a single game. Each individual gets this many rolls
    * of the dice before the game is terminated. This prevents the situation
-   * where the game goes forever when no player is ever able to dominate the game.
+   * where the game goes forever when no player is ever able to dominate the
+   * game.
    */
   public static int maxTurns = 50;
-  
+
   /**
    * The number of players that participate in a game.
    */
   public static int numPlayers = 4;
-  
+
   /**
    * Should existing players be loaded from data files (loadFromDisk=true) or
    * generated from scratch (loadFromDisk=false).
    */
   public static boolean loadFromDisk = false;
-  
+
   /**
    * When loading existing players from disk, this value indicates which
    * generation to load the players from. Normally this will be the last
@@ -59,7 +59,7 @@ public class Main {
    * Whether or not to output debug information.
    */
   public static boolean debug = false;
-  
+
   /**
    * Which chromosome types to use for a player. See
    * {@link edu.uccs.ecgs.ga.ChromoTypes} for valid values. Each type is
@@ -67,12 +67,12 @@ public class Main {
    * {@link edu.uccs.ecgs.ga.Monopoly#createPlayers() createPlayers}.
    */
   public static ChromoTypes chromoType = ChromoTypes.TGA;
-  
+
   /**
    * Rate at which to mutate the genome.
    */
   public static double mutationRate = 0.01;
-  
+
   /**
    * Whether or not to use a random seed. During testing, it helps to use the
    * same seed for each run (i.e., to not use a random seed), so that it is
@@ -87,26 +87,28 @@ public class Main {
   public static boolean useGui = false;
 
   public static boolean paused = true;
-  
+
   public static boolean started = false;
 
-  public static void main(String[] args) {
+  public static void main(String[] args)
+  {
     Main main = new Main();
     main.start(args);
   }
-  
-  public void start(String[] args) {
+
+  public void start(String[] args)
+  {
     if (args.length == 0 || !args[0].equalsIgnoreCase("gui")) {
-      useGui  = false;
+      useGui = false;
     } else {
       useGui = true;
     }
 
     if (useGui) {
       String[][] fields = new String[][] { 
-          { "Number of generations", "1000" }, 
+          { "Number of generations", "1000" },
           { "Number of matches per generation", "100" },
-          { "Max number of turns per game", "50" }, 
+          { "Max number of turns per game", "50" },
           { "Number of players in population", "1000" },
           { "Number of players per game", "4" },
           { "Load players from disk", "false" }, 
@@ -116,7 +118,7 @@ public class Main {
           { "Mutation Rate", "0.01" } };
 
       gui = new Gui(this, fields);
-      
+
     } else {
       Properties args2 = new Properties();
 
@@ -126,14 +128,14 @@ public class Main {
       }
 
       for (String key : args2.keySet().toArray(new String[args2.size()])) {
-        
+
         String value = args2.getProperty(key);
-        
+
         if (key.equals("maxPlayers")) {
           maxPlayers = Integer.parseInt(value);
         } else if (key.equals("numGenerations")) {
           numGenerations = Integer.parseInt(value);
-        } else if (key.equals("numMatches")) {  
+        } else if (key.equals("numMatches")) {
           numMatches = Integer.parseInt(value);
         } else if (key.equals("maxTurns")) {
           maxTurns = Integer.parseInt(value);
@@ -149,12 +151,13 @@ public class Main {
           useRandomSeed = Boolean.parseBoolean(value);
         }
       }
-      
+
       startSimulation();
     }
   }
 
-  public void startSimulation() {
+  public void startSimulation()
+  {
     started = true;
     paused = false;
     gaEngine = new GAEngine();
@@ -168,18 +171,69 @@ public class Main {
       e.printStackTrace();
     }
 
-//    gui.dispose();
+    // gui.dispose();
 
-    JOptionPane.showMessageDialog(null, "Monopoly simulation is complete", "Simulation Complete", JOptionPane.INFORMATION_MESSAGE);
+    JOptionPane.showMessageDialog(null, "Monopoly simulation is complete",
+        "Simulation Complete", JOptionPane.INFORMATION_MESSAGE);
     System.exit(0);
   }
-  
-  public static void pause() {
-    paused  = true;
+
+  public static void pause()
+  {
+    paused = true;
   }
-  
-  public static void resume() {
-    paused=false;
+
+  public static void resume()
+  {
+    paused = false;
     gaEngine.resume();
+  }
+
+  public static void setExecutionValue(int index, String text)
+  {
+    switch (index) {
+    case 0:
+      //Number of generations
+      numGenerations = Integer.parseInt(text);
+      break;
+    case 1:
+      //Number of matches per generation
+      numMatches = Integer.parseInt(text);
+      break;
+    case 2:
+      // Max number of turns per game
+      maxTurns = Integer.parseInt(text);
+      break;
+    case 3:
+      // Number of players in population
+      maxPlayers = Integer.parseInt(text);
+      break;
+    case 4:
+      // Number of players per game
+      numPlayers = Integer.parseInt(text);
+      break;
+    case 5:
+      // Load players from disk 
+      loadFromDisk = Boolean.parseBoolean(text);
+      break;
+    case 6:
+      // Generation to load
+      lastGeneration = Integer.parseInt(text);
+      break;
+    case 7:
+      // Debug
+      debug = Boolean.parseBoolean(text);
+      break;
+    case 8:
+      // Chromosome Type
+      chromoType = ChromoTypes.valueOf(text);
+      break;
+    case 9:
+      // Mutation Rate
+      mutationRate = Double.parseDouble(text);
+      break;
+    default:
+
+    }
   }
 }
