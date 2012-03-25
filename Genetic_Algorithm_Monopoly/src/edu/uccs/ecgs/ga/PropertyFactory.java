@@ -118,6 +118,10 @@ public class PropertyFactory {
     return edgeProperties;
   }
 
+  /**
+   * Iterate through all properties and determine if any properties are part of a monopoly.
+   * Properties are part of a monopoly when all properties in a group have the same owner.
+   */
   public void checkForMonopoly() {
     for (Location lot : locations) {
       lot.partOfMonopoly = false;
@@ -140,7 +144,7 @@ public class PropertyFactory {
       int z = monos[i][2];
       if (locations[x].owner != null) {
         if (locations[x].owner == locations[y].owner
-            && locations[y].owner == locations[z].owner) {
+            && locations[x].owner == locations[z].owner) {
           locations[x].partOfMonopoly = true;
           locations[y].partOfMonopoly = true;
           locations[z].partOfMonopoly = true;
@@ -284,6 +288,6 @@ public class PropertyFactory {
     assert factories.containsKey(gamekey);
 
     factories.remove(gamekey);
-    System.out.println("factory size: " + factories.size());
+    //System.out.println("factory size: " + factories.size());
   }
 }

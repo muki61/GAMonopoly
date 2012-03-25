@@ -714,10 +714,17 @@ public abstract class AbstractPlayer
         (mortgaged.size()-count) + " lots are still mortgaged");
   }
 
-  //make the decision of whether or not to pay the mortgage on the property
+  /**
+   * make the decision of whether or not to pay the mortgage on the property
+   * @param lot
+   * @return True if the player can pay the mortgage, False otherwise
+   */
   private boolean payMortgageP(Location lot) {
     int cost = (int) (1.1 * lot.getCost() / 2); 
 
+    //After paying cost, player should still have minimum cash, so
+    //if player's current cash is less than minimum cash + cost,
+    //then player should not pay mortgage.
     if (cash < getMinimumCash() + cost) {
       return false;
     }
@@ -725,6 +732,12 @@ public abstract class AbstractPlayer
     return true;
   }
 
+  /**
+   * Compute the minimum amount of cash the player should have on hand based on
+   * current game conditions.
+   * 
+   * @return
+   */
   private int getMinimumCash() {
     //Frayn: Keep a minimum of 200 pounds (dollars) in cash,
     int result = 200;
@@ -889,8 +902,14 @@ public abstract class AbstractPlayer
       case YELLOW:
       case GREEN:
         assert lots.size() == 3 : "Bad lot size: " + lots.elementAt(0).toString() + "/" + lots.elementAt(1).toString();
+        try {
         // extra houses on third and first property
         lots.elementAt(2).assignHouse();
+        } catch (ArrayIndexOutOfBoundsException e) {
+          for (Location location : lots) {
+            System.out.println(location.toString());
+          }
+        }
         --houseCount;
 
         if (houseCount == 1) {

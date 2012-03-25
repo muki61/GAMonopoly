@@ -95,10 +95,10 @@ public class Main {
   public static void main(String[] args)
   {
     Main main = new Main();
-    main.start(args);
+    main.start();
   }
 
-  public void start(String[] args)
+  public void start()
   {
     InputStream inStream = this.getClass().getResourceAsStream("Main.properties");
     Properties props = new Properties();

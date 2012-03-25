@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.Vector;
-import java.util.logging.Formatter;
 
 /**
  * The Genetic Algorithm Engine. Create and manage the population of players.
@@ -20,7 +19,6 @@ import java.util.logging.Formatter;
  * population.
  */
 public class GAEngine implements Runnable {
-  static Formatter formatter;
 
   private int generation = 0;
   private int matches = 0;

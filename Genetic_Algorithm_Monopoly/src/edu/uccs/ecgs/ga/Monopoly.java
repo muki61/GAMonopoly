@@ -81,8 +81,7 @@ public class Monopoly implements Runnable {
   public void playGame() {
     done = false;
 
-    logger.info("Started game " + game + " with players: ");
-//    System.out.println("Started game " + this.generation + "." + this.match + "." + this.game);
+    logger.info("Started game " + this.generation + "." + this.match + "." + this.game + " with players: ");
     for (AbstractPlayer p : players) {
       logger.info("Player " + p.playerIndex);
     }
@@ -118,6 +117,11 @@ public class Monopoly implements Runnable {
 
       while (action != Actions.DONE) {
         action = player.getNextActionEnum(event);
+        
+        if (bankruptCount == 3) {
+          break;
+        }
+        
         switch (action) {
         case ROLL_DICE:
           event = Events.ROLL_DICE_EVENT;

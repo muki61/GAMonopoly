@@ -30,10 +30,10 @@ public class UtilityLocation extends Location {
     if (isMortgaged) {
       multiple = 0;
     } else if (arrivedFromChance || owner.getNumUtilities() == 1) {
-      multiple = 10;
+      multiple = 4;
       arrivedFromChance = false;
     } else if (owner.getNumUtilities() == 2) {
-      multiple = 4;
+      multiple = 10;
     } else {
       assert false : "Invalid conditions at " + name + "; owner.numUtilities: "
           + owner.getNumUtilities() + "; arrived from chance: "
