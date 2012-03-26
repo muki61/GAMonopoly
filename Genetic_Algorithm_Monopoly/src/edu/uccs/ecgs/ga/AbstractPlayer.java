@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 //import org.junit.Assert;
 
@@ -79,6 +80,7 @@ public abstract class AbstractPlayer
 
   public void reset() {
     rolledDoubles = false;
+    assert game != null : "Found null game reference";
   }
   
   public void resetAll() {
@@ -121,7 +123,7 @@ public abstract class AbstractPlayer
     if (inJail && !rolledDoubles) {
       --jailSentence;
       
-      game.logger.info("Player " + playerIndex + " jailSentence: " + jailSentence);
+      logInfo("Player " + playerIndex + " jailSentence: " + jailSentence);
       assert jailSentence>=0 : "Illegal jailSentence value: " + jailSentence;
     }
   }
@@ -134,9 +136,9 @@ public abstract class AbstractPlayer
       passedGo = true;
 
       if (locationIndex == 0) {
-        game.logger.info("Player " + playerIndex + " landed on Go");
+        logInfo("Player " + playerIndex + " landed on Go");
       } else {
-        game.logger.info("Player " + playerIndex + " passed Go");
+        logInfo("Player " + playerIndex + " passed Go");
       }
     }
     return locationIndex;
@@ -150,18 +152,18 @@ public abstract class AbstractPlayer
     this.location = location;
 
     if (location.name.equals("Jail")) {
-      game.logger.info("Player " + playerIndex + " landed on " + location.name);
+      logInfo("Player " + playerIndex + " landed on " + location.name);
       if (inJail) {
-        game.logger.info("Player " + playerIndex + " is in Jail");
-        game.logger.info("Player sentence: " + jailSentence);
-        game.logger.info("Player inJail flag: " + inJail);
+        logInfo("Player " + playerIndex + " is in Jail");
+        logInfo("Player sentence: " + jailSentence);
+        logInfo("Player inJail flag: " + inJail);
         assert inJail : "Flag inJail is not valid";
         assert jailSentence == 3 : "JailSentence value is not correct";
       } else {
-        game.logger.info("Player " + playerIndex + " is Just Visiting");
+        logInfo("Player " + playerIndex + " is Just Visiting");
       }
     } else {
-      game.logger.info("Player " + playerIndex + " landed on " + location.name);
+      logInfo("Player " + playerIndex + " landed on " + location.name);
     }
   }
 
@@ -170,17 +172,22 @@ public abstract class AbstractPlayer
   }
 
   public void receiveCash(int amount) {
-    cash += amount;
-    game.logger.info("Player " + playerIndex + " received " + amount
-        + " dollars.");
-    game.logger.info("Player " + playerIndex + " has " + cash + " dollars.");
+    try {
+      cash += amount;
+      logInfo("Player " + playerIndex + " received " + amount
+          + " dollars.");
+      logInfo("Player " + playerIndex + " has " + cash + " dollars.");
+    } catch (RuntimeException e) {
+      Throwable t = new Throwable(game.toString(), e);
+      t.printStackTrace();
+    }
   }
 
   public void getCash(int amount) throws BankruptcyException {
     raiseCash(amount);
     cash = cash - amount;
-    game.logger.info("Player " + playerIndex + " paid " + amount + " dollars.");
-    game.logger.info("Player " + playerIndex + " has " + cash + " dollars.");
+    logInfo("Player " + playerIndex + " paid " + amount + " dollars.");
+    logInfo("Player " + playerIndex + " has " + cash + " dollars.");
   }
 
   public int getNumRailroads() {
@@ -345,20 +352,20 @@ public abstract class AbstractPlayer
   public abstract void dumpGenome(DataOutputStream out) throws IOException;
 
   public void printTotalWorth() {
-    game.logger.info("Player " + playerIndex);
-    game.logger.info("Total cash: " + cash);
-    game.logger.info("Net worth : " + getTotalWorth());
-    game.logger.info("Fitness   : " + fitnessScore);
+    logInfo("Player " + playerIndex);
+    logInfo("Total cash: " + cash);
+    logInfo("Net worth : " + getTotalWorth());
+    logInfo("Fitness   : " + fitnessScore);
 
     if (!isBankrupt) {
-      game.logger.info("Has monopoly: " + hasMonopoly());
-      game.logger.info("Properties owned: ");
+      logInfo("Has monopoly: " + hasMonopoly());
+      logInfo("Properties owned: ");
 
       for (Location location : owned.values()) {
         if (location.getNumHouses() > 0) {
-          game.logger.info(location.name + " (" + location.getNumHouses() + " houses)");
+          logInfo(location.name + " (" + location.getNumHouses() + " houses)");
         } else {
-          game.logger.info(location.name);
+          logInfo(location.name);
         }
       }
     }
@@ -437,13 +444,13 @@ public abstract class AbstractPlayer
   }
 
   public void raiseCash(int amount) throws BankruptcyException {
-    game.logger.info("Player " + playerIndex + " has " + cash + " dollars");
+    logInfo("Player " + playerIndex + " has " + cash + " dollars");
     if (cash >= amount) {
       return;
     }
     
     if (canRaiseCash(amount)) {
-      game.logger.info("Player " + playerIndex + " attempting to raise " + amount
+      logInfo("Player " + playerIndex + " attempting to raise " + amount
           + " dollars");
       for (Location l : owned.values()) {
         //mortgage single properties first
@@ -453,7 +460,7 @@ public abstract class AbstractPlayer
             && l.getGroup() != PropertyGroups.RAILROADS) 
         {
           // mortgage property if not part of monopoly
-          game.logger.info("Player will mortgage " + l.name);
+          logInfo("Player will mortgage " + l.name);
           l.setMortgaged();
           receiveCash(l.getCost() / 2);
         }
@@ -467,7 +474,7 @@ public abstract class AbstractPlayer
         for (Location l : owned.values()) {
           if (l.getGroup() == PropertyGroups.UTILITIES && !l.isMortgaged()) 
           {
-            game.logger.info("Player will mortgage " + l.name);
+            logInfo("Player will mortgage " + l.name);
             l.setMortgaged();
             receiveCash(l.getCost() / 2);
           }
@@ -484,7 +491,7 @@ public abstract class AbstractPlayer
         if (owned.containsKey(index[i])) {
           Location l = owned.get(index[i]);
           if (!l.isMortgaged) {
-            game.logger.info("Player will mortgage " + l.name);
+            logInfo("Player will mortgage " + l.name);
             l.setMortgaged();
             receiveCash(l.getCost() / 2);
           }
@@ -498,7 +505,7 @@ public abstract class AbstractPlayer
       for (Location l : owned.values()) {
         if (l.getGroup() == PropertyGroups.UTILITIES && !l.isMortgaged()) 
         {
-          game.logger.info("Player will mortgage " + l.name);
+          logInfo("Player will mortgage " + l.name);
           l.setMortgaged();
           receiveCash(l.getCost() / 2);
         }
@@ -531,8 +538,8 @@ public abstract class AbstractPlayer
         }
         
         if (maxHouses > 0) {
-          game.logger.info(locMaxHouses.name + " has " + locMaxHouses.getNumHouses() + " houses");
-          game.logger.info("Will sell house at " + locMaxHouses.name);
+          logInfo(locMaxHouses.name + " has " + locMaxHouses.getNumHouses() + " houses");
+          logInfo("Will sell house at " + locMaxHouses.name);
           game.sellHouse(this, locMaxHouses);
         } else {
           break;
@@ -547,7 +554,7 @@ public abstract class AbstractPlayer
       for (Location l : owned.values()) {
         if (!l.isMortgaged()) 
         {
-          game.logger.info("Player will mortgage " + l.name);
+          logInfo("Player will mortgage " + l.name);
           l.setMortgaged();
           receiveCash(l.getCost() / 2);
         }
@@ -565,48 +572,54 @@ public abstract class AbstractPlayer
     return owned;
   }
 
+  /**
+   * Add properties from a bankrupt player to this player
+   * @param allProperties All the properties owned by a player who has gone bamkrupt
+   * @param gameOver Whether the game is over because the bankrupt player is the last
+   * other player in the game
+   */
   public void addProperties(TreeMap<Integer, Location> allProperties, 
                             boolean gameOver) 
   {
-    //this is called when another player goes bankrupt against this player
-
     //add all properties first
     for (Location l : allProperties.values()) {
       owned.put(l.index, l);
       l.owner = this;
     }
-    
+
+    // mark all the properties that are part of monopolies 
     PropertyFactory.getPropertyFactory(game.gamekey).checkForMonopoly();
   
+    // if the game isn't over, then the gaining player needs to pay the
+    // 10% fee on any mortgaged properties, and possible unmortgage the 
+    // properties
     if (!gameOver) {
       processMortgagedNewProperties(allProperties);
     }
   }
 
-  private void processMortgagedNewProperties(TreeMap<Integer, Location> allProperties) {
+  /**
+   * Go through all the new properties gained by this player, and for the ones that are
+   * mortgaged, pay the fee and then dertermine whether or not to unmortgage the property
+   * @param newProperties
+   */
+  private void processMortgagedNewProperties(TreeMap<Integer, Location> newProperties) {
     Vector<Location> mortgaged = new Vector<Location>();
 
     // want to handle mortgages of added properties in this order:
     // properties that are part of monopolies
-    for (Location lot : allProperties.values()) {
+    for (Location lot : newProperties.values()) {
       if (lot.partOfMonopoly && lot.isMortgaged()) {
         mortgaged.add(lot);
       }
     }
         
     // utility monopolies
-    // count number of utilties
-    int countUtilities = 0;
-    for (Location lot : allProperties.values()) {
-      if (lot.getGroup() == PropertyGroups.UTILITIES) {
-        ++countUtilities;
-      }
-    }
-    countUtilities += getNumUtilities();
+    int countUtilities = getNumUtilities();
     
     //add utilities if player has 2 utilities
     if (countUtilities == 2) {
-      for (Location lot : allProperties.values()) {
+      for (Location lot : newProperties.values()) {
         if (lot.getGroup() == PropertyGroups.UTILITIES && lot.isMortgaged()) {
           mortgaged.add(lot);
         }
@@ -614,7 +627,7 @@ public abstract class AbstractPlayer
     }
     
     // add railroads
-    for (Location lot : allProperties.values()) {
+    for (Location lot : newProperties.values()) {
       if (lot.getGroup() == PropertyGroups.RAILROADS && lot.isMortgaged()) {
         mortgaged.add(lot);
       }
@@ -622,7 +635,7 @@ public abstract class AbstractPlayer
     
     // add single utilities
     if (countUtilities == 1) {
-      for (Location lot : allProperties.values()) {
+      for (Location lot : newProperties.values()) {
         if (lot.getGroup() == PropertyGroups.UTILITIES && lot.isMortgaged()) {
           mortgaged.add(lot);
         }
@@ -630,7 +643,7 @@ public abstract class AbstractPlayer
     }
 
     //lots that are not part of monopolies
-    for (Location lot : allProperties.values()) {
+    for (Location lot : newProperties.values()) {
       if (!lot.partOfMonopoly && lot.getGroup() != PropertyGroups.RAILROADS
           && lot.getGroup() != PropertyGroups.UTILITIES && lot.isMortgaged()) {
         mortgaged.add(lot);
@@ -643,7 +656,7 @@ public abstract class AbstractPlayer
       if (lot.isMortgaged()) {
         // leave property mortgaged and only pay the fee
         int amountToPay = (int) (0.1 * lot.getCost() / 2);
-        game.logger.info("Player " + playerIndex + 
+        logInfo("Player " + playerIndex + 
                     " will only pay mortgage fee for " + lot.name + 
                     "; fee is " + amountToPay);
 
@@ -654,7 +667,9 @@ public abstract class AbstractPlayer
           //player is in this method because some other player
           //went bankrupt, so assume this player has enough cash
           //or can raise enough cash
-          e.printStackTrace();
+          // TODO assumption is flawed, need to fix
+          Throwable t = new Throwable(game.toString(), e);
+          t.printStackTrace();
         }
       }
     }
@@ -664,7 +679,7 @@ public abstract class AbstractPlayer
     Vector<Location> mortgaged = new Vector<Location>();
     for (Location lot : owned.values()) {
       if (lot.isMortgaged()) {
-        game.logger.info(lot.name + " is mortgaged");
+        logInfo(lot.name + " is mortgaged");
         mortgaged.add(lot);
       }
     }
@@ -696,21 +711,23 @@ public abstract class AbstractPlayer
       if (payMortgageP(lot)) {
         // pay off mortgage
         amountToPay = (int) (1.1 * lot.getCost() / 2);
-        game.logger.info("Player will pay off mortgage for " + lot.name + "; cost is "
+        logInfo("Player will pay off mortgage for " + lot.name + "; cost is "
             + amountToPay);
         try {
           getCash(amountToPay);
           lot.setMortgaged(false);
-          game.logger.info(lot.name + " is no longer mortgaged");
+          logInfo(lot.name + " is no longer mortgaged");
           ++count;
         } catch (BankruptcyException e) {
           // the player will not decide to pay mortgage unless
           // enough free cash is available
-          e.printStackTrace();
+          // TODO
+          Throwable t = new Throwable(game.toString(), e);
+          t.printStackTrace();
         }
       }
     }
-    game.logger.info(count + " mortgaged lots were paid off; " + 
+    logInfo(count + " mortgaged lots were paid off; " + 
         (mortgaged.size()-count) + " lots are still mortgaged");
   }
 
@@ -778,16 +795,11 @@ public abstract class AbstractPlayer
     isBankrupt = true;
   }
 
-  public void sellAllHousesHotels() {
-    //sell all houses first
-    for (Location l : owned.values()) {
-      while (l.getNumHouses() > 0) {
-        game.sellHouse(this, l);
-      }
-    }
-    
-    //now sell any hotels, and then houses again because selling a hotel may result
-    //in houses at the location
+  /**
+   * Sell all the hotels and houses owned by the player
+   */
+  public void sellAllHousesAndHotels() {
+    // Sell all hotels first
     for (Location l : owned.values()) {
       if (l.getNumHotels() > 0) {
         game.sellHotel(this, l, owned.values());
@@ -796,25 +808,32 @@ public abstract class AbstractPlayer
         game.sellHouse(this, l);
       }
     }
+
+    // And sell all houses
+    for (Location l : owned.values()) {
+      while (l.getNumHouses() > 0) {
+        game.sellHouse(this, l);
+      }
+    }
   }
 
   public void processDevelopHouseEvent() {
     if (game.getNumHouses() == 0) {
-      game.logger.info("Bank has no more houses");
+      logInfo("Bank has no more houses");
       return;
     }
       
     if (!hasMonopoly()) {
-      game.logger.info("Player does not have monopoly");
+      logInfo("Player does not have monopoly");
       return;
     }
     
-    game.logger.info("Player has " + cash + " dollars");
+    logInfo("Player has " + cash + " dollars");
     int minCash = getMinimumCash();
-    game.logger.info("Player minimum cash is " + minCash);
+    logInfo("Player minimum cash is " + minCash);
 
     if (cash < minCash) {
-      game.logger.info("Player does not have minimum cash");
+      logInfo("Player does not have minimum cash");
       return;
     }
 
@@ -847,7 +866,7 @@ public abstract class AbstractPlayer
 
         while (location.getNumHouses() < 3) {
           if (location.getNumHouses() >= 3 || location.getNumHotels() > 0) {
-            game.logger.info("Location " + location.name + " has enough houses");
+            logInfo("Location " + location.name + " has enough houses");
             break;
           }
 
@@ -856,7 +875,7 @@ public abstract class AbstractPlayer
           // not enough houses/hotels
           // now check that there is enough cash to buy a house
           if (cash < (getMinimumCash() + location.getHouseCost())) {
-            game.logger.info("Player does not have " + location.getHouseCost()
+            logInfo("Player does not have " + location.getHouseCost()
                 + " dollars extra");
             break;
           }
@@ -941,7 +960,7 @@ public abstract class AbstractPlayer
     }
     
     for (Location location : lots) {
-      game.logger.info(location.name + " has " + location.getNumHouses() + " houses");
+      logInfo(location.name + " has " + location.getNumHouses() + " houses");
     }
   }
 
@@ -991,5 +1010,9 @@ public abstract class AbstractPlayer
   public void joinGame(Monopoly game) {
     this.game = game;
     location = PropertyFactory.getPropertyFactory(game.gamekey).getLocationAt(locationIndex);
+  }
+  
+  private void logInfo(String s) {
+    Logger.getLogger(game.gamekey).info(s);
   }
 }

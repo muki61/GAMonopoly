@@ -36,7 +36,10 @@ public class BuyPropertyState extends PlayerState {
         }
       } catch (BankruptcyException e) {
         // player will not buy house unless they have enough cash
-        e.printStackTrace();
+        // TODO
+        Throwable t = new Throwable(game.toString(), e);
+        t.printStackTrace();
+
         //but just in case this happens...
         TreeMap<Integer, Location> lotsToAuction = new TreeMap<Integer,Location>();
         lotsToAuction.put(location.index, location);

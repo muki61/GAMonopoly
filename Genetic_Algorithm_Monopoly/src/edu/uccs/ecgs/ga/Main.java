@@ -3,6 +3,8 @@ package edu.uccs.ecgs.ga;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.logging.Level;
+
 import javax.swing.JOptionPane;
 
 public class Main {
@@ -60,7 +62,7 @@ public class Main {
   /**
    * Whether or not to output debug information.
    */
-  public static boolean debug = false;
+  public static Level debug = Level.OFF;
 
   /**
    * Which chromosome types to use for a player. See
@@ -130,14 +132,14 @@ public class Main {
         } else if (key.equals("useGui")) {
           useGui = Boolean.parseBoolean(value);
         } else if (key.equals("debug")) {
-          debug = Boolean.parseBoolean(value);
+          debug = Level.parse(value);
         } else if (key.equals("chromoType")) {
           chromoType = ChromoTypes.valueOf(value);
         } else if (key.equals("mutationRate")) {
           mutationRate = Double.parseDouble(value);
         } else if (key.equals("useRandomSeed")) {
           useRandomSeed = Boolean.parseBoolean(value);
-        } else if (key.equals("numthreads")) {
+        } else if (key.equals("numThreads")) {
           numThreads = Integer.parseInt(value);
         }
       }
@@ -240,7 +242,7 @@ public class Main {
       break;
     case 7:
       // Debug
-      debug = Boolean.parseBoolean(text);
+      debug = Level.parse(text.toUpperCase());
       break;
     case 8:
       // Chromosome Type

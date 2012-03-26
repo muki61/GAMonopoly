@@ -6,7 +6,7 @@ import javax.swing.JFileChooser;
 public class Utility {
   private static String rootDir;
 
-  public static StringBuilder getDirForGen(int generation) {
+  public static synchronized StringBuilder getDirForGen(int generation) {
     File f = null;
     if (rootDir == null || rootDir.equals("")) {
       if (Main.useGui) {

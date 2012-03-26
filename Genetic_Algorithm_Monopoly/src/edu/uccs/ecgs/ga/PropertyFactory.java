@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Properties;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A class to manage the properties in a game of Monopoly
@@ -20,7 +20,7 @@ public class PropertyFactory {
    * stored in this map and accessed by a key which is unique to a game
    * instance.
    */
-  static TreeMap<String, PropertyFactory> factories = new TreeMap<String, PropertyFactory>();
+  static ConcurrentHashMap<String, PropertyFactory> factories = new ConcurrentHashMap<String, PropertyFactory>();
 
   /**
    * Get the PropertyFactory for the given game key
@@ -132,8 +132,9 @@ public class PropertyFactory {
   }
 
   /**
-   * Iterate through all properties and determine if any properties are part of a monopoly.
-   * Properties are part of a monopoly when all properties in a group have the same owner.
+   * Iterate through all properties and determine if any properties are part of
+   * a monopoly. Properties are part of a monopoly when all properties in a
+   * group have the same owner.
    */
   public void checkForMonopoly() {
     for (Location lot : locations) {
@@ -218,6 +219,14 @@ public class PropertyFactory {
     return result;
   }
 
+  /**
+   * Get the number of hotels in the property group that includes location.
+   * 
+   * @param location
+   *          The property that will be used to determine the group
+   * @return The number of hotels that are on all properties in the group that
+   *         includes location
+   */
   public int getNumHotelsInGroup(Location location) {
     int result = 0;
 
@@ -229,6 +238,14 @@ public class PropertyFactory {
     return result;
   }
 
+  /**
+   * Get the number of houses in the property group that includes location.
+   * 
+   * @param location
+   *          The property that will be used to determine the group
+   * @return The number of houses that are on all properties in the group that
+   *         includes location
+   */
   public int getNumHousesInGroup(Location location) {
     int result = 0;
 
@@ -240,6 +257,11 @@ public class PropertyFactory {
     return result;
   }
 
+  /**
+   * Get the number of monopolies that the player controls.
+   * @param player The player to check
+   * @return The number of monopolies that the player controls.
+   */
   public int getNumMonopolies(AbstractPlayer player) {
     Hashtable<PropertyGroups, Boolean> h = new Hashtable<PropertyGroups, Boolean>();
     
@@ -301,6 +323,5 @@ public class PropertyFactory {
     assert factories.containsKey(gamekey);
 
     factories.remove(gamekey);
-    //System.out.println("factory size: " + factories.size());
   }
 }

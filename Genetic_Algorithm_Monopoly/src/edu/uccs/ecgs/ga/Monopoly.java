@@ -54,6 +54,7 @@ public class Monopoly implements Runnable {
 
     gamekey = "edu.uccs.ecgs.ga." + this.generation + "." + this.match + "." + game;
     logger = Logger.getLogger(gamekey);
+    assert logger != null;
 
     r = new Random();
     long seed = 1241797664697L;
@@ -236,8 +237,8 @@ public class Monopoly implements Runnable {
    * turned on; if debug is false, logging is turned off.
    */
   public void initLogger() {
-    if (Main.debug) {
-      logger.setLevel(Level.SEVERE);
+    if (Main.debug != Level.OFF) {
+      logger.setLevel(Main.debug);
 
       formatter = new Formatter() {
         @Override
@@ -255,7 +256,7 @@ public class Monopoly implements Runnable {
    * the formatter to the logger.
    */
   public void logFileSetup() {
-    if (!Main.debug) {
+    if (Main.debug.equals(Level.OFF)) {
       return;
     }
 
@@ -648,7 +649,9 @@ public class Monopoly implements Runnable {
     } catch (BankruptcyException ignored) {
       // expect that any player that buys a house first verifies they
       // have enough cash
-      ignored.printStackTrace();
+      // TODO
+      Throwable t = new Throwable(toString(), ignored);
+      t.printStackTrace();
     }
   }
 
@@ -677,38 +680,28 @@ public class Monopoly implements Runnable {
 
     logger.info("Bankrupt count: " + bankruptCount);
 
+    player.sellAllHousesAndHotels();
+
     if (gainingPlayer == null) {
       player.getAllCash();
 
       if (!gameOver) {
-        // remove houses and hotels from lots and remove mortgage
         for (Location lot : player.getAllProperties().values()) {
-          numHotels += lot.getNumHotels();
-          lot.resetNumHotels();
-
-          numHouses += lot.getNumHouses();
-          lot.resetNumHouses();
-
           lot.setMortgaged(false);
         }
 
         auctionLots(player.getAllProperties());
       }
-
-      player.clearAllProperties();
-
     } else {
-      player.sellAllHousesHotels();
-
       // give all cash to gaining player
       gainingPlayer.receiveCash(player.getAllCash());
 
       // give all property
       // mortgaged properties are handled in the addProperties method
       gainingPlayer.addProperties(player.getAllProperties(), gameOver);
-
-      player.clearAllProperties();
     }
+
+    player.clearAllProperties();
 
     player.setBankrupt();
     assert player.cash == 0;
@@ -767,7 +760,9 @@ public class Monopoly implements Runnable {
         processAuction(highBidPlayer, location, finalBid);
       } catch (BankruptcyException e) {
         // assume player cannot win auction unless they have enough cash
-        e.printStackTrace();
+        // TODO
+        Throwable t = new Throwable(toString(), e);
+        t.printStackTrace();
       }
     }
 
@@ -819,10 +814,12 @@ public class Monopoly implements Runnable {
     }
   }
 
-  private void endGame() {
+  public void endGame() {
     if (fh != null) {
       fh.flush();
       fh.close();
+//      logger.removeHandler(fh);
+//      fh = null;
     }
     PropertyFactory.releasePropertyFactory(gamekey);
     logger = null;
@@ -896,5 +893,10 @@ public class Monopoly implements Runnable {
 
   public Dice getDice() {
     return dice;
+  }
+
+  @Override
+  public String toString() {
+    return "Gen: " + generation + "; Match: " + match + "; Game: " + game;
   }
 }
