@@ -64,7 +64,6 @@ public class Monopoly implements Runnable {
     r.setSeed(seed);
 
     turnCounter = 0;
-    PropertyFactory.getPropertyFactory(gamekey).reset();
     numHouses = 32;
     numHotels = 12;
 
@@ -243,7 +242,7 @@ public class Monopoly implements Runnable {
       formatter = new Formatter() {
         @Override
         public String format(LogRecord record) {
-          return record.getMessage() + "\n";
+          return gamekey + ": " + record.getMessage() + "\n";
         }
       };
     } else {
@@ -891,5 +890,9 @@ public class Monopoly implements Runnable {
     if (roll[0] == roll[1]) {
       logger.info("Doubles!!");
     }
+  }
+
+  public Dice getDice() {
+    return dice;
   }
 }

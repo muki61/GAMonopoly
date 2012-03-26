@@ -27,7 +27,7 @@ public class SpecialLocation extends Location {
   }
 
   @Override
-  public int getRent() {
+  public int getRent(int diceRoll) {
     return 0;
   }
 

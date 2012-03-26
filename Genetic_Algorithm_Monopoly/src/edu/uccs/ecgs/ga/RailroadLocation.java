@@ -34,7 +34,7 @@ public class RailroadLocation extends Location {
   }
 
   @Override
-  public int getRent() {
+  public int getRent(int diceRoll) {
     int rent = 0;
 
     if (isMortgaged) {

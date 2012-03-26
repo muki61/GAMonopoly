@@ -39,7 +39,7 @@ public enum Chance {
       location = PropertyFactory.getPropertyFactory(game.gamekey).getLocationAt(locationIndex);
       ((UtilityLocation) location).arrivedFromChance = true;
       game.logger.info("Rolling dice...");
-      game.logDiceRoll(Dice.getDice().roll());
+      game.logDiceRoll(game.getDice().roll());
       advancePlayer(player, locationIndex);
 
       break;

@@ -14,7 +14,7 @@ public abstract class Location implements Comparable<Location> {
   final String type;
   public final int index;
   protected String _string;
-  public AbstractPlayer owner;
+  public AbstractPlayer owner = null;
   public boolean partOfMonopoly = false;
 
   private int numHouses = 0;
@@ -29,7 +29,7 @@ public abstract class Location implements Comparable<Location> {
     index = getInteger(key + ".index", properties);
     name = properties.getProperty(key + ".name");
     type = properties.getProperty(key + ".type");
-  }
+}
 
   protected int getInteger(String aKey, Properties properties) {
     return Integer.parseInt(properties.getProperty(aKey));
@@ -65,7 +65,7 @@ public abstract class Location implements Comparable<Location> {
     return numHotels;
   }
 
-  public abstract int getRent();
+  public abstract int getRent(int diceRoll);
   
   public abstract PropertyGroups getGroup();
 
@@ -79,17 +79,6 @@ public abstract class Location implements Comparable<Location> {
 
   protected void resetMultiple() {
     multiple = 1;
-  }
-
-  public void initialize() {
-    owner = null;
-    partOfMonopoly = false;
-
-    numHouses = 0;
-    numHotels = 0;
-    
-    isMortgaged = false;
-    multiple = 1;    
   }
 
   public void sellHouse() {

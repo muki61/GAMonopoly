@@ -6,14 +6,27 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.TreeMap;
 
-
+/**
+ * A class to manage the properties in a game of Monopoly
+ */
 public class PropertyFactory {
 
   private Location[] locations;
   private Properties properties = null;
 
+  /**
+   * A map of all the active factories. One instance of this class is created
+   * for every game instance. The various instances of PropertyFactory are
+   * stored in this map and accessed by a key which is unique to a game
+   * instance.
+   */
   static TreeMap<String, PropertyFactory> factories = new TreeMap<String, PropertyFactory>();
-  
+
+  /**
+   * Get the PropertyFactory for the given game key
+   * @param gamekey The key that identifies the factory for a given game
+   * @return A PropertyFactory instance
+   */
   public static PropertyFactory getPropertyFactory(String gamekey) {
     PropertyFactory pf = factories.get(gamekey);
 
@@ -22,12 +35,6 @@ public class PropertyFactory {
       factories.put(gamekey, pf);
     }
     return pf;
-  }
-
-  public void reset () {
-    for (Location l : locations) {
-      l.initialize();
-    }
   }
 
   private PropertyFactory(String gamekey) {
@@ -43,10 +50,26 @@ public class PropertyFactory {
         properties.load(fis);
       } catch (IOException e) {
         e.printStackTrace();
+      } finally {
+        close(fis);
       }
     }
 
     createLocations(properties, gamekey);
+  }
+
+  /**
+   * Close the FileInputStream used in the constructor.
+   * @param fis FileInputStream
+   */
+  private void close(InputStream fis) {
+    if (fis != null) {
+      try {
+        fis.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
   }
 
   public Location getLocationAt(int index) {
@@ -60,19 +83,9 @@ public class PropertyFactory {
       String key = keys[i];
       String type = properties.getProperty(key + ".type");
 
-      if (type.equals("property")) {
-        Location location = new PropertyLocation(key, properties);
-        locations[location.index] = location;
-      } else if (type.equals("utility")) {
-        Location location = new UtilityLocation(key, properties);
-        locations[location.index] = location;
-      } else if (type.equals("railroad")) {
-        Location location = new RailroadLocation(key, properties);
-        locations[location.index] = location;
-      } else if (type.equals("special")) {
-        Location location = new SpecialLocation(key, properties);
-        locations[location.index] = location;
-      }
+      PropertyTypes propertyType = PropertyTypes.valueOf(type.toUpperCase());
+      Location location = propertyType.getProperty(key, properties);
+      locations[location.index] = location;
     }
   }
 

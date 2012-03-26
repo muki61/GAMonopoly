@@ -24,7 +24,7 @@ public class UtilityLocation extends Location {
   }
 
   @Override
-  public int getRent() {
+  public int getRent(int diceRoll) {
     int rent = 0;
 
     if (isMortgaged) {
@@ -40,7 +40,7 @@ public class UtilityLocation extends Location {
           + arrivedFromChance;
     }
 
-    rent = Dice.getDice().getLastRoll() * multiple;
+    rent = diceRoll * multiple;
     if (isMortgaged) {
 //      game.logger.info("Lot is mortgaged, rent: 0");
     } else {

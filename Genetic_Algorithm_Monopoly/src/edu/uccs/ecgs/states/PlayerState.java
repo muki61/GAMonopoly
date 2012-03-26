@@ -29,7 +29,6 @@ public class PlayerState {
 
   Random r = new Random();
 
-  Dice dice = Dice.getDice();
   int numDoubles = 0;
 
   PlayerState() {
@@ -54,6 +53,7 @@ public class PlayerState {
   }
 
   protected void rollDice(Monopoly game, AbstractPlayer player) {
+    Dice dice = game.getDice();
     int[] roll = dice.roll();
     game.logDiceRoll(roll);
 

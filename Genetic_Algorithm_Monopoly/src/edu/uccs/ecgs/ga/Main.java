@@ -82,6 +82,13 @@ public class Main {
    */
   public static boolean useRandomSeed = true;
 
+  /**
+   * The number of threads to use when running games. Each thread is used to run
+   * 1 game, and when the game is complete, the thread can then run another
+   * game.
+   */
+  public static int numThreads = 8;
+  
   private static GAEngine gaEngine;
 
   private Gui gui = null;
@@ -130,10 +137,18 @@ public class Main {
           mutationRate = Double.parseDouble(value);
         } else if (key.equals("useRandomSeed")) {
           useRandomSeed = Boolean.parseBoolean(value);
+        } else if (key.equals("numthreads")) {
+          numThreads = Integer.parseInt(value);
         }
       }
     } catch (IOException e) {
       e.printStackTrace();
+    } finally {
+      try {
+        inStream.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
     
     if (useGui) {
@@ -148,7 +163,8 @@ public class Main {
           { "Debug", "" + debug }, 
           { "Chromosome Type (RGA, SGA, TGA)", "" + ChromoTypes.TGA.toString() },
           { "Mutation Rate", "" + mutationRate },
-          { "Use random seed for games", "" + useRandomSeed} };
+          { "Use random seed for games", "" + useRandomSeed},
+          { "Number of threads (1 thread per concurrent game)", "" + numThreads } };
 
       gui = new Gui(this);
       gui.init(fields);
@@ -234,8 +250,15 @@ public class Main {
       // Mutation Rate
       mutationRate = Double.parseDouble(text);
       break;
+    case 10:
+      // use random seed
+      useRandomSeed = Boolean.parseBoolean(text);
+      break;
+    case 11:
+      // number of threads
+      numThreads = Integer.parseInt(text);
+      break;
     default:
-
     }
   }
 }

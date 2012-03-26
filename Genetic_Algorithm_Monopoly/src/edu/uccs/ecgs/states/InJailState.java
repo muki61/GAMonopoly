@@ -5,6 +5,7 @@ package edu.uccs.ecgs.states;
 import edu.uccs.ecgs.ga.AbstractPlayer;
 import edu.uccs.ecgs.ga.Actions;
 import edu.uccs.ecgs.ga.BankruptcyException;
+import edu.uccs.ecgs.ga.Dice;
 import edu.uccs.ecgs.ga.Monopoly;
 
 public class InJailState extends PlayerState {
@@ -18,6 +19,7 @@ public class InJailState extends PlayerState {
   public PlayerState processEvent(Monopoly game, AbstractPlayer player, Events event) {
     game.logger.info("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
         "; event " + event.name());
+    Dice dice = game.getDice();
     switch (event) {
     
     case ROLL_DICE_EVENT:

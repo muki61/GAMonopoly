@@ -12,6 +12,9 @@ import java.util.Collections;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.Vector;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The Genetic Algorithm Engine. Create and manage the population of players.
@@ -42,7 +45,9 @@ public class GAEngine implements Runnable {
       Main.maxPlayers);
 
   Random r;
+  private LinkedBlockingQueue<Runnable> runnableGames;
   private ArrayList<Monopoly> games;
+  private ThreadPoolExecutor gameExecutor;
 
   public GAEngine() {
     r = new Random();
@@ -52,7 +57,7 @@ public class GAEngine implements Runnable {
     }
 //    System.out.println("Monopoly seed      : " + seed);
     r.setSeed(seed);
-    createPlayers();
+    createPlayers();    
   }
 
   private void createPlayers() {
@@ -97,40 +102,35 @@ public class GAEngine implements Runnable {
     while (generation < Main.numGenerations) {
       matches = 0;
       while (matches < Main.numMatches) {
+        runnableGames = new LinkedBlockingQueue<Runnable>();
+        gameExecutor = new ThreadPoolExecutor(Main.numThreads, Main.numThreads*2, 1L, TimeUnit.MINUTES, runnableGames);
+
         gameNumber = 0;
 
         games = new ArrayList<Monopoly>();
-        ArrayList<Thread> gameThreads = new ArrayList<Thread>();
 
         while (!playerPool.isEmpty()) {
           Monopoly game = new Monopoly(generation, matches, gameNumber,
               getFourPlayers());
 
           games.add(game);
-
-          Thread t = new Thread(game);
-          gameThreads.add(t);
+          gameExecutor.execute(game);
 
           ++gameNumber;
         }
 
-        for (Thread t : gameThreads) {
-          t.start();
+        gameExecutor.shutdown();
+        try {
+          gameExecutor.awaitTermination(1, TimeUnit.HOURS);
+        } catch (InterruptedException ignored) {
+          ignored.printStackTrace();
         }
-        for (Thread t : gameThreads) {
-          try {
-            t.join();
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
-        }
-
+        
         for (Monopoly game : games) {
           game.endGame();
         }
 
         games.clear();
-        gameThreads.clear();
 
         ++matches;
 
