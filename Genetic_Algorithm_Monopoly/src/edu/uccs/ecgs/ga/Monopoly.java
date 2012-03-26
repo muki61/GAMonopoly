@@ -67,9 +67,6 @@ public class Monopoly implements Runnable {
     numHouses = 32;
     numHotels = 12;
 
-    initLogger();
-    logFileSetup();
-
     cards = Cards.getCards();
 
     for (AbstractPlayer player : players) {
@@ -78,6 +75,9 @@ public class Monopoly implements Runnable {
   }
 
   public void playGame() {
+    initLogger();
+    logFileSetup();
+
     done = false;
 
     logger.info("Started game " + this.generation + "." + this.match + "." + this.game + " with players: ");
@@ -237,7 +237,7 @@ public class Monopoly implements Runnable {
    */
   public void initLogger() {
     if (Main.debug) {
-      logger.setLevel(Level.INFO);
+      logger.setLevel(Level.SEVERE);
 
       formatter = new Formatter() {
         @Override
@@ -814,10 +814,12 @@ public class Monopoly implements Runnable {
     } catch (Throwable t) {
       t.printStackTrace();
       logger.log(Level.SEVERE, "", t);
+    } finally {
+      endGame();
     }
   }
 
-  public void endGame() {
+  private void endGame() {
     if (fh != null) {
       fh.flush();
       fh.close();

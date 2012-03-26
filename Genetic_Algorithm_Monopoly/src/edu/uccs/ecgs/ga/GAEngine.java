@@ -126,10 +126,6 @@ public class GAEngine implements Runnable {
           ignored.printStackTrace();
         }
         
-        for (Monopoly game : games) {
-          game.endGame();
-        }
-
         games.clear();
 
         ++matches;
