@@ -2,13 +2,8 @@ package edu.uccs.ecgs.ga;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Random;
-import java.util.TreeMap;
-import java.util.Vector;
+import java.util.*;
 import java.util.logging.Logger;
-
-//import org.junit.Assert;
-
 import edu.uccs.ecgs.states.Events;
 import edu.uccs.ecgs.states.PlayerState;
 
@@ -285,8 +280,10 @@ public abstract class AbstractPlayer
   }
 
   /**
-   * Return the number of houses that have been bought for all properties that are owned by this player
-   * @return
+   * Return the number of houses that have been bought for all properties that
+   * are owned by this player
+   * 
+   * @return The number of houses owned by this player
    */
   public int getNumHouses() {
     int result = 0;
@@ -299,8 +296,10 @@ public abstract class AbstractPlayer
   }
 
   /**
-   * Return the number of hotels that have been bought for all properties that are owned by this player
-   * @return
+   * Return the number of hotels that have been bought for all properties that
+   * are owned by this player
+   * 
+   * @return The number of hotels owned by this player.
    */
   public int getNumHotels() {
     int result = 0;
@@ -312,6 +311,21 @@ public abstract class AbstractPlayer
     return result;
   }
 
+  /**
+   * Calculate whether the player has or can sell enough things to have at least
+   * the cash given by amount. If the player's cash is already greater than
+   * amount then the method simply returns true. if the player's current cash is
+   * less than amount, then the method determines if the player can sell enough
+   * houses, hotels, and mortgage properties to have cash greater than or equal
+   * to amount. This method does not actually sell any houses, hotels, or
+   * properties; it just computes how much cash could be raised if the player
+   * sold everything.
+   * 
+   * @param amount
+   *          The amount the player needs to have in cash
+   * @return True if the player has or can sell stuff to raise cash greater than
+   *         amount.
+   */
   public boolean canRaiseCash (int amount) {
     int totalWorth = cash;
     
@@ -320,8 +334,11 @@ public abstract class AbstractPlayer
     }
 
     for (Location location : owned.values()) {
+      // add selling price for all houses
       totalWorth += location.getNumHouses() * location.getHouseCost() / 2;
-      totalWorth += location.getNumHotels() * location.getHotelCost() / 2;
+      // add selling price for all hotels (hotels == 5 houses)
+      totalWorth += location.getNumHotels() * 5 * location.getHotelCost() / 2;
+      // add cash for mortgaging any unmortgaged properties
       if (!location.isMortgaged()) {
         totalWorth += location.getCost() / 2;
       }
@@ -334,23 +351,45 @@ public abstract class AbstractPlayer
     return false;
   }
 
-  // Predicate asking whether or not player wishes to pay bail
-  // True --> player wishes to pay bail
-  // False --> player wishes to attempt to roll doubles
+  /**
+   * Ask if the player wishes to pay bail to get out of jail. This method must
+   * be implemented by subclasses.
+   * 
+   * @return True --> player wishes to pay bail<br>
+   *         False --> player wishes to attempt to roll doubles
+   */
   public abstract boolean payBailP();
 
-  // If player wants to buy current location -->
-  // return true
-  // Otherwise -->
-  // return false
-  // Player will buy property if random double is less than chromosome
-  // value; in other words, a higher chromosome value means a higher
-  // likelihood of buying a property
+  /**
+   * Ask if the player wants to buy the location where they current are. This
+   * method must be implemented by subclasses
+   * 
+   * @return True --> If the player wants to buy their current location
+   *         False --> If the player does not want to buy the property at
+   *                   their current location.
+   */
   public abstract boolean buyProperty();
+
+  /**
+   * Ask if the player wants to buy the location. This method must be
+   * implemented by subclasses
+   * 
+   * @return True --> If the player wants to buy the given location 
+   *         False --> If the player does not want to buy the given location.
+   */
   public abstract boolean buyProperty(Location location);
 
+  /**
+   * Output the player genome to a data file.
+   * 
+   * @param out The output stream to which data should be written.
+   * @throws IOException If there is a problem writing out the data.
+   */
   public abstract void dumpGenome(DataOutputStream out) throws IOException;
 
+  /**
+   * Output the player's total worth to the debug log.
+   */
   public void printTotalWorth() {
     logInfo("Player " + playerIndex);
     logInfo("Total cash: " + cash);
@@ -371,6 +410,15 @@ public abstract class AbstractPlayer
     }
   }
 
+  /**
+   * Determine the amount that this player wants to bid in an auction for the
+   * given location. A player can bid on a property in an auction even if the
+   * player just decided not to buy it directly after landing on the property.
+   * 
+   * @param currentLocation
+   *          The property being auctioned.
+   * @return The amount of this player's bid.
+   */
   public int getBidForLocation(Location currentLocation) {
     int bid = 0;
 
@@ -417,11 +465,23 @@ public abstract class AbstractPlayer
     return bid;
   }
 
+  /**
+   * Called by game if the player lands in jail either through rolling doubles
+   * three times, getting a Go To Jail card, or landing on the Go To Jail
+   * location.  
+   */
   public void enteredJail() {
     inJail = true;
     jailSentence = 3;
   }
 
+  /**
+   * Ask whether player must leave jail or not. Player must leave jail when they
+   * have declined to pay bail three times and have had 3 chances to roll
+   * doubles but have not rolled doubles.
+   * 
+   * @return True if the player must pay bail and leave jail, false otherwise.
+   */
   public boolean jailSentenceCompleted() {
     return jailSentence == 0;
   }
@@ -431,6 +491,11 @@ public abstract class AbstractPlayer
     jailSentence = 0;
   }
 
+  /**
+   * TODO Even if the player has all the properties of a color group, they 
+   * cannot build houses if one or more properties are mortgaged.
+   * @return True if the player has at least one monopoly, false otherwise.
+   */
   public boolean hasMonopoly() {
     boolean result = false;
     for (Location l : owned.values()) {
@@ -443,6 +508,15 @@ public abstract class AbstractPlayer
     return result;
   }
 
+  /**
+   * Attempt to sell houses and hotels, and mortgage properties until the
+   * player's cash is greater than or equal to amount.
+   * 
+   * @param amount
+   *          The amount of cash that the player is trying to have on hand.
+   * @throws BankruptcyException
+   *           If the player cannot raise enough cash to equal or exceed amount.
+   */
   public void raiseCash(int amount) throws BankruptcyException {
     logInfo("Player " + playerIndex + " has " + cash + " dollars");
     if (cash >= amount) {
@@ -540,7 +614,7 @@ public abstract class AbstractPlayer
         if (maxHouses > 0) {
           logInfo(locMaxHouses.name + " has " + locMaxHouses.getNumHouses() + " houses");
           logInfo("Will sell house at " + locMaxHouses.name);
-          game.sellHouse(this, locMaxHouses);
+          game.sellHouse(locMaxHouses);
         } else {
           break;
         }
@@ -805,14 +879,14 @@ public abstract class AbstractPlayer
         game.sellHotel(this, l, owned.values());
       }
       while (l.getNumHouses() > 0) {
-        game.sellHouse(this, l);
+        game.sellHouse(l);
       }
     }
 
     // And sell all houses
     for (Location l : owned.values()) {
       while (l.getNumHouses() > 0) {
-        game.sellHouse(this, l);
+        game.sellHouse(l);
       }
     }
   }

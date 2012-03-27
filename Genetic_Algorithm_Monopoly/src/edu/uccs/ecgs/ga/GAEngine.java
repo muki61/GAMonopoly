@@ -125,8 +125,6 @@ public class GAEngine implements Runnable {
         } catch (InterruptedException ignored) {
           ignored.printStackTrace();
         }
-        
-//        endGames();
 
         games.clear();
 
@@ -148,12 +146,6 @@ public class GAEngine implements Runnable {
         playerPool.clear();
         playerPool.addAll(newPopulation);
       }
-    }
-  }
-
-  private void endGames() {
-    for (Monopoly game : games) {
-      game.endGame();
     }
   }
 

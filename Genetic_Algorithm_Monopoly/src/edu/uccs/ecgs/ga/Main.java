@@ -67,7 +67,8 @@ public class Main {
    * Which chromosome types to use for a player. See
    * {@link edu.uccs.ecgs.ga.ChromoTypes} for valid values. Each type is
    * implemented by a concrete class which is used in
-   * {@link edu.uccs.ecgs.ga.Monopoly#createPlayers() createPlayers}.
+   * {@link edu.uccs.ecgs.ga.PlayerFactory#getPlayer(int index, ChromoTypes chromoType)}
+   * .
    */
   public static ChromoTypes chromoType = ChromoTypes.TGA;
 

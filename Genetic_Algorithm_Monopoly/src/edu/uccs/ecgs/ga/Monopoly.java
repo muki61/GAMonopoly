@@ -327,9 +327,16 @@ public class Monopoly implements Runnable {
     return result;
   }
 
-  public void sellHouse(AbstractPlayer player, Location location) {
+  /**
+   * Sell a house from the given location. The proceeds from the sale are given
+   * to the player that owns the property (identified by location.owner).
+   * 
+   * @param location
+   *          The property to be sold.
+   */
+  public void sellHouse(Location location) {
     location.sellHouse();
-    player.receiveCash(location.getHouseCost() / 2);
+    location.owner.receiveCash(location.getHouseCost() / 2);
     ++numHouses;
     
     logger.info("Sold house at " + location.toString() + "; property now has " + location.getNumHouses() + " houses");
@@ -818,12 +825,11 @@ public class Monopoly implements Runnable {
     if (fh != null) {
       fh.flush();
       fh.close();
-//      logger.removeHandler(fh);
-//      fh = null;
+      logger.removeHandler(fh);
+      fh = null;
     }
     PropertyFactory.releasePropertyFactory(gamekey);
     logger = null;
-//    System.out.println("Ended game " + this.generation + "." + this.match + "." + this.game);
   }
 
   public void payEachPlayer50(AbstractPlayer player) throws BankruptcyException {

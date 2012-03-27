@@ -6,7 +6,7 @@ package edu.uccs.ecgs.ga;
  */
 public class PlayerFactory {
   /**
-   * Get a player of the given chromosome type.
+   * Get an instance of the player class of the given chromosome type.
    * @param index The player id
    * @param chromoType The type of player to create
    * @return An AbstractPlayer reference to a player of the given type
