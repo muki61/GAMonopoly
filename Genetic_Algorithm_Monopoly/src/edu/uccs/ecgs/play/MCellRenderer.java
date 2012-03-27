@@ -1,10 +1,11 @@
-package edu.uccs.ecgs.ga;
+package edu.uccs.ecgs.play;
 
 import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
+import edu.uccs.ecgs.ga.Location;
 
 @SuppressWarnings("serial")
 public class MCellRenderer extends DefaultTableCellRenderer {

@@ -129,7 +129,7 @@ public class PlayerPanel extends JPanel implements ListSelectionListener {
     
     table.setModel(m);
     table.getSelectionModel().addListSelectionListener(this);
-    table.setDefaultRenderer(Object.class, new edu.uccs.ecgs.ga.MCellRenderer());
+    table.setDefaultRenderer(Object.class, new edu.uccs.ecgs.play.MCellRenderer());
     layout.setConstraints(table, gbc);
     add(scrollPane, gbc);
 
