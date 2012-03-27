@@ -109,7 +109,7 @@ public class Main {
 
   public void start()
   {
-    InputStream inStream = this.getClass().getResourceAsStream("Main.properties");
+    InputStream inStream = this.getClass().getResourceAsStream("/Main.properties");
     Properties props = new Properties();
     try {
       props.load(inStream);
