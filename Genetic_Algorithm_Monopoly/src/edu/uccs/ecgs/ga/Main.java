@@ -1,7 +1,6 @@
 package edu.uccs.ecgs.ga;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Properties;
 import java.util.logging.Level;
 
@@ -109,7 +108,15 @@ public class Main {
 
   public void start()
   {
-    InputStream inStream = this.getClass().getResourceAsStream("/Main.properties");
+    File f = new File("Main.properties");
+    InputStream inStream = null;
+    try {
+      inStream = new FileInputStream(f);
+    } catch (FileNotFoundException e1) {
+      e1.printStackTrace();
+      return;
+    }
+    
     Properties props = new Properties();
     try {
       props.load(inStream);
