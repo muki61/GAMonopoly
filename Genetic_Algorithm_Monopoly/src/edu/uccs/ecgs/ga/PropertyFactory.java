@@ -317,11 +317,32 @@ public class PropertyFactory {
     return locations;
   }
 
+  /**
+   * Release the reference to a PropertyFactory, allowing its resources to be released from the heap.
+   * @param gamekey The key that identifies the PropertyFactory to release.
+   */
   public static void releasePropertyFactory(String gamekey) {
     assert factories != null;
     assert gamekey != null;
     assert factories.containsKey(gamekey);
 
     factories.remove(gamekey);
+  }
+
+  /**
+   * As if any property in the group is mortgaged
+   * @param group The group which contains the locations to check
+   * @return True --> If any property in the group is mortgaged
+   *         False --> otherwise
+   */
+  public boolean groupIsMortgaged(PropertyGroups group) {
+    for (Location location : locations) {
+      if (location.getGroup() == group) {
+        if (location.isMortgaged()) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

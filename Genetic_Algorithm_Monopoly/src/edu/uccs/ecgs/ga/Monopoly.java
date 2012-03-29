@@ -628,6 +628,10 @@ public class Monopoly implements Runnable {
 
     try {
       assert player.canRaiseCash(location.getHouseCost()) : "Player tried to buy house with insufficient cash";
+      assert !location.isMortgaged : "Player tried to buy house; Location " + location.name + " is mortgaged.";
+      assert location.partOfMonopoly : "Player tried to buy house; Location " + location.name + " is not part of monopoly";
+      assert PropertyFactory.getPropertyFactory(gamekey).groupIsMortgaged(location.getGroup());
+
       player.getCash(location.getHouseCost());
       location.addHouse();
       --numHouses;

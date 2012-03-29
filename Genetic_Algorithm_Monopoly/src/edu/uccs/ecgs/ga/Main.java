@@ -109,15 +109,9 @@ public class Main {
 
   public void start()
   {
-    File f = new File("Main.properties");
-    InputStream inStream = null;
-    try {
-      inStream = new FileInputStream(f);
-    } catch (FileNotFoundException e1) {
-      e1.printStackTrace();
-      return;
-    }
-    
+    Class<edu.uccs.ecgs.ga.Main> c = Main.class;
+    InputStream inStream = c.getResourceAsStream("/Main.properties");
+
     Properties props = new Properties();
     try {
       props.load(inStream);
