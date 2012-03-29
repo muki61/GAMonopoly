@@ -500,14 +500,23 @@ public abstract class AbstractPlayer
     return jailSentence == 0;
   }
 
+  /**
+   * Change player state based on having paid bail to leave jail.
+   */
   public void paidBail() {
     inJail = false;
     jailSentence = 0;
   }
 
   /**
-   * TODO Even if the player has all the properties of a color group, they 
-   * cannot build houses if one or more properties are mortgaged.
+   * Ask if the player has a monopoly in any property group, ignoring whether
+   * any of those properties are mortgaged; callers of this method should also
+   * check for mortgaged properties before taking any action for a monopoly.
+   * Mortgaged properties can impact what a player can do with a monopoly. For
+   * example, even if the player has all the properties of a color group, the
+   * player cannot build any houses for a color group if one or more properties
+   * are mortgaged.
+   * 
    * @return True if the player has at least one monopoly, false otherwise.
    */
   public boolean hasMonopoly() {
@@ -740,13 +749,15 @@ public abstract class AbstractPlayer
         mortgaged.add(lot);
       }
     }    
-    
+
+    // Decide whether to pay off any of the mortgaged properties, and if so,
+    // then pay them off
     processMortgagedLots(mortgaged);
 
+    // If any lots are still mortgaged, need to pay the interest
     for (Location lot : mortgaged) {
       if (lot.isMortgaged()) {
-        // leave property mortgaged and only pay the fee
-        // TODO, what if player wants to unmortgage? Need to handle
+        // pay the interest of 10%
         int amountToPay = (int) (0.1 * lot.getCost() / 2);
         logInfo("Player " + playerIndex + 
                     " will only pay mortgage fee for " + lot.name + 
@@ -759,7 +770,7 @@ public abstract class AbstractPlayer
           //player is in this method because some other player
           //went bankrupt, so assume this player has enough cash
           //or can raise enough cash
-          // TODO assumption is flawed, need to fix
+          // TODO assumption may be flawed, need to fix
           Throwable t = new Throwable(game.toString(), e);
           t.printStackTrace();
         }
@@ -775,32 +786,33 @@ public abstract class AbstractPlayer
     Vector<Location> mortgaged = new Vector<Location>();
     for (Location lot : owned.values()) {
       if (lot.isMortgaged()) {
-        logInfo(lot.name + " is mortgaged");
+        logInfo(lot.name + " is mortgaged; added to list of properties to unmortgage");
         mortgaged.add(lot);
       }
     }
-    if (mortgaged.size() > 0) {
-      processMortgagedLots(mortgaged);
-    }
+
+    processMortgagedLots(mortgaged);
   }
 
   /**
    * Actually does the work of paying off the mortgages in the list created by
-   * payOffMortgages().
+   * {@link payOffMortgages()} or {@link processMortgagedNewProperties()).
    * 
    * @param mortgaged
    *          A list of mortgaged properties owned by the player.
    */
   private void processMortgagedLots(Vector<Location> mortgaged) {
-    // only mortgage if other monopolies have been developed
+    // only unmortgage when other monopolies have been fully developed
+    // TODO: Need to validate this FOR block. It appears that the original
+    // intent here was that if a location was part of a monopoly, then it should
+    // be fully developed with 3 houses or a hotel before the player pays off the
+    // mortgage for other properties.
     for (Location location : owned.values()) {
-      boolean locationFullyBuilt = (location.getNumHouses() == 3 || 
-                                    (location.getNumHouses() == 0 && 
-                                     location.getNumHotels() == 1));
+      if (location.isMortgaged() || location.groupIsMortgaged(game.gamekey)) {
+        continue;
+      }
 
-      if ( location.partOfMonopoly && 
-          !location.isMortgaged && 
-          !locationFullyBuilt) 
+      if (location.partOfMonopoly && !location.isFullyBuilt()) 
       {
         return;
       }
@@ -811,7 +823,7 @@ public abstract class AbstractPlayer
     for (Location lot : mortgaged) {
       int amountToPay = 0;
 
-      if (payMortgageP(lot)) {
+      if (canPayMortgage(lot)) {
         // pay off mortgage
         amountToPay = (int) (1.1 * lot.getCost() / 2);
         logInfo("Player will pay off mortgage for " + lot.name + "; cost is "
@@ -822,9 +834,9 @@ public abstract class AbstractPlayer
           logInfo(lot.name + " is no longer mortgaged");
           ++count;
         } catch (BankruptcyException e) {
-          // the player will not decide to pay mortgage unless
-          // enough free cash is available
-          // TODO
+          // payMortgageP() should only return true if the player can raise the
+          // cash to pay off the mortgage, thus getCash should not throw a
+          // bankruptcy exception.
           Throwable t = new Throwable(game.toString(), e);
           t.printStackTrace();
         }
@@ -836,20 +848,16 @@ public abstract class AbstractPlayer
 
   /**
    * make the decision of whether or not to pay the mortgage on the property
-   * @param lot
+   * @param lot The property for which to pay off mortgage 
    * @return True if the player can pay the mortgage, False otherwise
    */
-  private boolean payMortgageP(Location lot) {
+  private boolean canPayMortgage(Location lot) {
     int cost = (int) (1.1 * lot.getCost() / 2); 
 
-    //After paying cost, player should still have minimum cash, so
-    //if player's current cash is less than minimum cash + cost,
-    //then player should not pay mortgage.
-    if (cash < getMinimumCash() + cost) {
-      return false;
-    }
-    
-    return true;
+    // After paying cost, player should still have minimum cash, so player can
+    // pay off mortgage if player's current cash is more than minimum
+    // cash + cost,
+    return cash >= getMinimumCash() + cost;
   }
 
   /**
@@ -940,26 +948,33 @@ public abstract class AbstractPlayer
     int minCash = getMinimumCash();
     logInfo("Player minimum cash is " + minCash);
 
-    //TODO can player raise cash?
+    // Assume player will not try to raise cash for this. In most cases it
+    // will not make sense for the player to sell houses or mortgage properties
+    // to buy houses or hotels.
+    //
+    // TODO This might be implemented in the future: A player might want to sell
+    // houses from one property to buy them for another property if an opponent
+    // is far from the first property and close to the second property.
     if (cash < minCash) {
       logInfo("Player does not have minimum cash");
       return;
     }
 
-    //Create a list of all the properties that the player owns that are also
-    //part of monopolies
+    // Create a list of all the properties that the player owns that are also
+    // part of monopolies; however, if any property in the group is mortgaged,
+    // do not add that property to the vector.
     Vector<Location> monopolies = new Vector<Location>();
     for (Location location : owned.values()) {
-      if (location.partOfMonopoly) {
+      if (location.partOfMonopoly &&
+          !PropertyFactory.getPropertyFactory(game.gamekey).groupIsMortgaged(location.getGroup())) {
         monopolies.add(location);
       }
     }
-
-    //TODO Need to process monopolies data structure to remove any groups that have
-    //mortgaged properties.
     
     for (int i = 0; i < groupOrder.length; i++) {
       for (Location location : monopolies) {
+        // Process properties in group order, so if location is not part of current
+        // group, then skip it for now
         if (location.getGroup() != groupOrder[i]) {
           continue;
         }
@@ -970,7 +985,8 @@ public abstract class AbstractPlayer
           logInfo("Location " + location.name + " has a hotel; nothing to build");
         }
 
-        logInfo("Location " + location.name + " has " + location.getNumHouses() + "houses");
+        logInfo("Location " + location.name + " has " + location.getNumHouses() + " houses");
+
         // At this point, location is part of a monopoly and the player might
         // want to build on the property.
         //

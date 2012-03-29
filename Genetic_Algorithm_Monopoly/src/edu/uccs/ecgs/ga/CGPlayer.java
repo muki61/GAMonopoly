@@ -204,21 +204,14 @@ public abstract class CGPlayer extends AbstractPlayer {
       }
     }
 
-    //TODO -- fix to use polymorphism??
-    if (Main.chromoType == ChromoTypes.RGA) {
-      result[0] = new RGAPlayer(index, chrNoOwners1, chrPlayerOwns1,
-                                chrOpponentOwns1, chrTwoOpponentOwns1, chrJail1);
-      ++index;
-      result[1] = new RGAPlayer(index, chrNoOwners1, chrPlayerOwns1,
-                                chrOpponentOwns1, chrTwoOpponentOwns1, chrJail1);
-    } else {
-      result[0] = new TGAPlayer(index, chrNoOwners1, chrPlayerOwns1,
-                                chrOpponentOwns1, chrTwoOpponentOwns1, chrJail1);
-      ++index;
-      result[1] = new TGAPlayer(index, chrNoOwners1, chrPlayerOwns1,
-                                chrOpponentOwns1, chrTwoOpponentOwns1, chrJail1);
-    }
-    
+    result[0] = Main.chromoType.getPlayer(index, chrNoOwners1, chrPlayerOwns1,
+        chrOpponentOwns1, chrTwoOpponentOwns1, chrJail1);
+
+    ++index;
+
+    result[1] = Main.chromoType.getPlayer(index, chrNoOwners2, chrPlayerOwns2,
+        chrOpponentOwns2, chrTwoOpponentOwns2, chrJail2);
+
     return result; 
   }
 

@@ -124,4 +124,22 @@ public abstract class Location implements Comparable<Location> {
   public int compareTo(Location arg0) {
 		return Integer.valueOf(index).compareTo(Integer.valueOf(arg0.index));
 	}
+
+  /**
+   * Is the location fully developed.
+   * @return True if the location has 3 or more houses or a hotel, false otherwise 
+   */
+  public boolean isFullyBuilt() {
+    return getNumHouses() >= 3 || getNumHotels() > 0;
+  }
+
+  /**
+   * Is any property in the same group mortgaged
+   * 
+   * @return True if any property in the same group as this property is
+   *         mortgaged, false otherwise.
+   */
+  public boolean groupIsMortgaged(String gamekey) {
+    return PropertyFactory.getPropertyFactory(gamekey).groupIsMortgaged(this.getGroup());
+  }
 }

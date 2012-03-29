@@ -36,7 +36,7 @@ public class BuyPropertyState extends PlayerState {
         }
       } catch (BankruptcyException e) {
         // player will not buy house unless they have enough cash
-        // TODO
+        // TODO Verify that this exception will not occur
         Throwable t = new Throwable(game.toString(), e);
         t.printStackTrace();
 
