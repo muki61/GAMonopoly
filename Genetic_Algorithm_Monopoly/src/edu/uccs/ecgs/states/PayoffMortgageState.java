@@ -17,7 +17,7 @@ public class PayoffMortgageState extends PlayerState {
         "; event " + event.name());
     switch (event) {
     case MORTGAGE_DECISION_EVENT:
-      player.processMortgagedLots();
+      player.payOffMortgages();
       
       player.nextAction = Actions.MAKE_TRADE_DECISION;
       tradePropertyState.enter();

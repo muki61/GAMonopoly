@@ -619,6 +619,17 @@ public class Monopoly implements Runnable {
     }
   }
 
+  /**
+   * Buy a house for player at location.
+   * 
+   * @param player
+   *          The player that is buying the house.
+   * @param location
+   *          The location which will initially receive the house. The player
+   *          must build evenly, so after buying a house for this location, the
+   *          player may rebalance the houses among the properties in this
+   *          location's group.
+   */
   public void buyHouse(AbstractPlayer player, Location location) {
     if (numHouses == 0) {
       logger.info("Player " + player.playerIndex
@@ -630,7 +641,8 @@ public class Monopoly implements Runnable {
       assert player.canRaiseCash(location.getHouseCost()) : "Player tried to buy house with insufficient cash";
       assert !location.isMortgaged : "Player tried to buy house; Location " + location.name + " is mortgaged.";
       assert location.partOfMonopoly : "Player tried to buy house; Location " + location.name + " is not part of monopoly";
-      assert PropertyFactory.getPropertyFactory(gamekey).groupIsMortgaged(location.getGroup());
+      assert !PropertyFactory.getPropertyFactory(gamekey).groupIsMortgaged(location.getGroup()) : 
+        "Player tried to buy house; Some property in " + location.getGroup() + " is mortgaged.";
 
       player.getCash(location.getHouseCost());
       location.addHouse();
@@ -642,6 +654,9 @@ public class Monopoly implements Runnable {
       // expect that any player that buys a house first verifies they
       // have enough cash
       ignored.printStackTrace();
+    } catch (AssertionError ae) {
+      logger.info(player.toString());
+      throw ae;
     }
   }
 
@@ -819,7 +834,11 @@ public class Monopoly implements Runnable {
       playGame();
     } catch (Throwable t) {
       t.printStackTrace();
-      logger.log(Level.SEVERE, "", t);
+      StackTraceElement[] ste = t.getStackTrace();
+      logger.severe(t.toString());
+      for (StackTraceElement s : ste) {
+        logger.log(Level.SEVERE, s.toString());
+      }
     } finally {
       endGame();
     }

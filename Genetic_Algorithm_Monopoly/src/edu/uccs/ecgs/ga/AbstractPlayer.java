@@ -28,13 +28,27 @@ public abstract class AbstractPlayer
 
   PlayerState playerState = PlayerState.inactiveState;
 
+  //build in this order
+  // 1 Orange
+  // 2 Light Blue
+  // 3 Red
+  // 4 Purple
+  // 5 Dark Blue
+  // 6 Yellow
+  // 8 Green
+  // 9 Brown
+  private static final PropertyGroups[] groupOrder = new PropertyGroups[] 
+      {PropertyGroups.ORANGE, PropertyGroups.LIGHT_BLUE,
+      PropertyGroups.RED, PropertyGroups.PURPLE, 
+      PropertyGroups.DARK_BLUE, PropertyGroups.YELLOW,
+      PropertyGroups.GREEN, PropertyGroups.BROWN};
+  
   public static Random r = new Random();
   static {
     long seed = 1241797664697L;
     if (Main.useRandomSeed) {
       seed = System.currentTimeMillis();
     }
-//    System.out.println("AbstractPlayer seed: " + seed);
     r.setSeed(seed);
   }
 
@@ -648,9 +662,12 @@ public abstract class AbstractPlayer
 
   /**
    * Add properties from a bankrupt player to this player
-   * @param allProperties All the properties owned by a player who has gone bamkrupt
-   * @param gameOver Whether the game is over because the bankrupt player is the last
-   * other player in the game
+   * 
+   * @param allProperties
+   *          All the properties owned by a player who has gone bankrupt
+   * @param gameOver
+   *          Whether the game is over because the bankrupt player is the last
+   *          other player in the game
    */
   public void addProperties(TreeMap<Integer, Location> allProperties, 
                             boolean gameOver) 
@@ -674,7 +691,7 @@ public abstract class AbstractPlayer
 
   /**
    * Go through all the new properties gained by this player, and for the ones that are
-   * mortgaged, pay the fee and then dertermine whether or not to unmortgage the property
+   * mortgaged, pay the fee and then determine whether or not to unmortgage the property
    * @param newProperties
    */
   private void processMortgagedNewProperties(TreeMap<Integer, Location> newProperties) {
@@ -729,6 +746,7 @@ public abstract class AbstractPlayer
     for (Location lot : mortgaged) {
       if (lot.isMortgaged()) {
         // leave property mortgaged and only pay the fee
+        // TODO, what if player wants to unmortgage? Need to handle
         int amountToPay = (int) (0.1 * lot.getCost() / 2);
         logInfo("Player " + playerIndex + 
                     " will only pay mortgage fee for " + lot.name + 
@@ -749,7 +767,11 @@ public abstract class AbstractPlayer
     }
   }
 
-  public void processMortgagedLots() {
+  /**
+   * Create a list of all mortgaged properties and decide whether or not to pay
+   * them off.
+   */
+  public void payOffMortgages() {
     Vector<Location> mortgaged = new Vector<Location>();
     for (Location lot : owned.values()) {
       if (lot.isMortgaged()) {
@@ -762,6 +784,13 @@ public abstract class AbstractPlayer
     }
   }
 
+  /**
+   * Actually does the work of paying off the mortgages in the list created by
+   * payOffMortgages().
+   * 
+   * @param mortgaged
+   *          A list of mortgaged properties owned by the player.
+   */
   private void processMortgagedLots(Vector<Location> mortgaged) {
     // only mortgage if other monopolies have been developed
     for (Location location : owned.values()) {
@@ -891,12 +920,17 @@ public abstract class AbstractPlayer
     }
   }
 
+  /**
+   * Attempt to buy a house for a property
+   */
   public void processDevelopHouseEvent() {
+    // Bank has to have houses available
     if (game.getNumHouses() == 0) {
       logInfo("Bank has no more houses");
       return;
     }
       
+    //Player has to have a monopoly
     if (!hasMonopoly()) {
       logInfo("Player does not have monopoly");
       return;
@@ -906,51 +940,52 @@ public abstract class AbstractPlayer
     int minCash = getMinimumCash();
     logInfo("Player minimum cash is " + minCash);
 
+    //TODO can player raise cash?
     if (cash < minCash) {
       logInfo("Player does not have minimum cash");
       return;
     }
 
-    //build in this order
-    // 1 Orange
-    // 2 Light Blue
-    // 3 Red
-    // 4 Light Purple
-    // 5 Dark Blue
-    // 6 Yellow
-    // 8 Green
-    // 9 Brown
-    
-    PropertyGroups[] groupOrder = new PropertyGroups[] {PropertyGroups.ORANGE, PropertyGroups.LIGHT_BLUE,
-        PropertyGroups.RED, PropertyGroups.PURPLE, PropertyGroups.DARK_BLUE, PropertyGroups.YELLOW,
-        PropertyGroups.GREEN, PropertyGroups.BROWN};
-    
+    //Create a list of all the properties that the player owns that are also
+    //part of monopolies
     Vector<Location> monopolies = new Vector<Location>();
     for (Location location : owned.values()) {
       if (location.partOfMonopoly) {
         monopolies.add(location);
       }
     }
+
+    //TODO Need to process monopolies data structure to remove any groups that have
+    //mortgaged properties.
     
     for (int i = 0; i < groupOrder.length; i++) {
       for (Location location : monopolies) {
         if (location.getGroup() != groupOrder[i]) {
           continue;
         }
+        
+        logInfo("Checking " + location.name + " for build decision");
+        
+        if (location.getNumHotels() > 0) {
+          logInfo("Location " + location.name + " has a hotel; nothing to build");
+        }
 
+        logInfo("Location " + location.name + " has " + location.getNumHouses() + "houses");
+        // At this point, location is part of a monopoly and the player might
+        // want to build on the property.
+        //
+        // But good strategy says to build all properties up to 3 houses first,
+        // and then if all monopolies of player have 3 houses, then build hotels.
+        //
+        // So while location has less than three houses, build on it
         while (location.getNumHouses() < 3) {
-          if (location.getNumHouses() >= 3 || location.getNumHotels() > 0) {
-            logInfo("Location " + location.name + " has enough houses");
-            break;
-          }
-
           // at this point location is part of monopoly
           // correct group
           // not enough houses/hotels
           // now check that there is enough cash to buy a house
           if (cash < (getMinimumCash() + location.getHouseCost())) {
             logInfo("Player does not have " + location.getHouseCost()
-                + " dollars extra");
+                + " dollars extra to buy house for " + location.name);
             break;
           }
 
