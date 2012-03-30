@@ -76,7 +76,7 @@ public abstract class Location implements Comparable<Location> {
   protected boolean isMortgaged = false;
 
   /**
-   * Rent multiplier. See {@link #setRentMultiple(int)}
+   * Rent multiplier. See {@link #setRentMultiplier(int)}
    */
   protected int multiple = 1;
 
@@ -199,14 +199,14 @@ public abstract class Location implements Comparable<Location> {
    * @param multiple
    *          The amount to multiply the rent by.
    */
-  protected void setRentMultiple(int multiple) {
+  protected void setRentMultiplier(int multiple) {
     this.multiple  = multiple;
   }
 
   /**
    * Reset rent multiplier to 1.
    */
-  protected void resetMultiple() {
+  public void resetRentMultiplier() {
     multiple = 1;
   }
 

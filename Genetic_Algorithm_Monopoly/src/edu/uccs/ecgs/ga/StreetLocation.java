@@ -87,7 +87,7 @@ public class StreetLocation extends Location {
 
     // Unimproved properties that are part of a monopoly receive double rent.
     if (partOfMonopoly) {
-      setRentMultiple(2);
+      setRentMultiplier(2);
     }
     
     int buildCount = getNumHouses() + (getNumHotels() * 5);
@@ -112,7 +112,7 @@ public class StreetLocation extends Location {
       break;
     }
     
-    resetMultiple();
+    resetRentMultiplier();
     return rent;
   }
 

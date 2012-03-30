@@ -784,7 +784,7 @@ public class Monopoly implements Runnable {
           + highBidPlayer.playerIndex + " cannot raise cash " + finalBid;
 
       try {
-        processAuction(highBidPlayer, location, finalBid);
+        processAuctionResult(highBidPlayer, location, finalBid);
       } catch (BankruptcyException e) {
         // assume player cannot win auction unless they have enough cash
         // TODO Verify that this exception will not occur
@@ -798,17 +798,24 @@ public class Monopoly implements Runnable {
     for (Location location : lotsToAuction.values()) {
       if (location.owner == null) {
         if (printHead) {
-          logger.info("The following lots were returned to the bank:");
+          logger.info("The following lots were not bought at auction:");
           printHead = false;
         }
         logger.info(location.name);
       }
     }
-    // logger.setLevel(Level.OFF);
   }
 
-  private void processAuction(AbstractPlayer aPlayer,
-      Location aLocation, int amount) throws BankruptcyException {
+  /**
+   * Sell the Location to the Player for the given Amount.
+   * @param aPlayer The player who won the auction.
+   * @param aLocation The location that was being auctioned.
+   * @param amount The amount that player owes for the location.
+   * @throws BankruptcyException If the player does not have amount.
+   */
+  private void processAuctionResult(AbstractPlayer aPlayer, Location aLocation,
+      int amount) throws BankruptcyException 
+  {
     aPlayer.getCash(amount);
     logger.fine("Player " + aPlayer.playerIndex + " won auction for "
         + aLocation.name);
@@ -821,10 +828,17 @@ public class Monopoly implements Runnable {
     }
   }
 
+  /**
+   * Get the number of houses in the bank.
+   * @return The number of houses in the bank.
+   */
   public int getNumHouses() {
     return numHouses;
   }
 
+  /**
+   * Unpause the game.
+   */
   public synchronized void resume() {
     notify();
   }
@@ -845,6 +859,9 @@ public class Monopoly implements Runnable {
     }
   }
 
+  /**
+   * Release the logger resources and PropertyFactory resource for this game.
+   */
   public void endGame() {
     if (fh != null) {
       fh.flush();
@@ -856,6 +873,15 @@ public class Monopoly implements Runnable {
     logger = null;
   }
 
+  /**
+   * Called after a special card instructs the player to pay all other players
+   * $50.
+   * 
+   * @param player
+   *          The player that owes the amount to other players.
+   * @throws BankruptcyException
+   *           If the player does not have enough money to pay other players.
+   */
   public void payEachPlayer50(AbstractPlayer player) throws BankruptcyException {
     int numPlayersToPay = 0;
     for (AbstractPlayer p : players) {
@@ -874,6 +900,12 @@ public class Monopoly implements Runnable {
     }
   }
 
+  /**
+   * Called after a special card awards the player $10 from all other players
+   * 
+   * @param player
+   *          The player that receives the amount from other players.
+   */
   public void collect10FromAll(AbstractPlayer player) {
     for (AbstractPlayer p : players) {
       if (p != player && !p.bankrupt()) {
@@ -906,12 +938,19 @@ public class Monopoly implements Runnable {
 
   /**
    * Return the number of players in the game that are not bankrupt.
+   * 
    * @return The number of players in the game that are not bankrupt.
    */
   public int getNumActivePlayers() {
     return players.length - bankruptCount;
   }
 
+  /**
+   * Log information about the most recent dice roll.
+   * 
+   * @param roll
+   *          The values of each dice.
+   */
   public void logDiceRoll(int[] roll) {
     logger.info("Dice 1: " + roll[0]);
     logger.info("Dice 2: " + roll[1]);
@@ -921,6 +960,11 @@ public class Monopoly implements Runnable {
     }
   }
 
+  /**
+   * Get a reference to the Dice instance for this game.
+   * 
+   * @return The Dice instance for this game.
+   */
   public Dice getDice() {
     return dice;
   }

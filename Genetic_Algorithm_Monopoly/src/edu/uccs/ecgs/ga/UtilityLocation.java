@@ -31,16 +31,16 @@ public class UtilityLocation extends Location {
     assert !isMortgaged() : "Location is mortgaged in getRent";
 
     if (arrivedFromChance ) {
-      setRentMultiple(10);
+      setRentMultiplier(10);
     } else {
-      setRentMultiple(owner.getNumUtilities() == 1 ? 4 : 10);
+      setRentMultiplier(owner.getNumUtilities() == 1 ? 4 : 10);
     }
     
     int rent = 0;
 
     rent = diceRoll * multiple;
 
-    resetMultiple();
+    resetRentMultiplier();
     arrivedFromChance = false; // this value no longer matters, so reset to default  
 
     return rent;

@@ -56,7 +56,7 @@ public enum Chance {
       }
       advancePlayer(player, locationIndex);
       if (player.location.owner != null && player.location.owner != player) {
-        player.location.setRentMultiple(2);
+        player.location.setRentMultiplier(2);
       }
       break;
 

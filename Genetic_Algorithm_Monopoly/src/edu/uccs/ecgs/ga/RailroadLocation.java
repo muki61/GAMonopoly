@@ -15,7 +15,7 @@ public class RailroadLocation extends Location {
     super(key2, properties);
 
     cost = getInteger(key + ".cost", properties);
-    rent = getInteger(key + ".rent.one_railroad", properties);
+    rent = getInteger(key + ".rent", properties);
 
     _string = "Name              : " + name + "\n  index           : " + index
         + "\n  group           : " + group + "\n  type            : " + type
@@ -34,11 +34,12 @@ public class RailroadLocation extends Location {
     assert !isMortgaged() : "Location is mortgaged in getRent";
     int result = 0;
     double multiplier = Math.pow(2.0, owner.getNumRailroads() - 1);
-    this.setRentMultiple((int) multiplier);
+    this.setRentMultiplier((int) multiplier);
 
     result = rent * multiple;
+    assert result == 25 || result == 50 || result == 100 || result == 200 : "Invalid rent " + result + " for railroad";
 
-    resetMultiple();
+    resetRentMultiplier();
     return result;
   }
   

@@ -1134,15 +1134,19 @@ public abstract class AbstractPlayer
   public String toString() {
     String separator = System.getProperty("line.separator");
     StringBuilder result = new StringBuilder(1024);
-    result.append("Player ").append(playerIndex).append(separator)
+    result.append(separator)
+        .append("Player ").append(playerIndex).append(separator)
         .append("  Total cash  : ").append(cash).append(separator)
         .append("  Net worth   : ").append(getTotalWorth()).append(separator)
         .append("  Fitness     : ").append(fitnessScore).append(separator)
         .append("  Has Monopoly: ").append(hasMonopoly()).append(separator)
-        .append("  Properties owned: ").append(separator);
+        .append("  Is Bankrupt : ").append(isBankrupt).append(separator);
 
-    for (Location location : owned.values()) {
-      result.append("    ").append(location.toString()).append(separator);
+    if (!owned.isEmpty()) {
+      result.append("  Properties owned: ").append(separator);
+      for (Location location : owned.values()) {
+        result.append("    ").append(location.toString()).append(separator);
+      }
     }
 
     System.out.println("Player toString: " + result.length());

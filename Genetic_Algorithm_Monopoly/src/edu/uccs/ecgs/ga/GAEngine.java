@@ -121,10 +121,11 @@ public class GAEngine implements Runnable {
       generation = Main.lastGeneration + 1;
     }
 
+    runnableGames = new LinkedBlockingQueue<Runnable>();
+
     while (generation < Main.numGenerations) {
       matches = 0;
       while (matches < Main.numMatches) {
-        runnableGames = new LinkedBlockingQueue<Runnable>();
         gameExecutor = new ThreadPoolExecutor(Main.numThreads, Main.numThreads*2, 1L, TimeUnit.MINUTES, runnableGames);
 
         gameNumber = 0;
