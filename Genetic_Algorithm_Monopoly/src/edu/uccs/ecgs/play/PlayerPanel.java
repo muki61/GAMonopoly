@@ -175,7 +175,6 @@ public class PlayerPanel extends JPanel implements ListSelectionListener {
   // }
 
   public void disableLoadButton() {
-//    System.out.println("disabling");
     loadButton.setEnabled(false);
   }
   public void enableMortgageButton() {

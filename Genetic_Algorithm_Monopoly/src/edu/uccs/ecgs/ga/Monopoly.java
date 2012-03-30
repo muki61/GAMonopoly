@@ -675,7 +675,7 @@ public class Monopoly implements Runnable {
     } catch (BankruptcyException ignored) {
       // expect that any player that buys a house first verifies they
       // have enough cash
-      // TODO
+      // TODO Verify that this exception will not occur
       Throwable t = new Throwable(toString(), ignored);
       t.printStackTrace();
     }
@@ -786,7 +786,7 @@ public class Monopoly implements Runnable {
         processAuction(highBidPlayer, location, finalBid);
       } catch (BankruptcyException e) {
         // assume player cannot win auction unless they have enough cash
-        // TODO
+        // TODO Verify that this exception will not occur
         Throwable t = new Throwable(toString(), e);
         t.printStackTrace();
       }
