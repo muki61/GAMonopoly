@@ -6,7 +6,7 @@ public enum PropertyTypes {
   STREET {
     @Override
     public Location getProperty(String key, Properties properties) {
-      return new PropertyLocation(key, properties);
+      return new StreetLocation(key, properties);
     }
   },
 

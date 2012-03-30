@@ -709,14 +709,16 @@ public class Monopoly implements Runnable {
     player.sellAllHousesAndHotels();
 
     if (gainingPlayer == null) {
+      // player went bankrupt because they owed bank money
       player.getAllCash();
 
-      if (!gameOver) {
-        for (Location lot : player.getAllProperties().values()) {
-          lot.setMortgaged(false);
-        }
-
-        auctionLots(player.getAllProperties());
+      if (gameOver) {
+        player.clearAllProperties();
+      } else {
+        TreeMap<Integer, Location> lotsToAuction = new TreeMap<Integer, Location>();
+        lotsToAuction.putAll(player.getAllProperties());
+        player.clearAllProperties();
+        auctionLots(lotsToAuction);
       }
     } else {
       // give all cash to gaining player
@@ -733,12 +735,11 @@ public class Monopoly implements Runnable {
     assert player.cash == 0;
   }
 
-  public void auctionLots(TreeMap<Integer, Location> lotsToAuction) {
-    // logger.setLevel(Level.INFO);
-
-    // set owner to null for all lots
+  public void auctionLots(TreeMap<Integer, Location> lotsToAuction) {    
+    // set owner to null and mortgaged to false for all lots
     for (Location location : lotsToAuction.values()) {
       location.owner = null;
+      location.setMortgaged(false);
     }
 
     String msg = "";

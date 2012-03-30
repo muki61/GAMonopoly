@@ -40,7 +40,7 @@ public enum Chance {
       game.logger.info("Advancing player to " + location.name);
       advancePlayer(player, locationIndex);
       game.logger.info("Rolling dice to determine rent...");
-      location.setRentMultiple(10); // rent is 10x dice roll when coming from chance
+      location.arrivedFromChance = true; // rent is 10x dice roll when coming from chance
       game.logDiceRoll(game.getDice().roll());
 
       break;

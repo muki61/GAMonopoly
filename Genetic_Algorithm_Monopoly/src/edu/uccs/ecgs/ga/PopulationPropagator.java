@@ -125,7 +125,6 @@ public class PopulationPropagator {
     for (AbstractPlayer player : newPopulation) {
       player.setIndex(index);
       player.resetAll();
-      player.clearAllProperties();
       player.fitnessScore = 0;
       ++index;
     }

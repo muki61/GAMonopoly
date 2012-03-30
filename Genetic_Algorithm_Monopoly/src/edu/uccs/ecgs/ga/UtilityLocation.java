@@ -2,6 +2,10 @@ package edu.uccs.ecgs.ga;
 
 import java.util.Properties;
 
+/**
+ * Represents one of the utilities in the game, either Electric Company or Water
+ * Works.
+ */
 public class UtilityLocation extends Location {
 
   private int cost;
@@ -26,13 +30,19 @@ public class UtilityLocation extends Location {
   public int getRent(int diceRoll) {
     assert !isMortgaged() : "Location is mortgaged in getRent";
 
-    setRentMultiple(owner.getNumUtilities() == 1 ? 4 : 10);
+    if (arrivedFromChance ) {
+      setRentMultiple(10);
+    } else {
+      setRentMultiple(owner.getNumUtilities() == 1 ? 4 : 10);
+    }
     
     int rent = 0;
 
     rent = diceRoll * multiple;
 
     resetMultiple();
+    arrivedFromChance = false; // this value no longer matters, so reset to default  
+
     return rent;
   }
 

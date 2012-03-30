@@ -44,9 +44,23 @@ public class GAEngine implements Runnable {
   private Vector<AbstractPlayer> playersDone = new Vector<AbstractPlayer>(
       Main.maxPlayers);
 
-  Random r;
+  private Random r;
+
+  /**
+   * A queue that contains games to be played. This queue is used by the gameExecutor.
+   */
   private LinkedBlockingQueue<Runnable> runnableGames;
+
+  /**
+   * A list of games. The games in this list are the same as the games in runnableGames.
+   * This list enables the GAEngine to call some cleanup methods on the games after all
+   * the games are complete. 
+   */
   private ArrayList<Monopoly> games;
+
+  /**
+   * A Thread pool for executing the games in runnableGames.
+   */
   private ThreadPoolExecutor gameExecutor;
 
   public GAEngine() {
@@ -55,11 +69,15 @@ public class GAEngine implements Runnable {
     if (Main.useRandomSeed) {
       seed = System.currentTimeMillis();
     }
-//    System.out.println("Monopoly seed      : " + seed);
     r.setSeed(seed);
     createPlayers();    
   }
 
+  /**
+   * Create a pool of players. If Main.loadFromDisk is true, this method loads
+   * players from stored data files. Otherwise this methods creates a pool
+   * of randomly generated players.
+   */
   private void createPlayers() {
     if (Main.loadFromDisk) {
       playerPool.addAll(PopulationPropagator.loadPlayers(Main.lastGeneration));
@@ -77,6 +95,10 @@ public class GAEngine implements Runnable {
     }
   }
 
+  /**
+   * Pick four players at random from the pool of available players.
+   * @return A list of four randomly selected players.
+   */
   private AbstractPlayer[] getFourPlayers() {
     AbstractPlayer[] players = new AbstractPlayer[] { null, null, null, null };
     for (int i = 0; i < players.length; i++) {
@@ -151,8 +173,6 @@ public class GAEngine implements Runnable {
 
   private void resetPlayers() {
     for (AbstractPlayer p : playerPool) {
-      p.clearAllProperties();
-      p.initCash(1500);
       p.resetAll();
     }
   }

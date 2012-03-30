@@ -2,6 +2,9 @@ package edu.uccs.ecgs.ga;
 
 import java.util.Properties;
 
+/**
+ * Represents a railroad in the game of monopoly.
+ */
 public class RailroadLocation extends Location {
 
   final private PropertyGroups group = PropertyGroups.RAILROADS;
@@ -16,9 +19,9 @@ public class RailroadLocation extends Location {
 
     _string = "Name              : " + name + "\n  index           : " + index
         + "\n  group           : " + group + "\n  type            : " + type
-        + "\n  cost            : " + cost + "\n  rent 1 railroads: " + rent
-        + "\n  rent 2 railroads: " + (2 * rent) + "\n  rent 3 railroads: "
-        + (4 * rent) + "\n  rent 4 railroads: " + (8 * rent);
+        + "\n  cost            : " + cost + "\n  rent with 1 railroad: " + rent
+        + "\n  rent with 2 railroads: " + (2 * rent) + "\n  rent with 3 railroads: "
+        + (4 * rent) + "\n  rent with 4 railroads: " + (8 * rent);
   }
 
   @Override
@@ -54,8 +57,8 @@ public class RailroadLocation extends Location {
     isMortgaged = b;
   }
 
+  @Override
   public String toString() {
     return super.toString() + (isMortgaged() ? " (mortgaged)" : "");
-
   }
 }

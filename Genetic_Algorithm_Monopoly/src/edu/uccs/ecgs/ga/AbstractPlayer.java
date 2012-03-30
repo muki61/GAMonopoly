@@ -92,6 +92,10 @@ public abstract class AbstractPlayer
     assert game != null : "Found null game reference";
   }
   
+  /**
+   * Reset the player to the default state, ready to play a game. This resets cash to 1500,
+   * removes all properties, resets location, resets bankruptcy state, etc.
+   */
   public void resetAll() {
     cash = 1500;
     rolledDoubles = false;
@@ -112,8 +116,13 @@ public abstract class AbstractPlayer
 
     isBankrupt = false;
     bankruptIndex = 0;
+
+    clearAllProperties();
   }
 
+  /**
+   * Set player's state to inactive.
+   */
   public void setInactive() {
     setNewState(GameState.INACTIVE);
   }
@@ -123,10 +132,21 @@ public abstract class AbstractPlayer
     return nextAction;
   }
 
+  /**
+   * Set player's state to gameState.
+   * @param gameState State in which player is.
+   */
   public void setNewState(GameState gameState) {
     currentState = gameState;
   }
 
+  /**
+   * Set the player's rolledDoubles flag to the input parameter. If the player
+   * is in jail and the parameter is false (player did not roll doubles), this
+   * method reduces the jail term counter.
+   * 
+   * @param rolledDoubles True if the player rolled doubles, false otherwise.
+   */
   public void setDoubles(boolean rolledDoubles) {
     this.rolledDoubles = rolledDoubles;
     if (inJail && !rolledDoubles) {
@@ -137,6 +157,11 @@ public abstract class AbstractPlayer
     }
   }
 
+  /**
+   * Advance the player's location by numSpaces.
+   * @param numSpaces The number of spaces to advance.
+   * @return The player's location index after advancing.
+   */
   public int advance(int numSpaces) {
     passedGo = false;
     locationIndex += numSpaces;
@@ -153,10 +178,17 @@ public abstract class AbstractPlayer
     return locationIndex;
   }
 
+  /**
+   * @return The player's current location index.
+   */
   public int getLocationIndex() {
     return locationIndex;
   }
 
+  /**
+   * Set the player's current location to the location parameter.
+   * @param location The location where the player is currently located.
+   */
   public void setCurrentLocation(Location location) {
     this.location = location;
 
@@ -176,22 +208,33 @@ public abstract class AbstractPlayer
     }
   }
 
+  /**
+   * @return True if the player passed Go or landed on Go during the most recent
+   *         movement, false otherwise.
+   */
   public boolean passedGo() {
     return passedGo;
   }
 
+  /**
+   * Add cash to the player's current amount of cash. 
+   * @param amount The amount of cash to add the player's current amount of cash.
+   */
   public void receiveCash(int amount) {
-    try {
-      cash += amount;
-      logInfo("Player " + playerIndex + " received " + amount
-          + " dollars.");
-      logInfo("Player " + playerIndex + " has " + cash + " dollars.");
-    } catch (RuntimeException e) {
-      Throwable t = new Throwable(game.toString(), e);
-      t.printStackTrace();
-    }
+    cash += amount;
+    logInfo("Player " + playerIndex + " received " + amount + " dollars.");
+    logInfo("Player " + playerIndex + " has " + cash + " dollars.");
   }
 
+  /**
+   * Take some cash from the player.
+   * 
+   * @param amount
+   *          The amount of cash to take from the player
+   * @throws BankruptcyException
+   *           If player does not have the amount and cannot sell houses or
+   *           hotels and cannot mortgage any properties to raise the amount.
+   */
   public void getCash(int amount) throws BankruptcyException {
     raiseCash(amount);
     cash = cash - amount;
@@ -199,6 +242,9 @@ public abstract class AbstractPlayer
     logInfo("Player " + playerIndex + " has " + cash + " dollars.");
   }
 
+  /**
+   * @return The number of railroads that the player owns.
+   */
   public int getNumRailroads() {
     int count = 0;
     for (Location property : owned.values()) {
@@ -209,6 +255,9 @@ public abstract class AbstractPlayer
     return count;
   }
 
+  /**
+   * @return The number of Utilities that the player owns.
+   */
   public int getNumUtilities() {
     int count = 0;
     for (Location property : owned.values()) {
@@ -219,6 +268,13 @@ public abstract class AbstractPlayer
     return count;
   }
 
+  /**
+   * Add a property to the player's inventory, normally by buying a property or
+   * receiving a property through another player's bankruptcy.
+   * 
+   * @param location2
+   *          The property to be added.
+   */
   public void addProperty(Location location2) {
     owned.put(location2.index, location2);
   }
@@ -227,10 +283,16 @@ public abstract class AbstractPlayer
     locationIndex = index;
   }
 
+  /** 
+   * @return True if the player is in jail, false otherwise.
+   */
   public boolean inJail() {
     return inJail;
   }
 
+  /**
+   * @return A reference to the Location where the player current is.
+   */
   public Location getCurrentLocation() {
     return location;
   }
@@ -239,10 +301,18 @@ public abstract class AbstractPlayer
     return rolledDoubles;
   }
 
+  /**
+   * @return True if the player has either Get Out Of Jail Free card.
+   */
   public boolean hasGetOutOfJailCard() {
     return chanceGOOJ != null || ccGOOJ != null;
   }
 
+  /**
+   * Use the player's Get Out Of Jail Free card by returning it to the Card
+   * collection; modifying other state related to being in jail is not performed
+   * by this method.
+   */
   public void useGetOutOfJailCard() {
     if (chanceGOOJ != null) {
       game.getCards().returnChanceGetOutOfJail();
@@ -254,7 +324,11 @@ public abstract class AbstractPlayer
       throw new IllegalArgumentException("Illegal attempt to use Get Out Of Jail Card");
     }
   }
-  
+
+  /**
+   * @return The total worth of the player including cash, value of all houses
+   *         and hotels, and value of all property owned by the player.
+   */
   public int getTotalWorth() {
     int totalWorth = cash;
 
@@ -285,19 +359,25 @@ public abstract class AbstractPlayer
     return isBankrupt ;
   }
 
+  /**
+   * Add the Get Out Of Jail Free Card to the player's inventory.
+   * @param chanceJailCard The card to add.
+   */
   public void setGetOutOfJail(Chance chanceJailCard) {
     chanceGOOJ = chanceJailCard;
   }
-  
+
+  /**
+   * Add the Get Out Of Jail Free Card to the player's inventory.
+   * @param ccJailCard The card to add.
+   */
   public void setGetOutOfJail(CommunityChest ccJailCard) {
     ccGOOJ = ccJailCard;
   }
 
   /**
-   * Return the number of houses that have been bought for all properties that
-   * are owned by this player
-   * 
-   * @return The number of houses owned by this player
+   * @return The number of houses that have been bought for all properties that
+   *         are owned by this player
    */
   public int getNumHouses() {
     int result = 0;
@@ -310,10 +390,8 @@ public abstract class AbstractPlayer
   }
 
   /**
-   * Return the number of hotels that have been bought for all properties that
-   * are owned by this player
-   * 
-   * @return The number of hotels owned by this player.
+   * @return The number of hotels that have been bought for all properties that
+   *         are owned by this player.
    */
   public int getNumHotels() {
     int result = 0;
@@ -338,7 +416,7 @@ public abstract class AbstractPlayer
    * @param amount
    *          The amount the player needs to have in cash
    * @return True if the player has or can sell stuff to raise cash greater than
-   *         amount.
+   *         amount, false otherwise.
    */
   public boolean canRaiseCash (int amount) {
     int totalWorth = cash;
@@ -366,29 +444,27 @@ public abstract class AbstractPlayer
   }
 
   /**
-   * Ask if the player wishes to pay bail to get out of jail. This method must
-   * be implemented by subclasses.
+   * Ask if the player wishes to pay bail.
    * 
-   * @return True --> player wishes to pay bail<br>
-   *         False --> player wishes to attempt to roll doubles
+   * @return True --> player wishes to pay bail to leave jail.<br>
+   *         False --> player wishes to attempt to roll doubles to leave jail.
    */
   public abstract boolean payBailP();
 
   /**
-   * Ask if the player wants to buy the location where they current are. This
-   * method must be implemented by subclasses
+   * Ask if the player wants to buy their current location.
    * 
-   * @return True --> If the player wants to buy their current location
-   *         False --> If the player does not want to buy the property at
-   *                   their current location.
+   * @return True --> If the player wants to buy the property at their current
+   *         location<br>
+   *         False --> If the player does not want to buy the property at their
+   *         current location.
    */
   public abstract boolean buyProperty();
 
   /**
-   * Ask if the player wants to buy the location. This method must be
-   * implemented by subclasses
+   * Ask if the player wants to buy the given location.
    * 
-   * @return True --> If the player wants to buy the given location 
+   * @return True --> If the player wants to buy the given location <br>
    *         False --> If the player does not want to buy the given location.
    */
   public abstract boolean buyProperty(Location location);
@@ -443,15 +519,6 @@ public abstract class AbstractPlayer
     }
 
     assert bid >= 0 : "Invalid bid amount: " + bid;
-    //ensure some minimum bid (cost/4, cost/5 or cost/6)
-    // if (bid <= 0) {
-    // int factor = r.nextInt(3) + 4; //factor is 4,5,6
-    // bid = currentLocation.getCost()/factor;
-    //      
-    // if (bid > cash) {
-    // bid = cash;
-    // }
-    // }
 
     return bid;
   }
@@ -527,7 +594,7 @@ public abstract class AbstractPlayer
       logInfo("Player " + playerIndex + " attempting to raise " + amount
           + " dollars");
       for (Location l : owned.values()) {
-        //mortgage single properties first
+        //mortgage single street properties first
         if (!l.partOfMonopoly
             && !l.isMortgaged()
             && l.getGroup() != PropertyGroups.UTILITIES
@@ -558,31 +625,17 @@ public abstract class AbstractPlayer
         }
       }
 
-      // then mortgage railroads
-      // sell in order 1,4,2,3 or location index 5,35,15,25
-      int[] index = new int[] { 5, 35, 15, 25 };
-      for (int i = 0; i < index.length; i++) {
-        if (owned.containsKey(index[i])) {
-          Location l = owned.get(index[i]);
-          if (!l.isMortgaged) {
-            logInfo("Player will mortgage " + l.name);
-            l.setMortgaged();
-            receiveCash(l.getCost() / 2);
-          }
-        }
-        if (cash >= amount) {
-          return;
-        }
-      }
-
-      // then mortgage utility monopolies
-      for (Location l : owned.values()) {
-        if (l.getGroup() == PropertyGroups.UTILITIES && !l.isMortgaged()) 
-        {
+      // then mortgage railroads, and then utilities
+      // sell railroads in order 1,4,2,3 or location index 5,35,15,25
+      // sell utilities in order electric, water or location index 12, 28
+      int[] index = new int[] { 5, 35, 15, 25, 12, 28 };
+      for (int i : index) {
+        Location l = owned.get(i);
+        if (l != null && !l.isMortgaged) {
           logInfo("Player will mortgage " + l.name);
           l.setMortgaged();
           receiveCash(l.getCost() / 2);
-        }
+        }        
         if (cash >= amount) {
           return;
         }
@@ -599,29 +652,21 @@ public abstract class AbstractPlayer
       }
 
       // then sell houses
-      while (cash < amount) {
-        int maxHouses = 0;
-        Location locMaxHouses = null;
-
+      int maxHouses = 4;
+      while (maxHouses > 0) {
         for (Location l : owned.values()) {
-          // find property with greatest number of houses
-          if (l.getNumHouses() > maxHouses) {
-            maxHouses = l.getNumHouses();
-            locMaxHouses = l;
+          if (l.getNumHouses() == maxHouses) {
+            logInfo(l.name + " has " + l.getNumHouses() + " houses");
+            logInfo("Will sell house at " + l.name);
+            game.sellHouse(l);
           }
         }
-        
-        if (maxHouses > 0) {
-          logInfo(locMaxHouses.name + " has " + locMaxHouses.getNumHouses() + " houses");
-          logInfo("Will sell house at " + locMaxHouses.name);
-          game.sellHouse(locMaxHouses);
-        } else {
-          break;
-        }
-        
+
         if (cash >= amount) {
           return;
         }
+
+        --maxHouses;
       }
 
       //then mortgage any remaining unmortgaged lots

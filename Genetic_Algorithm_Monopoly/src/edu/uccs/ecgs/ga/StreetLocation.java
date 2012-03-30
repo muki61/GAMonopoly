@@ -2,20 +2,24 @@ package edu.uccs.ecgs.ga;
 
 import java.util.Properties;
 
-public class PropertyLocation extends Location {
+/**
+ * Represents one of the properties that can have houses or hotels in Monopoly,
+ * that is, a property of PropertyType STREET.
+ */
+public class StreetLocation extends Location {
 
   final private PropertyGroups group;
   final private int houseCost;
+  final private int hotelCost;
   final private int rentUnimproved;
   final private int rentOneHouse;
-  final private int hotelCost;
   final private int rentTwoHouses;
   final private int rentThreeHouses;
   final private int rentFourHouses;
   final private int rentHotel;
-  private int cost;
+  final private int cost;
 
-  public PropertyLocation(String key, Properties properties) {
+  public StreetLocation(String key, Properties properties) {
     super(key, properties);
 
     cost = getInteger(key + ".cost", properties);
@@ -46,8 +50,8 @@ public class PropertyLocation extends Location {
     } else if (grp.equals("dark_blue")) {
       group = PropertyGroups.DARK_BLUE;
     } else {
-      group = PropertyGroups.SPECIAL;
-      throw new IllegalArgumentException("Property value is "+grp);
+      group = null;
+      assert false : "Invalid Group [" + grp + "] for location " + name;
     }
 
     _string = "Name           : " + name + "\n  index        : " + index
@@ -81,32 +85,31 @@ public class PropertyLocation extends Location {
 
     assert !isMortgaged() : "Location is mortgaged in getRent";
 
+    // Unimproved properties that are part of a monopoly receive double rent.
     if (partOfMonopoly) {
-      int buildCount = getNumHouses() + (getNumHotels() * 5);
-      switch (buildCount) {
-      case 0:
-        setRentMultiple(2);
-        rent = rentUnimproved * multiple;
-        break;
-      case 1:
-        rent = rentOneHouse;
-        break;
-      case 2:
-        rent = rentTwoHouses;
-        break;
-      case 3:
-        rent = rentThreeHouses;
-        break;
-      case 4:
-        rent = rentFourHouses;
-        break;
-      case 5:
-        rent = rentHotel;
-        break;
-      }
-    } else {
-      // else not part of monopoly (and this means 0 houses or hotels)
+      setRentMultiple(2);
+    }
+    
+    int buildCount = getNumHouses() + (getNumHotels() * 5);
+    switch (buildCount) {
+    case 0:
       rent = rentUnimproved * multiple;
+      break;
+    case 1:
+      rent = rentOneHouse;
+      break;
+    case 2:
+      rent = rentTwoHouses;
+      break;
+    case 3:
+      rent = rentThreeHouses;
+      break;
+    case 4:
+      rent = rentFourHouses;
+      break;
+    case 5:
+      rent = rentHotel;
+      break;
     }
     
     resetMultiple();
@@ -128,6 +131,7 @@ public class PropertyLocation extends Location {
     isMortgaged = b;
   }
 
+  @Override
   public String toString() {
     return super.toString() + (isMortgaged() ? " (mortgaged)" : "") + " ("
         + getNumHouses() + " houses/" + getNumHotels() + " hotels)";

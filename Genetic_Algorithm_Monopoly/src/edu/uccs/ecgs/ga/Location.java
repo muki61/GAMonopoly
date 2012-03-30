@@ -9,18 +9,75 @@ import java.util.Properties;
  * 
  */
 public abstract class Location implements Comparable<Location> {
+  /**
+   * A short string that identifies the values for a given property in the
+   * locations.properties file.
+   */
   final String key;
+  
+  /**
+   * The name of this property.
+   */
   public final String name;
-  final String type;
-  public final int index;
-  protected String _string;
-  public AbstractPlayer owner = null;
-  public boolean partOfMonopoly = false;
+  
+  /**
+   * The type of this location: Property, Railroad, Utility, or Special.
+   */
+  protected final String type;
 
+  /**
+   * The position of this location on the game board. Locations are numbered
+   * sequentially starting at Go with an index of 0, and proceeding clockwise
+   * around the board to Boardwalk with an index of 39.
+   */
+  public final int index;
+
+  /**
+   * A string that gives information about the property. Access using
+   * {@link #getInfo()}.
+   */
+  protected String _string;
+
+  /**
+   * A reference to the player that owns this location. Only has meaning for
+   * locations of type Property, Railroad, or Utility.
+   */
+  public AbstractPlayer owner = null;
+
+  /**
+   * Whether this location is part of a monopoly. Only has meaning for locations
+   * of type Property.
+   */
+  public boolean partOfMonopoly = false;
+  
+  /**
+   * Whether the player who is on this space arrived by drawing a Chance card
+   * that directed the player to this location. Used only for utilities.
+   */
+  boolean arrivedFromChance = false;
+
+  /**
+   * Number of houses on this location. Only has meaning for locations of type
+   * Property.
+   */
   private int numHouses = 0;
+
+  /**
+   * Number of hotels on this location. Only has meaning for locations of type
+   * Property.
+   */
   private int numHotels = 0;
   
+
+  /**
+   * Whether this location is mortgaged. Only has meaning for locations of type
+   * Property, Railroad, or Utility.
+   */
   protected boolean isMortgaged = false;
+
+  /**
+   * Rent multiplier. See {@link #setRentMultiple(int)}
+   */
   protected int multiple = 1;
 
   public Location(String key2, Properties properties) {
@@ -31,6 +88,20 @@ public abstract class Location implements Comparable<Location> {
     type = properties.getProperty(key + ".type");
 }
 
+  /**
+   * Get an integer from the locations.properties file. This method does not
+   * check for key existence. It is the caller's responsibility to ensure that
+   * the key is valid and the property can be parsed as an integer.
+   * 
+   * @param aKey
+   *          A string that identifies the integer, such as "Go.index"
+   * @param properties
+   *          The properties object that contains key-value pairs to be
+   *          retrieved.
+   * @return An integer
+   * @throws java.lang.NumberFormatException
+   *           If the properties file does not contain the given key.
+   */
   protected int getInteger(String aKey, Properties properties) {
     return Integer.parseInt(properties.getProperty(aKey));
   }
@@ -39,6 +110,9 @@ public abstract class Location implements Comparable<Location> {
     return getGroup().toString() + "/" + name;
   }
   
+  /**
+   * @return Information about the location.
+   */
   public String getInfo() {
     return _string;
   }
@@ -116,9 +190,14 @@ public abstract class Location implements Comparable<Location> {
   }
   
   /**
-   * Set multiplier for rent. For example, unimproved properties in a monopoly receive
-   * double rent so multiplier would be 2 in this case. 
-   * @param multiple The amount to multiply the rent by.
+   * Set multiplier for rent. For example, unimproved properties in a monopoly
+   * receive double rent so multiplier would be 2 in this case. Railroads
+   * receive a multiple of the base rent depending on how many railroads are
+   * owned by a player. Utilities also have a rent multiplier based on how many
+   * utilities are owned by a player.
+   * 
+   * @param multiple
+   *          The amount to multiply the rent by.
    */
   protected void setRentMultiple(int multiple) {
     this.multiple  = multiple;
