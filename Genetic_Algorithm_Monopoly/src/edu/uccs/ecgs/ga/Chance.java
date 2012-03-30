@@ -37,10 +37,11 @@ public enum Chance {
         locationIndex = 28;
       }
       location = PropertyFactory.getPropertyFactory(game.gamekey).getLocationAt(locationIndex);
-      ((UtilityLocation) location).arrivedFromChance = true;
-      game.logger.info("Rolling dice...");
-      game.logDiceRoll(game.getDice().roll());
+      game.logger.info("Advancing player to " + location.name);
       advancePlayer(player, locationIndex);
+      game.logger.info("Rolling dice to determine rent...");
+      location.setRentMultiple(10); // rent is 10x dice roll when coming from chance
+      game.logDiceRoll(game.getDice().roll());
 
       break;
 
@@ -140,6 +141,7 @@ public enum Chance {
     movePlayer(player, spacesToAdvance);
   }
 
+  @Override
   public String toString() {
     switch (this) {
     case ADVANCE_TO_GO:

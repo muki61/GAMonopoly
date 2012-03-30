@@ -210,7 +210,7 @@ public class Monopoly implements Runnable {
 
     for (AbstractPlayer p : sortedPlayers.values()) {
       logger.info("");
-      p.printTotalWorth();
+      logger.info(p.toString());
     }    
   }
 
@@ -335,7 +335,7 @@ public class Monopoly implements Runnable {
    *          The property to be sold.
    */
   public void sellHouse(Location location) {
-    location.sellHouse();
+    location.removeHouse();
     location.owner.receiveCash(location.getHouseCost() / 2);
     ++numHouses;
     
@@ -391,7 +391,7 @@ public class Monopoly implements Runnable {
       // 4 houses
     default:
       // more than 4 houses
-      location.sellHotel();
+      location.removeHotel();
       logger.info("Sold hotel at " + location.toString() + "; property now has 4 houses");
       player.receiveCash(location.getHotelCost() / 2);
       ++numHotels;
@@ -589,7 +589,7 @@ public class Monopoly implements Runnable {
       if (loc.getGroup() == location.getGroup()) {
         ++count;
 
-        loc.sellHotel();
+        loc.removeHotel();
         logger.info("Sold hotel at " + loc.toString());
         ++numHotels;
         assert numHotels < 13 : "Invalid number hotels: " + numHotels;
@@ -610,7 +610,7 @@ public class Monopoly implements Runnable {
         }
 
         for (; sellCount > 0; sellCount--) {
-          loc.sellHouse();
+          loc.removeHouse();
           // in this method, don't increment the number of houses
           // because the houses at the location are virtual houses
           player.receiveCash(loc.getHouseCost() / 2);

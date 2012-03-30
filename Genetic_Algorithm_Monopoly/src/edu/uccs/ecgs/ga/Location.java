@@ -36,67 +36,131 @@ public abstract class Location implements Comparable<Location> {
   }
 
   public String toString() {
-    return name;
+    return getGroup().toString() + "/" + name;
+  }
+  
+  public String getInfo() {
+    return _string;
   }
 
+  /**
+   * @return A reference to the player that owns the property
+   */
   public AbstractPlayer getOwner() {
     return owner;
   }
 
+  /**
+   * @return The cost of purchasing the property
+   */
   public abstract int getCost();
 
+  /**
+   * @return The cost to buy a house for this property. For Utilities,
+   *         Railroads, and special locations, this method returns 0.
+   */
   public int getHouseCost() {
     return 0;
   }
   
+  /**
+   * @return The cost to buy a hotel for this property. For Utilities,
+   *         Railroads, and special locations, this method returns 0.
+   */
   public int getHotelCost() {
     return 0;
   }
   
+  /**
+   * Set the owner for the property to the given player.
+   * @param player The player that owns the property.
+   */
   public void setOwner(AbstractPlayer player) {
     owner = player;
   }
 
+  /**
+   * @return The number of houses on the property. For Utilities, Railroads, and
+   *         special locations, this method returns 0.
+   */
   public int getNumHouses() {
     return numHouses;
   }
   
+  /**
+   * @return The number of hotels on the property. For Utilities, Railroads, and
+   *         special locations, this method returns 0.
+   */
   public int getNumHotels() {
     return numHotels;
   }
 
+  /**
+   * @param diceRoll
+   *          The total value of the dice roll of the player who landed on this
+   *          property.
+   * @return The rent owed.
+   */
   public abstract int getRent(int diceRoll);
-  
+
+  /**
+   * @return The PropertyGroup value that the property belongs to.
+   */
   public abstract PropertyGroups getGroup();
 
+  /**
+   * @return True if the property is mortgaged, false otherwise.
+   */
   public boolean isMortgaged() {
     return isMortgaged;
   }
   
-  public void setRentMultiple(int multiple) {
+  /**
+   * Set multiplier for rent. For example, unimproved properties in a monopoly receive
+   * double rent so multiplier would be 2 in this case. 
+   * @param multiple The amount to multiply the rent by.
+   */
+  protected void setRentMultiple(int multiple) {
     this.multiple  = multiple;
   }
 
+  /**
+   * Reset rent multiplier to 1.
+   */
   protected void resetMultiple() {
     multiple = 1;
   }
 
-  public void sellHouse() {
+  /**
+   * Remove a house from the property.
+   */
+  public void removeHouse() {
     assert numHouses > 0 : "Illegal house count: " + numHouses;
     --numHouses;
   }
 
+  /**
+   * Add a house to this property.
+   */
   public void addHouse() {
     ++numHouses;
     assert numHouses < 5 : "Illegal house count: " + numHouses;
   }
   
-  public void sellHotel() {
+  /**
+   * Remove a hotel from this property (also sets number of houses on this property to 4).
+   */
+  public void removeHotel() {
     --numHotels;
     assert numHotels == 0 : "Illegal hotel count: " + numHotels;
     numHouses = 4;
   }
 
+  /**
+   * Add a hotel to this property by removing 4 houses from property and adding
+   * hotel. Property must have 4 houses prior to calling this method; caller is
+   * responsible for returning the 4 houses to the game inventory.
+   */
   public void addHotel() {
     assert numHouses == 4 : "Not enough houses to buy hotel: " + numHouses;
     ++numHotels;
@@ -104,18 +168,27 @@ public abstract class Location implements Comparable<Location> {
     numHouses = 0;
   }
 
+  /**
+   * Set the property to be mortgaged or not, based on the input parameter.
+   * @param b True if property is mortgaged, false otherwise.
+   */
   public abstract void setMortgaged(boolean b);
 
+  /**
+   * Set the property to be mortgaged.
+   */
   public abstract void setMortgaged();
 
+  /**
+   * Set number of houses on property to 0.
+   */
   public void resetNumHouses() {
     numHouses = 0;
   }
 
-  public void assignHouse() {
-    ++numHouses;
-  }
-
+  /**
+   * Set number of hotels on property to 0.
+   */
   public void resetNumHotels() {
     numHotels = 0;
   }

@@ -5,27 +5,20 @@ import java.util.Properties;
 public class RailroadLocation extends Location {
 
   final private PropertyGroups group = PropertyGroups.RAILROADS;
-  final private int rentOneLine;
-  final private int rentTwoLines;
-  final private int rentThreeLines;
-  final private int rentFourLines;
+  final private int rent;
   private int cost;
 
   public RailroadLocation(String key2, Properties properties) {
     super(key2, properties);
 
     cost = getInteger(key + ".cost", properties);
-    rentOneLine = getInteger(key + ".rent.one_railroad", properties);
-    rentTwoLines = getInteger(key + ".rent.two_railroads", properties);
-    rentThreeLines = getInteger(key + ".rent.three_railroads", properties);
-    rentFourLines = getInteger(key + ".rent.four_railroads", properties);
+    rent = getInteger(key + ".rent.one_railroad", properties);
 
     _string = "Name              : " + name + "\n  index           : " + index
-        + "\n  group           : " + group
-        + "\n  type            : " + type + "\n  cost            : "
-        + cost + "\n  rent 1 railroads: " + rentOneLine + "\n  rent 2 railroads: " 
-        + rentTwoLines + "\n  rent 3 railroads: "
-        + rentThreeLines + "\n  rent 4 railroads: " + rentFourLines;
+        + "\n  group           : " + group + "\n  type            : " + type
+        + "\n  cost            : " + cost + "\n  rent 1 railroads: " + rent
+        + "\n  rent 2 railroads: " + (2 * rent) + "\n  rent 3 railroads: "
+        + (4 * rent) + "\n  rent 4 railroads: " + (8 * rent);
   }
 
   @Override
@@ -35,34 +28,15 @@ public class RailroadLocation extends Location {
 
   @Override
   public int getRent(int diceRoll) {
-    int rent = 0;
+    assert !isMortgaged() : "Location is mortgaged in getRent";
+    int result = 0;
+    double multiplier = Math.pow(2.0, owner.getNumRailroads() - 1);
+    this.setRentMultiple((int) multiplier);
 
-    if (isMortgaged) {
-      multiple = 0;
-    }
+    result = rent * multiple;
 
-    switch (owner.getNumRailroads()) {
-    case 1: 
-      rent = rentOneLine * multiple;
-      break;
-    case 2: 
-      rent = rentTwoLines * multiple;
-      break;
-    case 3: 
-      rent = rentThreeLines * multiple;
-      break;
-    case 4: 
-      rent = rentFourLines * multiple;
-      break;
-    }
-
-    if (isMortgaged) {
-//      game.logger.info("Lot is mortgaged, rent: 0");
-    } else {
-//      game.logger.info("Rent for " + name + ": " + rent);
-    }
     resetMultiple();
-    return rent;
+    return result;
   }
   
   @Override
@@ -78,5 +52,10 @@ public class RailroadLocation extends Location {
   @Override
   public void setMortgaged(boolean b) {
     isMortgaged = b;
+  }
+
+  public String toString() {
+    return super.toString() + (isMortgaged() ? " (mortgaged)" : "");
+
   }
 }

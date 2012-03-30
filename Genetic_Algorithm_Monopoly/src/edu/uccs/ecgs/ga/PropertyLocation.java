@@ -79,31 +79,29 @@ public class PropertyLocation extends Location {
   public int getRent(int diceRoll) {
     int rent = 0;
 
-    if (isMortgaged) {
-      multiple = 0;
-    }
+    assert !isMortgaged() : "Location is mortgaged in getRent";
 
     if (partOfMonopoly) {
       int buildCount = getNumHouses() + (getNumHotels() * 5);
       switch (buildCount) {
       case 0:
-        multiple = multiple * 2;
+        setRentMultiple(2);
         rent = rentUnimproved * multiple;
         break;
       case 1:
-        rent = rentOneHouse * multiple;
+        rent = rentOneHouse;
         break;
       case 2:
-        rent = rentTwoHouses * multiple;
+        rent = rentTwoHouses;
         break;
       case 3:
-        rent = rentThreeHouses * multiple;
+        rent = rentThreeHouses;
         break;
       case 4:
-        rent = rentFourHouses * multiple;
+        rent = rentFourHouses;
         break;
       case 5:
-        rent = rentHotel * multiple;
+        rent = rentHotel;
         break;
       }
     } else {
@@ -128,5 +126,11 @@ public class PropertyLocation extends Location {
   @Override
   public void setMortgaged(boolean b) {
     isMortgaged = b;
+  }
+
+  public String toString() {
+    return super.toString() + (isMortgaged() ? " (mortgaged)" : "") + " ("
+        + getNumHouses() + " houses/" + getNumHotels() + " hotels)";
+
   }
 }

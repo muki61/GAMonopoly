@@ -402,29 +402,6 @@ public abstract class AbstractPlayer
   public abstract void dumpGenome(DataOutputStream out) throws IOException;
 
   /**
-   * Output the player's total worth to the debug log.
-   */
-  public void printTotalWorth() {
-    logInfo("Player " + playerIndex);
-    logInfo("Total cash: " + cash);
-    logInfo("Net worth : " + getTotalWorth());
-    logInfo("Fitness   : " + fitnessScore);
-
-    if (!isBankrupt) {
-      logInfo("Has monopoly: " + hasMonopoly());
-      logInfo("Properties owned: ");
-
-      for (Location location : owned.values()) {
-        if (location.getNumHouses() > 0) {
-          logInfo(location.name + " (" + location.getNumHouses() + " houses)");
-        } else {
-          logInfo(location.name);
-        }
-      }
-    }
-  }
-
-  /**
    * Determine the amount that this player wants to bid in an auction for the
    * given location. A player can bid on a property in an auction even if the
    * player just decided not to buy it directly after landing on the property.
@@ -796,7 +773,7 @@ public abstract class AbstractPlayer
 
   /**
    * Actually does the work of paying off the mortgages in the list created by
-   * {@link payOffMortgages()} or {@link processMortgagedNewProperties()).
+   * {@link #payOffMortgages()} or {@link #processMortgagedNewProperties(TreeMap)}.
    * 
    * @param mortgaged
    *          A list of mortgaged properties owned by the player.
@@ -864,7 +841,7 @@ public abstract class AbstractPlayer
    * Compute the minimum amount of cash the player should have on hand based on
    * current game conditions.
    * 
-   * @return
+   * @return The minimum amount of cash the player should have to avoid problems
    */
   private int getMinimumCash() {
     //Frayn: Keep a minimum of 200 pounds (dollars) in cash,
@@ -1034,7 +1011,7 @@ public abstract class AbstractPlayer
 
     while (houseCount >= lots.size()) {
       for (Location location : lots) {
-        location.assignHouse();
+        location.addHouse();
         --houseCount;
       }
     }
@@ -1048,7 +1025,7 @@ public abstract class AbstractPlayer
         assert lots.size() == 3 : "Bad lot size: " + lots.elementAt(0).toString() + "/" + lots.elementAt(1).toString();
         try {
         // extra houses on third and first property
-        lots.elementAt(2).assignHouse();
+        lots.elementAt(2).addHouse();
         } catch (ArrayIndexOutOfBoundsException e) {
           for (Location location : lots) {
             System.out.println(location.toString());
@@ -1057,7 +1034,7 @@ public abstract class AbstractPlayer
         --houseCount;
 
         if (houseCount == 1) {
-          lots.elementAt(0).assignHouse();
+          lots.elementAt(0).addHouse();
           --houseCount;
         }
         break;
@@ -1066,11 +1043,11 @@ public abstract class AbstractPlayer
       case ORANGE:
         assert lots.size() == 3 : "Bad lot size: " + lots.elementAt(0).toString() + "/" + lots.elementAt(1).toString();
         // extra houses on third and second property
-        lots.elementAt(2).assignHouse();
+        lots.elementAt(2).addHouse();
         --houseCount;
 
         if (houseCount == 1) {
-          lots.elementAt(1).assignHouse();
+          lots.elementAt(1).addHouse();
           --houseCount;
         }
         break;
@@ -1078,7 +1055,7 @@ public abstract class AbstractPlayer
       case BROWN:
       case DARK_BLUE:
         assert lots.size() == 2 : "Bad lot size: " + lots.elementAt(0).toString();
-        lots.elementAt(1).assignHouse();
+        lots.elementAt(1).addHouse();
         --houseCount;
         break;
       }
@@ -1110,21 +1087,21 @@ public abstract class AbstractPlayer
   public abstract AbstractPlayer[] createChildren(AbstractPlayer parent2, int index);
   
   public String toString() {
-    String result = "Player " + playerIndex +
-                    "\n  cash: " + cash +
-                    "\n  Lots owned: ";
+    String separator = System.getProperty("line.separator");
+    StringBuilder result = new StringBuilder(1024);
+    result.append("Player ").append(playerIndex).append(separator)
+        .append("  Total cash  : ").append(cash).append(separator)
+        .append("  Net worth   : ").append(getTotalWorth()).append(separator)
+        .append("  Fitness     : ").append(fitnessScore).append(separator)
+        .append("  Has Monopoly: ").append(hasMonopoly()).append(separator)
+        .append("  Properties owned: ").append(separator);
 
-    for (Location lot : owned.values()) {
-      result += "\n    " + lot.name;
-      if (lot.isMortgaged()) {
-        result += " (mortgaged)";
-      }
-      if (lot.getNumHouses() > 0) {
-        result += " (" + lot.getNumHouses() + ")";
-      }
+    for (Location location : owned.values()) {
+      result.append("    ").append(location.toString()).append(separator);
     }
 
-    return result;
+    System.out.println("Player toString: " + result.length());
+    return result.toString();
   }
 
   public abstract AbstractPlayer copyAndMutate();

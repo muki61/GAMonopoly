@@ -25,7 +25,9 @@ public class PayRentState extends PlayerState {
       if (location.owner != player) {
         if (location.isMortgaged()) {
             game.logger.info("Lot is mortgaged, rent: 0");
+            location.getRent(0);
         } else {
+          // TODO set multiplier??
           int amount = location.getRent(game.getDice().getLastRoll());
           assert amount >= 0 : "Invalid rent: " + location.name + "; rent: "
               + amount;
