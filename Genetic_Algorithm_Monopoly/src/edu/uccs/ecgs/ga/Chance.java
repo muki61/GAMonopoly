@@ -162,11 +162,11 @@ public enum Chance {
           + "Railroad is unowned, you may buy it from the Bank.";
 
     case ADVANCE_TO_ST_CHARLES:
-      return "Advance to St. Charles Place � if you pass Go, "
+      return "Advance to St. Charles Place - if you pass Go, "
           + "collect $200.";
 
     case ADVANCE_TO_READING:
-      return "Take a trip to Reading Railroad � if you pass Go "
+      return "Take a trip to Reading Railroad - if you pass Go "
           + "collect $200.";
 
     case ADVANCE_TO_BOARDWALK:
@@ -176,27 +176,27 @@ public enum Chance {
       return "Go back 3 spaces.";
 
     case GO_TO_JAIL:
-      return "Go directly to Jail � do not pass Go, " + "do not collect $200.";
+      return "Go directly to Jail - do not pass Go, " + "do not collect $200.";
 
     case BANK_PAYS_50:
       return "Bank pays you dividend of $50.";
 
     case BANK_PAYS_150:
-      return "Your building loan matures � collect $150.";
+      return "Your building loan matures - collect $150.";
 
     case REPAIR_PROPERTY:
-      return "Make general repairs on all your property � "
-          + "for each house pay $25 � for each hotel $100.";
+      return "Make general repairs on all your property - "
+          + "for each house pay $25 - for each hotel $100.";
 
     case PAY_15:
       return "Speeding Fine $15.";
 
     case PAY_EACH_PLAYER_50:
-      return "You have been elected chairman of the board � "
+      return "You have been elected chairman of the board - "
           + "pay each player $50.";
 
     case GET_OUT_OF_JAIL:
-      return "Get out of Jail free � "
+      return "Get out of Jail free - "
           + "this card may be kept until needed, or traded.";
 
     default:
