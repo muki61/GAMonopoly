@@ -991,10 +991,16 @@ public abstract class AbstractPlayer
     // do not add that property to the vector.
     Vector<Location> monopolies = new Vector<Location>();
     for (Location location : owned.values()) {
-      if (location.partOfMonopoly &&
-          !PropertyFactory.getPropertyFactory(game.gamekey).groupIsMortgaged(location.getGroup())) {
+      if (PropertyFactory.getPropertyFactory(game.gamekey).groupIsMortgaged(
+          location.getGroup())) {
+        //skip this property since the group is mortgaged
+        continue;
+      }
+
+      if (location.partOfMonopoly) {
         monopolies.add(location);
-        logInfo(location.toString() + " added to list of monopolies in processDevelopHouseEvent");
+        logInfo(location.toString()
+            + " added to list of monopolies in processDevelopHouseEvent");
       }
     }
     
@@ -1012,7 +1018,8 @@ public abstract class AbstractPlayer
           logInfo("Location " + location.name + " has a hotel; nothing to build");
         }
 
-        logInfo("Location " + location.name + " has " + location.getNumHouses() + " houses");
+        logInfo("Location " + location.name + " has " + location.getNumHouses()
+            + " houses");
 
         // At this point, location is part of a monopoly and the player might
         // want to build on the property.
@@ -1070,6 +1077,13 @@ public abstract class AbstractPlayer
       }
     }
 
+   if (g != PropertyGroups.BROWN && g != PropertyGroups.DARK_BLUE) {
+     assert lotSize == 3 : "Invalid lot size " + lotSize + " for Property Group " + g;
+   }
+   if (g == PropertyGroups.BROWN || g == PropertyGroups.DARK_BLUE) {
+     assert lotSize == 2 : "Invalid lot size " + lotSize + " for Property Group " + g;
+   }
+        
     // verify that the lots are in order by index
     for (int i = 0; i < lots.size() - 1; i++) {
       assert lots.elementAt(i).index < lots.elementAt(i+1).index : "Lot order is invalid";
