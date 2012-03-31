@@ -182,7 +182,7 @@ public class Main {
   {
     started = true;
     paused = false;
-    gaEngine = new GAEngine();
+    gaEngine = new GAEngine(this);
 
     Thread t = new Thread(gaEngine);
     t.start();
@@ -192,8 +192,6 @@ public class Main {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-
-    // gui.dispose();
 
     JOptionPane.showMessageDialog(null, "Monopoly simulation is complete",
         "Simulation Complete", JOptionPane.INFORMATION_MESSAGE);
@@ -263,6 +261,20 @@ public class Main {
       numThreads = Integer.parseInt(text);
       break;
     default:
+    }
+  }
+
+  public void setMatchNum(int matches)
+  {
+    if (useGui) {
+      gui.matchNum.setText("" + matches);
+    }
+  }
+
+  public void setGenNum(int generation)
+  {
+    if (useGui) {
+      gui.genNum.setText("" + generation);
     }
   }
 }

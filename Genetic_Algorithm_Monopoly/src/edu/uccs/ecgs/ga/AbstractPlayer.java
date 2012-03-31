@@ -1016,6 +1016,7 @@ public abstract class AbstractPlayer
         
         if (location.getNumHotels() > 0) {
           logInfo("Location " + location.name + " has a hotel; nothing to build");
+          continue;
         }
 
         logInfo("Location " + location.name + " has " + location.getNumHouses()

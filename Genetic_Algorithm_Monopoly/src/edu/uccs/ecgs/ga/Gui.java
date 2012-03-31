@@ -19,22 +19,8 @@ public class Gui extends JFrame {
   private Main program;
   private ArrayList<JTextField> textFields = new ArrayList<JTextField>();
 
-  public static void main(String[] args) {
-    String[][] fields = new String[][] { 
-        { "Number of generations", "1000" },
-        { "Number of matches per generation", "100" },
-        { "Max number of turns per game", "50" },
-        { "Number of players in population", "1000" },
-        { "Number of players per game", "4" },
-        { "Load players from disk", "false" }, 
-        { "Generation to load", "0" },
-        { "Debug", "false" },
-        { "Chromosome Type (RGA, SGA, TGA)", "TGA" },
-        { "Mutation Rate", "0.01" } };
-
-    Gui gui = new Gui(null);
-    gui.init(fields);
-  }
+  public JTextField matchNum = new JTextField(3);
+  public JTextField genNum = new JTextField(4);
 
   public Gui(Main main) {
     this.program = main;
@@ -75,6 +61,27 @@ public class Gui extends JFrame {
       
       gbc.gridy += 1;
     }
+    
+    JPanel genPanel = new JPanel();
+    genPanel.add(new JLabel("Generation: "));
+    genPanel.add(genNum);
+    genNum.setText("0");
+    genNum.setEditable(false);
+    gbc.gridx = 0;
+    gbc.anchor = GridBagConstraints.EAST;
+    gbc.ipadx = 0;
+    panel.add(genPanel, gbc);
+    
+    JPanel matchPanel = new JPanel();
+    matchPanel.add(new JLabel("Match: "));
+    matchPanel.add(matchNum);
+    matchNum.setText("0");
+    matchNum.setEditable(false);
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.gridx += 1;
+    gbc.ipadx = 40;
+    panel.add(matchPanel, gbc);
+    gbc.gridy += 1;
 
     button = new JButton("Start All Games");
     gbc.gridx = 0;

@@ -62,15 +62,17 @@ public class GAEngine implements Runnable {
    * A Thread pool for executing the games in runnableGames.
    */
   private ThreadPoolExecutor gameExecutor;
+  private Main main;
 
-  public GAEngine() {
+  public GAEngine(Main main) {
+    this.main = main;
     r = new Random();
     long seed = 1241797664697L;
     if (Main.useRandomSeed) {
       seed = System.currentTimeMillis();
     }
     r.setSeed(seed);
-    createPlayers();    
+    createPlayers();
   }
 
   /**
@@ -124,10 +126,11 @@ public class GAEngine implements Runnable {
     runnableGames = new LinkedBlockingQueue<Runnable>();
 
     while (generation < Main.numGenerations) {
+      main.setGenNum(generation);
       matches = 0;
       while (matches < Main.numMatches) {
+        main.setMatchNum(matches);
         gameExecutor = new ThreadPoolExecutor(Main.numThreads, Main.numThreads*2, 1L, TimeUnit.MINUTES, runnableGames);
-
         gameNumber = 0;
 
         games = new ArrayList<Monopoly>();
