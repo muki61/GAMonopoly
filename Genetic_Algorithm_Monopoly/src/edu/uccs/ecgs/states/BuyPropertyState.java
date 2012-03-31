@@ -24,7 +24,12 @@ public class BuyPropertyState extends PlayerState {
     
     case BUY_PROPERTY_EVENT:
       Location location = player.getCurrentLocation();
+
       assert player.canRaiseCash(location.getCost()) : "Player cannot raise cash: " + location.getCost();
+      
+      game.logger.info("Player " + player.playerIndex + " has decided to buy "
+          + location.name + " for " + location.getCost() + " dollars.");
+      
       try {
         player.getCash(location.getCost());
         location.setOwner(player);

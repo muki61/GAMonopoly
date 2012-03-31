@@ -83,7 +83,7 @@ public class TGAPlayer extends CGPlayer {
   // False --> player wishes to attempt to roll doubles
   @Override
   public boolean payBailP() {
-    if (!hasAtLeastCash(50) && !canRaiseCash(50) && !hasGetOutOfJailCard()) {
+    if (!hasAtLeastCash(50) && !hasGetOutOfJailCard()) {
       return false;
     }
 

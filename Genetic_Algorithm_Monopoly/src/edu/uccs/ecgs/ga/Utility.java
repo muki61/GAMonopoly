@@ -28,7 +28,7 @@ public class Utility {
       }
 
       rootDir = f.getAbsolutePath();
-      System.out.println("Root dir: " + rootDir);
+      System.out.println("Log dir: " + rootDir);
     }
 
     StringBuilder dir = new StringBuilder(rootDir);

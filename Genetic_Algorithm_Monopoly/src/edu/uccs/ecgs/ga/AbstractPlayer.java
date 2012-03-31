@@ -192,8 +192,12 @@ public abstract class AbstractPlayer
   public void setCurrentLocation(Location location) {
     this.location = location;
 
+    logInfo("Player " + playerIndex + " landed on " + location.name);
+    if (location.owner != null) {
+      logInfo(location.name + " is owned by " + location.owner.playerIndex);
+    }
+
     if (location.name.equals("Jail")) {
-      logInfo("Player " + playerIndex + " landed on " + location.name);
       if (inJail) {
         logInfo("Player " + playerIndex + " is in Jail");
         logInfo("Player sentence: " + jailSentence);
@@ -203,8 +207,6 @@ public abstract class AbstractPlayer
       } else {
         logInfo("Player " + playerIndex + " is Just Visiting");
       }
-    } else {
-      logInfo("Player " + playerIndex + " landed on " + location.name);
     }
   }
 
@@ -277,6 +279,8 @@ public abstract class AbstractPlayer
    */
   public void addProperty(Location location2) {
     owned.put(location2.index, location2);
+    // mark all the properties that are part of monopolies 
+    PropertyFactory.getPropertyFactory(game.gamekey).checkForMonopoly();
   }
 
   public void setLocationIndex(int index) {
@@ -990,6 +994,7 @@ public abstract class AbstractPlayer
       if (location.partOfMonopoly &&
           !PropertyFactory.getPropertyFactory(game.gamekey).groupIsMortgaged(location.getGroup())) {
         monopolies.add(location);
+        logInfo(location.toString() + " added to list of monopolies in processDevelopHouseEvent");
       }
     }
     
@@ -1038,26 +1043,54 @@ public abstract class AbstractPlayer
     }
   }
 
+  /**
+   * Properly distribute the houses among all the properties in the given group.
+   * 
+   * @param monopolies
+   *          The list of all properties for which the owner has a monopoly
+   * @param group
+   *          The group for which to balance the house distribution.
+   */
   private void balanceHouses(Vector<Location> monopolies, PropertyGroups group) {
+    // a list of the street locations in group
     Vector<Location> lots = new Vector<Location>();
+    // the number of houses in the group
     int houseCount = 0;
-
+    PropertyGroups g = group;
+    int lotSize = 0;
+    
+    // go through the list of monopolies and add all street locations for group
+    // to the list
     for (Location location : monopolies) {
       if (location.getGroup() == group) {
         lots.add(location);
+        lotSize = lots.size();
         houseCount += location.getNumHouses();
         location.resetNumHouses();
       }
     }
 
+    // verify that the lots are in order by index
     for (int i = 0; i < lots.size() - 1; i++) {
       assert lots.elementAt(i).index < lots.elementAt(i+1).index : "Lot order is invalid";
     }
 
-    while (houseCount >= lots.size()) {
-      for (Location location : lots) {
-        location.addHouse();
-        --houseCount;
+    // start by evenly distributing the houses among the streets, 
+    if (houseCount % lots.size() == 0) {
+      // all houses can be distributed evenly
+      while (houseCount > 0) {
+        for (Location location : lots) {
+          location.addHouse();
+          --houseCount;
+        }
+      }
+    } else {
+      // distribute as many houses as possible, leftovers will be handled later
+      while (houseCount > lots.size()) {
+        for (Location location : lots) {
+          location.addHouse();
+          --houseCount;
+        }
       }
     }
 
@@ -1067,7 +1100,7 @@ public abstract class AbstractPlayer
       case RED:
       case YELLOW:
       case GREEN:
-        assert lots.size() == 3 : "Bad lot size: " + lots.elementAt(0).toString() + "/" + lots.elementAt(1).toString();
+        assert lots.size() == 3 : "Bad lot size: " + lots.elementAt(0).toString() + "; " + lots.elementAt(1).toString();
         try {
         // extra houses on third and first property
         lots.elementAt(2).addHouse();
@@ -1149,7 +1182,6 @@ public abstract class AbstractPlayer
       }
     }
 
-    System.out.println("Player toString: " + result.length());
     return result.toString();
   }
 

@@ -31,8 +31,7 @@ public class PayRentState extends PlayerState {
           assert amount >= 0 : "Invalid rent: " + location.name + "; rent: "
               + amount;
 
-          game.logger.info("Rent for " + location.toString() + " with "
-              + location.getNumHouses() + " houses: " + amount);
+          game.logger.info("Rent for " + location.toString() + ": " + amount);
           
           if (amount > 0) {
             try {
