@@ -43,14 +43,7 @@ public abstract class AbstractPlayer
       PropertyGroups.DARK_BLUE, PropertyGroups.YELLOW,
       PropertyGroups.GREEN, PropertyGroups.BROWN};
   
-  public static Random r = new Random();
-  static {
-    long seed = 1241797664697L;
-    if (Main.useRandomSeed) {
-      seed = System.currentTimeMillis();
-    }
-    r.setSeed(seed);
-  }
+  public Random r = new Random();
 
   private TreeMap<Integer, Location> owned;
   public boolean inJail = false;
@@ -63,6 +56,12 @@ public abstract class AbstractPlayer
   protected Monopoly game;
 
   public AbstractPlayer(int index) {
+    long seed = 1241797664697L;
+    if (Main.useRandomSeed) {
+      seed = System.currentTimeMillis();
+    }
+    r.setSeed(seed);
+
     playerIndex = index;
     owned = new TreeMap<Integer, Location>();
     clearAllProperties();
