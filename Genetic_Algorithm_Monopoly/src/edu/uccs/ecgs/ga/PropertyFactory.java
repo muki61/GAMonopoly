@@ -20,7 +20,8 @@ public class PropertyFactory {
    * stored in this map and accessed by a key which is unique to a game
    * instance.
    */
-  static ConcurrentHashMap<String, PropertyFactory> factories = new ConcurrentHashMap<String, PropertyFactory>();
+  static ConcurrentHashMap<String, PropertyFactory> factories = 
+      new ConcurrentHashMap<String, PropertyFactory>();
 
   /**
    * Get the PropertyFactory for the given game key
@@ -40,19 +41,17 @@ public class PropertyFactory {
   private PropertyFactory(String gamekey) {
     locations = new Location[40];
 
-    if (properties == null) {
-      properties = new Properties();
+    properties = new Properties();
 
-      Class<edu.uccs.ecgs.ga.PropertyFactory> c = PropertyFactory.class;
-      InputStream fis = c.getResourceAsStream("/locations.properties");
+    Class<edu.uccs.ecgs.ga.PropertyFactory> c = PropertyFactory.class;
+    InputStream fis = c.getResourceAsStream("/locations.properties");
 
-      try {
-        properties.load(fis);
-      } catch (IOException e) {
-        e.printStackTrace();
-      } finally {
-        close(fis);
-      }
+    try {
+      properties.load(fis);
+    } catch (IOException e) {
+      e.printStackTrace();
+    } finally {
+      close(fis);
     }
 
     createLocations(properties, gamekey);
@@ -60,6 +59,7 @@ public class PropertyFactory {
 
   /**
    * Close the FileInputStream used in the constructor.
+   * 
    * @param fis FileInputStream
    */
   private void close(InputStream fis) {
@@ -318,8 +318,11 @@ public class PropertyFactory {
   }
 
   /**
-   * Release the reference to a PropertyFactory, allowing its resources to be released from the heap.
-   * @param gamekey The key that identifies the PropertyFactory to release.
+   * Release the reference to a PropertyFactory, allowing its resources to be
+   * released from the heap.
+   * 
+   * @param gamekey
+   *          The key that identifies the PropertyFactory to release.
    */
   public static void releasePropertyFactory(String gamekey) {
     assert factories != null;
@@ -330,9 +333,9 @@ public class PropertyFactory {
   }
 
   /**
-   * As if any property in the group is mortgaged
+   * Ask if any property in the group is mortgaged
    * @param group The group which contains the locations to check
-   * @return True --> If any property in the group is mortgaged
+   * @return True --> If any property in the group is mortgaged<br>
    *         False --> otherwise
    */
   public boolean groupIsMortgaged(PropertyGroups group) {

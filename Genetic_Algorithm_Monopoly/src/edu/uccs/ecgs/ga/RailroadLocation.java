@@ -33,7 +33,8 @@ public class RailroadLocation extends Location {
   public int getRent(int diceRoll) {
     assert !isMortgaged() : "Location is mortgaged in getRent";
     int result = 0;
-    double multiplier = Math.pow(2.0, owner.getNumRailroads() - 1);
+    int numRailroads = owner.getNumRailroads();
+    double multiplier = Math.pow(2.0, numRailroads - 1);
     this.setRentMultiplier((int) multiplier);
 
     result = rent * multiple;
