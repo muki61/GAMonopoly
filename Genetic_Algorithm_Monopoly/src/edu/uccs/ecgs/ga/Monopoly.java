@@ -49,7 +49,15 @@ public class Monopoly implements Runnable {
   private int numHotels;
 
   public String gamekey;
+  private long seed;
 
+  /**
+   * Constructor
+   * @param generation Generation number for this game.
+   * @param match Match number for this game.
+   * @param gameNumber Game number for this game.
+   * @param players Array of players for this game.
+   */
   public Monopoly(int generation, int match, int gameNumber,
       AbstractPlayer[] players) {
     this.generation = generation;
@@ -61,35 +69,55 @@ public class Monopoly implements Runnable {
     logger = Logger.getLogger(gamekey);
     assert logger != null;
 
-    initLogger();
-    logFileSetup();
-
-    done = false;
-
     r = new Random();
-    long seed = 1241797664697L;
+    seed = 1241797664697L;
     if (Main.useRandomSeed) {
       seed = System.currentTimeMillis();
     }
     r.setSeed(seed);
-    logger.info("Game seed: " + seed);
 
     turnCounter = 0;
     numHouses = 32;
     numHotels = 12;
 
     cards = Cards.getCards();
+  }
 
-    for (AbstractPlayer player : players) {
-      player.joinGame(this);
+  @Override
+  public void run() {
+    try {
+      playGame();
+    } catch (Throwable t) {
+      t.printStackTrace();
+      StackTraceElement[] ste = t.getStackTrace();
+      logger.severe(t.toString());
+      for (StackTraceElement s : ste) {
+        logger.log(Level.SEVERE, s.toString());
+      }
+    } finally {
+      endGame();
     }
   }
 
-  public void playGame() {
+  /**
+   * Play the game
+   */
+  private void playGame() {
+    initLogger();
+    logFileSetup();
+
+    done = false;
+
     logger.info("Started game " + this.generation + "." + this.match + "." + this.game + " with players: ");
     for (AbstractPlayer p : players) {
       logger.info("Player " + p.playerIndex);
     }
+
+    for (AbstractPlayer player : players) {
+      player.joinGame(this);
+    }
+
+    logger.info("Game seed: " + seed);
 
     bankruptCount = 0;
 
@@ -111,7 +139,7 @@ public class Monopoly implements Runnable {
       }
 
       AbstractPlayer player = getNextPlayer();
-      player.reset();
+      player.resetDoubles();
 
       logger.info("");
       logger.info("Turn: " + turnCounter);
@@ -123,7 +151,7 @@ public class Monopoly implements Runnable {
       while (action != Actions.DONE) {
         action = player.getNextActionEnum(event);
         
-        if (bankruptCount == 3) {
+        if (bankruptCount == Main.numPlayers - 1) {
           break;
         }
         
@@ -190,7 +218,7 @@ public class Monopoly implements Runnable {
         }
       }
 
-      if (bankruptCount == 3) {
+      if (bankruptCount == Main.numPlayers - 1) {
         done = true;
       }
     }
@@ -219,6 +247,10 @@ public class Monopoly implements Runnable {
     }    
   }
 
+  /**
+   * Get a reference to the player whose turn it is to play.
+   * @return The player who is next to play.
+   */
   private AbstractPlayer getNextPlayer() {
     while (players[playerIndex].bankrupt()) {
       playerIndex = ++playerIndex % 4;
@@ -230,6 +262,13 @@ public class Monopoly implements Runnable {
     return p;
   }
 
+  /**
+   * Transfer rent amount from one player to another
+   * @param from Player who owes rent
+   * @param to Player to whom rent is owed.
+   * @param amount The amount of rent.
+   * @throws BankruptcyException If the paying player does not have amount.
+   */
   public void payRent(AbstractPlayer from, AbstractPlayer to, int amount)
       throws BankruptcyException {
     from.getCash(amount);
@@ -669,6 +708,14 @@ public class Monopoly implements Runnable {
     }
   }
 
+  /**
+   * Buy a hotel for player at location.
+   * 
+   * @param player
+   *          The player that is buying the hotel.
+   * @param location
+   *          The location which will receive the hotel.
+   */
   public void buyHotel(AbstractPlayer player, Location location) {
     try {
       assert player.canRaiseCash(location.getHotelCost()) : "Player tried to buy house with insufficient cash";
@@ -690,6 +737,19 @@ public class Monopoly implements Runnable {
     }
   }
 
+  /**
+   * Take all the necessary actions when a player goes bankrupt. This includes
+   * selling all houses and hotels, and giving all cash and properties to the
+   * gaining player.
+   * 
+   * @param player
+   *          The player who went bankrupt.
+   * @param gainingPlayer
+   *          The player who receives all the bankrupt player's assets. This can
+   *          be another player in the game, or it can be the bank. If the
+   *          parameter is null, then the player went bankrupt against the bank
+   *          (for example, by owing income tax).
+   */
   public void processBankruptcy(AbstractPlayer player,
       AbstractPlayer gainingPlayer) {
 
@@ -698,7 +758,7 @@ public class Monopoly implements Runnable {
     ++bankruptCount;
 
     boolean gameOver = false;
-    if (bankruptCount == 3) {
+    if (bankruptCount == Main.numPlayers - 1) {
       gameOver = true;
     }
 
@@ -850,22 +910,6 @@ public class Monopoly implements Runnable {
    */
   public synchronized void resume() {
     notify();
-  }
-
-  @Override
-  public void run() {
-    try {
-      playGame();
-    } catch (Throwable t) {
-      t.printStackTrace();
-      StackTraceElement[] ste = t.getStackTrace();
-      logger.severe(t.toString());
-      for (StackTraceElement s : ste) {
-        logger.log(Level.SEVERE, s.toString());
-      }
-    } finally {
-//      endGame();
-    }
   }
 
   /**

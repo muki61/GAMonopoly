@@ -145,22 +145,32 @@ public class GAEngine implements Runnable {
           ++gameNumber;
         }
 
+        // Start the executor shutdown process...
         gameExecutor.shutdown();
-        try {
-          gameExecutor.awaitTermination(1, TimeUnit.HOURS);
-        } catch (InterruptedException ignored) {
-          ignored.printStackTrace();
+
+        // ...but wait for all games to complete, at which point the executor
+        // will actually be shutdown
+        //
+        // We set a timeout length of 1 hour, but as long as some games have not
+        // completed, keep waiting
+        boolean allGamesComplete = false; 
+        while (!allGamesComplete) {
+          try {
+            // This will block until the executor is terminated or the timeout
+            // occurs (or there is an InterruptedException). If the executor
+            // terminates normally, allGamesComplete will be set to true.
+            allGamesComplete = gameExecutor.awaitTermination(1, TimeUnit.HOURS);
+          } catch (InterruptedException ignored) {
+            ignored.printStackTrace();
+          }
         }
 
         ++matches;
 
+        // Move all the players back to the player pool.
         playerPool.addAll(playersDone);
         playersDone.removeAllElements();
-        resetPlayers();
 
-//        for (Monopoly game : games) {
-//          game.endGame();
-//        }
         games.clear();
       }
 
@@ -175,12 +185,6 @@ public class GAEngine implements Runnable {
         playerPool.clear();
         playerPool.addAll(newPopulation);
       }
-    }
-  }
-
-  private void resetPlayers() {
-    for (AbstractPlayer p : playerPool) {
-      p.resetAll();
     }
   }
 
@@ -240,7 +244,7 @@ public class GAEngine implements Runnable {
       bw = new BufferedWriter(fw);
 
       // all scores
-      int maxScore = Main.numMatches * 3;
+      int maxScore = Main.numMatches * (Main.numPlayers - 1);
 
       for (int i = 0; i <= maxScore; i++) {
         if (scores.containsKey(i)) {

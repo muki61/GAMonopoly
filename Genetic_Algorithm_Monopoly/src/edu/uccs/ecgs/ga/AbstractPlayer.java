@@ -55,6 +55,10 @@ public abstract class AbstractPlayer
   private int bankruptIndex = 0;
   protected Monopoly game;
 
+  /**
+   * Constructor
+   * @param index An id for the player
+   */
   public AbstractPlayer(int index) {
     long seed = 1241797664697L;
     if (Main.useRandomSeed) {
@@ -68,12 +72,25 @@ public abstract class AbstractPlayer
     cash = 1500;
   }
 
+  /**
+   * Remove all properties from the player. This method simply clears the
+   * player's list of owned properties. No other changes are made to the
+   * player's state or to the properties' state.
+   */
   public void clearAllProperties() {
     if (owned != null) {
       owned.clear();
     }
   }
 
+  /**
+   * Does the player have at least as much cash as amount.
+   * 
+   * @param amount
+   *          The amount that is being checked.
+   * @return True --> if the player's cash is greater than or equal to amount.<br>
+   *         False --> otherwise.
+   */
   public boolean hasAtLeastCash(int amount) {
     if (cash >= amount) {
       return true;
@@ -82,20 +99,27 @@ public abstract class AbstractPlayer
     return false;
   }
 
+  /**
+   * Initialize the player's cash to amount.
+   * @param amount The amount of cash the player should have.
+   */
   public void initCash(int amount) {
     cash = amount;
   }
 
-  public void reset() {
+  /**
+   * Reset the doubles counter for this player; should only be called at the
+   * start of the player's turn.
+   */
+  public void resetDoubles() {
     rolledDoubles = false;
-    assert game != null : "Found null game reference";
   }
   
   /**
    * Reset the player to the default state, ready to play a game. This resets cash to 1500,
    * removes all properties, resets location, resets bankruptcy state, etc.
    */
-  public void resetAll() {
+  private void resetAll() {
     logInfo("Player " + playerIndex + " entering resetAll()");
     cash = 1500;
     rolledDoubles = false;
@@ -211,16 +235,19 @@ public abstract class AbstractPlayer
   }
 
   /**
-   * @return True if the player passed Go or landed on Go during the most recent
-   *         movement, false otherwise.
+   * @return True --> if the player passed Go or landed on Go during the most
+   *         recent movement,<br>
+   *         false --> otherwise.
    */
   public boolean passedGo() {
     return passedGo;
   }
 
   /**
-   * Add cash to the player's current amount of cash. 
-   * @param amount The amount of cash to add the player's current amount of cash.
+   * Add cash to the player's current amount of cash.
+   * 
+   * @param amount
+   *          The amount of cash to add the player's current amount of cash.
    */
   public void receiveCash(int amount) {
     cash += amount;
@@ -283,6 +310,14 @@ public abstract class AbstractPlayer
     PropertyFactory.getPropertyFactory(game.gamekey).checkForMonopoly();
   }
 
+  /**
+   * Set this player's location to the location at index.
+   * 
+   * @param index
+   *          The index of the location, corresponds to board position with Go
+   *          having index 0 and increasing sequentially counter-clockwise
+   *          around the board.
+   */
   public void setLocationIndex(int index) {
     locationIndex = index;
   }
@@ -301,6 +336,10 @@ public abstract class AbstractPlayer
     return location;
   }
 
+  /**
+   * @return True --> if the player rolled doubles on most recent dice roll,<br>
+   *         False --> otherwise.
+   */
   public boolean rolledDoubles() {
     return rolledDoubles;
   }
@@ -354,11 +393,21 @@ public abstract class AbstractPlayer
 
     return totalWorth;
   }
-  
+
+  /**
+   * Add to the player's fitness score.
+   * 
+   * @param amount
+   *          The amount to add to the player's fitness.
+   */
   public void addToScore(int amount) {
     fitnessScore += amount;
   }
-  
+
+  /**
+   * @return True --> if the player is bankrupt,<br>
+   *         False --> otherwise.
+   */
   public boolean bankrupt() {
     return isBankrupt ;
   }
@@ -1159,10 +1208,22 @@ public abstract class AbstractPlayer
     }
   }
 
+  /**
+   * @return The index which indicates in which order the player went bankrupt
+   *         in a game: 0 for first, 1 for second, 2 for third, etc.
+   */
   public Integer getBankruptIndex() {
     return Integer.valueOf(bankruptIndex);
   }
-  
+
+  /**
+   * Set an index indicating which order the player went bankrupt, the first
+   * player to go bankrupt in a game is assigned index 0, the second to go
+   * bankrupt is index 1, and the third player to go bankrupt is 2, etc..
+   * 
+   * @param index
+   *          The value to set.
+   */
   public void setBankruptIndex(int index) {
     bankruptIndex = index;
   }
@@ -1208,6 +1269,7 @@ public abstract class AbstractPlayer
   public void joinGame(Monopoly game) {
     this.game = game;
     location = PropertyFactory.getPropertyFactory(game.gamekey).getLocationAt(locationIndex);
+    resetAll();
   }
   
   private void logInfo(String s) {

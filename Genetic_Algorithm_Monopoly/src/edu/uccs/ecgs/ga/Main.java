@@ -246,7 +246,7 @@ public class Main {
       break;
     case 8:
       // Chromosome Type
-      chromoType = ChromoTypes.valueOf(text);
+      chromoType = ChromoTypes.valueOf(text.toUpperCase());
       break;
     case 9:
       // Mutation Rate

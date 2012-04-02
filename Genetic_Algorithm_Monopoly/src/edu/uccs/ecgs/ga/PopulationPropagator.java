@@ -12,6 +12,7 @@ import java.util.Vector;
 
 public class PopulationPropagator {
   private static Random r = new Random();
+  private static int pointsPerGame;
   private static PopulationPropagator _this = new PopulationPropagator();
 
   private PopulationPropagator() {
@@ -19,8 +20,14 @@ public class PopulationPropagator {
     if (Main.useRandomSeed) {
       seed = System.currentTimeMillis();
     }
-//    System.out.println("New Population seed: " + seed);
     r.setSeed(seed);
+    
+    // In a game with 4 players, the total points per game is 0+1+2+3 = 6
+    // In a game with 5 players, the total points per game is 0+1+2+3+4 = 10
+    // In general, total points is sum 0..(numPlayers-1)
+    for (int i = 0; i < Main.numPlayers; i++) {
+      pointsPerGame += i;
+    }
   }
   
   public PopulationPropagator getEvolver() {
@@ -31,8 +38,8 @@ public class PopulationPropagator {
   {
     Vector<AbstractPlayer> newPopulation = new Vector<AbstractPlayer>(Main.maxPlayers);
     // Total fitness available in one generation is 
-    //      (6 points per game) * (number of games per match) * (number of Matches) 
-    int totalFitness = 6 * (Main.maxPlayers / Main.numPlayers) * Main.numMatches;
+    //      (points per game) * (number of games per match) * (number of Matches) 
+    int totalFitness = pointsPerGame * (Main.maxPlayers / Main.numPlayers) * Main.numMatches;
     // Each player gets one entry in the roulette for each point of fitness, so make the
     // roulette have has many slots as the total fitness in a generation
     Vector<AbstractPlayer> roulette = new Vector<AbstractPlayer>(totalFitness);
@@ -124,7 +131,6 @@ public class PopulationPropagator {
     int index = 0;
     for (AbstractPlayer player : newPopulation) {
       player.setIndex(index);
-      player.resetAll(); // TODO remove this call, call resetAll at start of game
       player.fitnessScore = 0;
       ++index;
     }
