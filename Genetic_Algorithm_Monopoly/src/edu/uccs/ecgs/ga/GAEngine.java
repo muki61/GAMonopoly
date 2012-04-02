@@ -152,13 +152,16 @@ public class GAEngine implements Runnable {
           ignored.printStackTrace();
         }
 
-        games.clear();
-
         ++matches;
 
         playerPool.addAll(playersDone);
         playersDone.removeAllElements();
         resetPlayers();
+
+//        for (Monopoly game : games) {
+//          game.endGame();
+//        }
+        games.clear();
       }
 
       dumpGenome();

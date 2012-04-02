@@ -124,7 +124,7 @@ public class PopulationPropagator {
     int index = 0;
     for (AbstractPlayer player : newPopulation) {
       player.setIndex(index);
-      player.resetAll();
+      player.resetAll(); // TODO remove this call, call resetAll at start of game
       player.fitnessScore = 0;
       ++index;
     }

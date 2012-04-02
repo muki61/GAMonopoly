@@ -2,6 +2,9 @@ package edu.uccs.ecgs.ga;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Random;
 import java.util.TreeMap;
@@ -29,7 +32,8 @@ public class Monopoly implements Runnable {
   Dice dice = Dice.getDice();
   int turnCounter = 0;
   Random r;
-
+  private DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy HH:mm:ss.SS");
+  
   /**
    * The players for this game.
    */
@@ -43,6 +47,7 @@ public class Monopoly implements Runnable {
 
   private int numHouses;
   private int numHotels;
+
   public String gamekey;
 
   public Monopoly(int generation, int match, int gameNumber,
@@ -56,13 +61,18 @@ public class Monopoly implements Runnable {
     logger = Logger.getLogger(gamekey);
     assert logger != null;
 
+    initLogger();
+    logFileSetup();
+
+    done = false;
+
     r = new Random();
     long seed = 1241797664697L;
     if (Main.useRandomSeed) {
       seed = System.currentTimeMillis();
     }
-//    System.out.println("Monopoly seed      : " + seed);
     r.setSeed(seed);
+    logger.info("Game seed: " + seed);
 
     turnCounter = 0;
     numHouses = 32;
@@ -76,11 +86,6 @@ public class Monopoly implements Runnable {
   }
 
   public void playGame() {
-    initLogger();
-    logFileSetup();
-
-    done = false;
-
     logger.info("Started game " + this.generation + "." + this.match + "." + this.game + " with players: ");
     for (AbstractPlayer p : players) {
       logger.info("Player " + p.playerIndex);
@@ -243,7 +248,11 @@ public class Monopoly implements Runnable {
       formatter = new Formatter() {
         @Override
         public String format(LogRecord record) {
-          return gamekey + ": " + record.getMessage() + "\n";
+          return Monopoly.this.generation + ":" + Monopoly.this.match
+              + ":" + Monopoly.this.game + ":"
+              + Thread.currentThread().getName() + ":"
+              + dateFormat.format(Calendar.getInstance().getTime()) + ": "
+              + record.getMessage() + "\n";
         }
       };
     } else {
@@ -855,7 +864,7 @@ public class Monopoly implements Runnable {
         logger.log(Level.SEVERE, s.toString());
       }
     } finally {
-      endGame();
+//      endGame();
     }
   }
 

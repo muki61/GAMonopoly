@@ -96,6 +96,7 @@ public abstract class AbstractPlayer
    * removes all properties, resets location, resets bankruptcy state, etc.
    */
   public void resetAll() {
+    logInfo("Player " + playerIndex + " entering resetAll()");
     cash = 1500;
     rolledDoubles = false;
     jailSentence = 0;
@@ -1210,6 +1211,8 @@ public abstract class AbstractPlayer
   }
   
   private void logInfo(String s) {
-    Logger.getLogger(game.gamekey).info(s);
+    if (game != null) {
+      Logger.getLogger(game.gamekey).info(s);
+    }
   }
 }
