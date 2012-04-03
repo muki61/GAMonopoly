@@ -102,23 +102,24 @@ public class GAEngine implements Runnable {
    * @return A list of four randomly selected players.
    */
   private AbstractPlayer[] getFourPlayers() {
-    AbstractPlayer[] players = new AbstractPlayer[] { null, null, null, null };
+    AbstractPlayer[] players = new AbstractPlayer[Main.numPlayers];
     for (int i = 0; i < players.length; i++) {
-      players[i] = null;
-      AbstractPlayer player = playerPool.remove(r.nextInt(playerPool.size()));
-      players[i] = player;
-      playersDone.add(player);
-      assert !playerPool.contains(player);
+      players[i] = playerPool.remove(r.nextInt(playerPool.size()));
+      playersDone.add(players[i]);
+      assert !playerPool.contains(players[i]);
     }
     return players;
   }
 
   @Override
   public void run() {
-    runGame();
+    runGames();
   }
 
-  public void runGame() {
+  /**
+   * Create and evolve a population of players. 
+   */
+  public void runGames() {
     if (Main.loadFromDisk) {
       generation = Main.lastGeneration + 1;
     }
@@ -143,6 +144,11 @@ public class GAEngine implements Runnable {
           gameExecutor.execute(game);
 
           ++gameNumber;
+          // sleep 1 millisecond so each game gets a different random seed
+          try {
+            Thread.sleep(1);
+          } catch (InterruptedException ignored) {
+          }
         }
 
         // Start the executor shutdown process...
@@ -150,16 +156,14 @@ public class GAEngine implements Runnable {
 
         // ...but wait for all games to complete, at which point the executor
         // will actually be shutdown
-        //
-        // We set a timeout length of 1 hour, but as long as some games have not
-        // completed, keep waiting
         boolean allGamesComplete = false; 
         while (!allGamesComplete) {
           try {
-            // This will block until the executor is terminated or the timeout
-            // occurs (or there is an InterruptedException). If the executor
-            // terminates normally, allGamesComplete will be set to true.
-            allGamesComplete = gameExecutor.awaitTermination(1, TimeUnit.HOURS);
+            // This will block until the executor is terminated or there is an
+            // InterruptedException (timeout should not occur given the timeout
+            // value of 106752 days). If the executor terminates normally,
+            // allGamesComplete will be set to true.
+            allGamesComplete = gameExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
           } catch (InterruptedException ignored) {
             ignored.printStackTrace();
           }
@@ -331,6 +335,9 @@ public class GAEngine implements Runnable {
     }
   }
 
+  /**
+   * Send unpause signal to all games.
+   */
   public void resume() {
     for (Monopoly game : games) {
       game.resume();
