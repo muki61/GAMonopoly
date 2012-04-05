@@ -109,50 +109,55 @@ public class Main {
 
   public void start()
   {
-    Class<edu.uccs.ecgs.ga.Main> c = Main.class;
-    InputStream inStream = c.getResourceAsStream("/Main.properties");
-
-    Properties props = new Properties();
+    File f = new File("Main.properties");
+    BufferedInputStream inStream = null;
     try {
-      props.load(inStream);
-      for(String key : props.stringPropertyNames()) {
-        String value = props.getProperty(key);
-        if (key.equals("maxPlayers")) {
-          maxPlayers = Integer.parseInt(value);
-        } else if (key.equals("numGenerations")) {
-          numGenerations = Integer.parseInt(value);
-        } else if (key.equals("numMatches")) {
-          numMatches = Integer.parseInt(value);
-        } else if (key.equals("maxTurns")) {
-          maxTurns = Integer.parseInt(value);
-        } else if (key.equals("numPlayers")) {
-          numPlayers = Integer.parseInt(value);
-        } else if (key.equals("loadFromDisk")) {
-          loadFromDisk = Boolean.parseBoolean(value);
-        } else if (key.equals("lastGeneration")) {
-          lastGeneration = Integer.parseInt(value);
-        } else if (key.equals("useGui")) {
-          useGui = Boolean.parseBoolean(value);
-        } else if (key.equals("debug")) {
-          debug = Level.parse(value);
-        } else if (key.equals("chromoType")) {
-          chromoType = ChromoTypes.valueOf(value);
-        } else if (key.equals("mutationRate")) {
-          mutationRate = Double.parseDouble(value);
-        } else if (key.equals("useRandomSeed")) {
-          useRandomSeed = Boolean.parseBoolean(value);
-        } else if (key.equals("numThreads")) {
-          numThreads = Integer.parseInt(value);
-        }
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
-    } finally {
+      inStream = new BufferedInputStream(new FileInputStream(f));
+      Properties props = new Properties();
       try {
-        inStream.close();
+        props.load(inStream);
+        for(String key : props.stringPropertyNames()) {
+          String value = props.getProperty(key);
+          if (key.equals("maxPlayers")) {
+            maxPlayers = Integer.parseInt(value);
+          } else if (key.equals("numGenerations")) {
+            numGenerations = Integer.parseInt(value);
+          } else if (key.equals("numMatches")) {
+            numMatches = Integer.parseInt(value);
+          } else if (key.equals("maxTurns")) {
+            maxTurns = Integer.parseInt(value);
+          } else if (key.equals("numPlayers")) {
+            numPlayers = Integer.parseInt(value);
+          } else if (key.equals("loadFromDisk")) {
+            loadFromDisk = Boolean.parseBoolean(value);
+          } else if (key.equals("lastGeneration")) {
+            lastGeneration = Integer.parseInt(value);
+          } else if (key.equals("useGui")) {
+            useGui = Boolean.parseBoolean(value);
+          } else if (key.equals("debug")) {
+            debug = Level.parse(value);
+          } else if (key.equals("chromoType")) {
+            chromoType = ChromoTypes.valueOf(value);
+          } else if (key.equals("mutationRate")) {
+            mutationRate = Double.parseDouble(value);
+          } else if (key.equals("useRandomSeed")) {
+            useRandomSeed = Boolean.parseBoolean(value);
+          } else if (key.equals("numThreads")) {
+            numThreads = Integer.parseInt(value);
+          }
+        }
       } catch (IOException e) {
         e.printStackTrace();
+      } finally {
+        try {
+          inStream.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
       }
+    } catch (FileNotFoundException ignored) {
+      System.out.println("Could not find properties file " + f.getAbsolutePath());
+      System.out.println("Using default program parameters.");
     }
     
     if (useGui) {
