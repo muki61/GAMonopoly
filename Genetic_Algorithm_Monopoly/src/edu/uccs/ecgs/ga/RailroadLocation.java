@@ -45,6 +45,11 @@ public class RailroadLocation extends Location {
     result = rent * multiple;
     assert result == 25 || result == 50 || result == 100 || result == 200 : "Invalid rent " + result + " for railroad";
 
+    if (arrivedFromChance) {
+      result *= 2;
+    }
+
+    arrivedFromChance = false;
     resetRentMultiplier();
     return result;
   }

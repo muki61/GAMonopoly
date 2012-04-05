@@ -79,20 +79,12 @@ public class PlayerState {
 
     } else {
       movePlayer (currentRoll, game, player);
-
-      if (player.passedGo()) {
-        payPlayer(player, 200);
-      }
     }
   }
 
   protected void movePlayer(int currentRoll, Monopoly game, AbstractPlayer player) {
-    int newLocation = player.advance(currentRoll);
-
-    PropertyFactory pf = PropertyFactory.getPropertyFactory(game.gamekey);
-    Location location = pf.getLocationAt(newLocation);
-    
-    player.setCurrentLocation(location);
+    player.move(currentRoll);
+    Location location = player.getCurrentLocation();
     
     if (location.getGroup() == PropertyGroups.SPECIAL) {
       int locationIndex = player.getLocationIndex();
@@ -105,6 +97,7 @@ public class PlayerState {
           player.nextAction = Actions.MAKE_BUILD_DECISION;
         }
       } else {
+        // location is one of the other special locations
         player.nextAction = Actions.PROCESS_SPECIAL_ACTION;
       }
     } else if (location.owner != null) {

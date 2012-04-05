@@ -15,7 +15,7 @@ public enum CommunityChest {
     switch (this) {
     case ADVANCE_TO_GO:
       int locationIndex = 0;
-      advancePlayer(player, locationIndex, game);
+      advancePlayer(player, locationIndex);
       break;
 
     case COLLECT_200:
@@ -96,19 +96,19 @@ public enum CommunityChest {
     case ADVANCE_TO_GO:
       return "Advance to Go (Collect $200)";
     case COLLECT_200:
-      return "Bank error in your favor � collect $200";
+      return "Bank error in your favor - collect $200";
     case PAY_50:
-      return "Doctor's fees � Pay $50";
+      return "Doctor's fees - Pay $50";
     case GET_OUT_OF_JAIL:
-      return "Get out of jail free � this card may be kept until needed, or sold";
+      return "Get out of jail free - this card may be kept until needed, or sold";
     case GO_TO_JAIL:
-      return "Go to jail � go directly to jail � Do not pass Go, do not collect $200";
+      return "Go to jail - go directly to jail - Do not pass Go, do not collect $200";
     case COLLECT_10_FROM_ALL: 
       return "It is your birthday Collect $10 from each player";
     case COLLECT_20:
-      return "Income Tax refund � collect $20";
+      return "Income Tax refund - collect $20";
     case COLLECT_100:
-      return "Life Insurance Matures � collect $100";
+      return "Life Insurance Matures - collect $100";
     case PAY_100:
       return "Pay Hospital Fees of $100";
     case PAY_SCHOOL_50:
@@ -116,9 +116,9 @@ public enum CommunityChest {
     case COLLECT_25:
       return "Receive $25 Consultancy Fee";
     case REPAIR_PROPERTY:
-      return "You are assessed for street repairs � $40 per house, $115 per hotel";
+      return "You are assessed for street repairs - $40 per house, $115 per hotel";
     case COLLECT_10:
-      return "You have won second prize in a beauty contest � collect $10";
+      return "You have won second prize in a beauty contest - collect $10";
     case INHERIT_100:
       return "You inherit $100";
     case STOCK_50:
@@ -130,23 +130,13 @@ public enum CommunityChest {
     }    
   }
 
-  private void movePlayer(AbstractPlayer player, int spacesToAdvance, Monopoly game) {
-    int newLocation = player.advance(spacesToAdvance);
-    PropertyFactory pf = PropertyFactory.getPropertyFactory(game.gamekey);
-    Location location = pf.getLocationAt(newLocation);
-    player.setCurrentLocation(location);
-    if (player.passedGo()) {
-      player.receiveCash(200);
-    }
-  }
-
-  private void advancePlayer(AbstractPlayer player, int locationIndex, Monopoly game) {
+  private void advancePlayer(AbstractPlayer player, int locationIndex) {
     int spacesToAdvance = locationIndex - player.getLocationIndex();
     if (spacesToAdvance < 0) {
       //adjust if locationIndex < player location
       spacesToAdvance += 40;
     }
-    movePlayer (player, spacesToAdvance, game);
+    player.move(spacesToAdvance);
 
   }  
 }

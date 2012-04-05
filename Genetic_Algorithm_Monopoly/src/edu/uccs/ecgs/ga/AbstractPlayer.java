@@ -182,16 +182,19 @@ public abstract class AbstractPlayer
   }
 
   /**
-   * Advance the player's location by numSpaces.
-   * @param numSpaces The number of spaces to advance.
-   * @return The player's location index after advancing.
+   * Move the player's location by numSpaces, if the player passes Go, the
+   * player receives $200.
+   * 
+   * @param numSpaces
+   *          The number of spaces to move.
    */
-  public int advance(int numSpaces) {
+  public void move(int numSpaces) {
     passedGo = false;
     locationIndex += numSpaces;
     if (locationIndex >= 40) {
       locationIndex -= 40;
       passedGo = true;
+      receiveCash(200);
 
       if (locationIndex == 0) {
         logFinest("Player " + playerIndex + " landed on Go");
@@ -199,7 +202,13 @@ public abstract class AbstractPlayer
         logFinest("Player " + playerIndex + " passed Go");
       }
     }
-    return locationIndex;
+    
+    if (locationIndex < 0) {
+      locationIndex += 40;
+    }
+
+    Location location = PropertyFactory.getPropertyFactory(game.gamekey).getLocationAt(locationIndex);
+    setCurrentLocation(location);
   }
 
   /**
@@ -752,9 +761,10 @@ public abstract class AbstractPlayer
    * @param gameOver
    *          Whether the game is over because the bankrupt player is the last
    *          other player in the game
+   * @throws BankruptcyException 
    */
   public void addProperties(TreeMap<Integer, Location> allProperties, 
-                            boolean gameOver) 
+                            boolean gameOver) throws BankruptcyException 
   {
     //add all properties first
     for (Location l : allProperties.values()) {
@@ -774,11 +784,18 @@ public abstract class AbstractPlayer
   }
 
   /**
-   * Go through all the new properties gained by this player, and for the ones that are
-   * mortgaged, pay the fee and then determine whether or not to unmortgage the property
+   * Go through all the new properties gained by this player, and for the ones
+   * that are mortgaged, pay the fee and then determine whether or not to
+   * unmortgage the property
+   * 
    * @param newProperties
+   *          The mortgaged properties that the player is receiving.
+   * @throws BankruptcyException
+   *           If the player receiving the properties cannot pay the interest.
    */
-  private void processMortgagedNewProperties(TreeMap<Integer, Location> newProperties) {
+  private void processMortgagedNewProperties(TreeMap<Integer, Location> newProperties) 
+      throws BankruptcyException 
+  {
     Vector<Location> mortgaged = new Vector<Location>();
 
     // want to handle mortgages of added properties in this order:
@@ -838,17 +855,7 @@ public abstract class AbstractPlayer
                     " will only pay mortgage fee for " + lot.name + 
                     "; fee is " + amountToPay);
 
-        try {
-          getCash(amountToPay);
-        } catch (BankruptcyException e) {
-          //ignored exception
-          //player is in this method because some other player
-          //went bankrupt, so assume this player has enough cash
-          //or can raise enough cash
-          // TODO assumption may be flawed, need to fix
-          Throwable t = new Throwable(game.toString(), e);
-          t.printStackTrace();
-        }
+        getCash(amountToPay);
       }
     }
   }
@@ -1278,8 +1285,8 @@ public abstract class AbstractPlayer
 
   public void joinGame(Monopoly game) {
     this.game = game;
-    location = PropertyFactory.getPropertyFactory(game.gamekey).getLocationAt(locationIndex);
     resetAll();
+    location = PropertyFactory.getPropertyFactory(game.gamekey).getLocationAt(locationIndex);
   }
 
   /**

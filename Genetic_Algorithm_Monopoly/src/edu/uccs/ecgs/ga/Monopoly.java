@@ -781,9 +781,7 @@ public class Monopoly implements Runnable {
       // player went bankrupt because they owed bank money
       player.getAllCash();
 
-      if (gameOver) {
-        player.clearAllProperties();
-      } else {
+      if (!gameOver) {
         TreeMap<Integer, Location> lotsToAuction = new TreeMap<Integer, Location>();
         lotsToAuction.putAll(player.getAllProperties());
         player.clearAllProperties();
@@ -793,13 +791,18 @@ public class Monopoly implements Runnable {
       // give all cash to gaining player
       gainingPlayer.receiveCash(player.getAllCash());
 
-      // give all property
+      // give all property to gaining player
       // mortgaged properties are handled in the addProperties method
-      gainingPlayer.addProperties(player.getAllProperties(), gameOver);
+      try {
+        gainingPlayer.addProperties(player.getAllProperties(), gameOver);
+      } catch (BankruptcyException e) {
+        //rarely, the player gaining the properties will not be able to raise
+        //the case to pay the interest. The gainingPlayer goes bankrupt also.
+        processBankruptcy(gainingPlayer, null);
+      }
     }
 
     player.clearAllProperties();
-
     player.setBankrupt();
     assert player.cash == 0;
   }

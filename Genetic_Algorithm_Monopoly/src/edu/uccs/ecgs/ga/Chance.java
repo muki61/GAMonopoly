@@ -9,13 +9,10 @@ public enum Chance {
   BANK_PAYS_50, BANK_PAYS_150, REPAIR_PROPERTY, PAY_15, 
   PAY_EACH_PLAYER_50, GET_OUT_OF_JAIL;
 
-  private Monopoly game;
-
   public void processChance(AbstractPlayer player, Monopoly game) throws BankruptcyException {
     int locationIndex = 0;
     int spacesToAdvance = 0;
     Location location = null;
-    this.game = game;
 
     game.logger.finest("Processing Chance Card '" + toString() + "' for player "
         + player.playerIndex);
@@ -56,7 +53,7 @@ public enum Chance {
       }
       advancePlayer(player, locationIndex);
       if (player.location.owner != null && player.location.owner != player) {
-        player.location.setRentMultiplier(2);
+        player.location.arrivedFromChance = true;
       }
       break;
 
@@ -77,7 +74,7 @@ public enum Chance {
 
     case GO_BACK_3:
       spacesToAdvance = -3;
-      movePlayer(player, spacesToAdvance);
+      player.move(spacesToAdvance);
       break;
 
     case GO_TO_JAIL:
@@ -122,23 +119,13 @@ public enum Chance {
     player.getCash(amount);
   }
 
-  private void movePlayer(AbstractPlayer player, int spacesToAdvance) {
-    int newLocation = player.advance(spacesToAdvance);
-    PropertyFactory pf = PropertyFactory.getPropertyFactory(game.gamekey);
-    Location location = pf.getLocationAt(newLocation);
-    player.setCurrentLocation(location);
-    if (player.passedGo()) {
-      player.receiveCash(200);
-    }
-  }
-
   private void advancePlayer(AbstractPlayer player, int locationIndex) {
     int spacesToAdvance = locationIndex - player.getLocationIndex();
     if (spacesToAdvance < 0) {
       // adjust if locationIndex < player location
       spacesToAdvance += 40;
     }
-    movePlayer(player, spacesToAdvance);
+    player.move(spacesToAdvance);
   }
 
   @Override
