@@ -60,7 +60,7 @@ public class PlayerState {
     player.setDoubles(dice.rolledDoubles());
     if (dice.rolledDoubles()) {
       numDoubles += 1;
-      game.logger.info("numDoubles : " + numDoubles);
+      game.logger.finest("numDoubles : " + numDoubles);
     }
 
     Location location;
@@ -73,7 +73,7 @@ public class PlayerState {
       player.enteredJail();
       player.setLocationIndex(location.index);
       player.setCurrentLocation(location);
-      game.logger.info("Player " + player.playerIndex
+      game.logger.finest("Player " + player.playerIndex
           + " rolled doubles 3 times in a row. Player sent to jail.");
       player.nextAction = Actions.MAKE_BUILD_DECISION;
 

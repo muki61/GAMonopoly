@@ -17,7 +17,7 @@ public enum Chance {
     Location location = null;
     this.game = game;
 
-    game.logger.info("Processing Chance Card '" + toString() + "' for player "
+    game.logger.finest("Processing Chance Card '" + toString() + "' for player "
         + player.playerIndex);
 
     switch (this) {
@@ -37,9 +37,9 @@ public enum Chance {
         locationIndex = 28;
       }
       location = PropertyFactory.getPropertyFactory(game.gamekey).getLocationAt(locationIndex);
-      game.logger.info("Advancing player to " + location.name);
+      game.logger.finest("Advancing player to " + location.name);
       advancePlayer(player, locationIndex);
-      game.logger.info("Rolling dice to determine rent...");
+      game.logger.finest("Rolling dice to determine rent...");
       location.arrivedFromChance = true; // rent is 10x dice roll when coming from chance
       game.logDiceRoll(game.getDice().roll());
 

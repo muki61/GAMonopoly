@@ -35,7 +35,9 @@ public class RailroadLocation extends Location {
     int result = 0;
     int numRailroads = owner.getNumRailroads();
     if (numRailroads == 0) {
-      Main.paused = true;
+      owner.logInfo("!!! Bad numRailroads: " + numRailroads);
+      numRailroads = 1;
+      owner.logInfo(owner.toString());
     }
     double multiplier = Math.pow(2.0, numRailroads - 1);
     this.setRentMultiplier((int) multiplier);

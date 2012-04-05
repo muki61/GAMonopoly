@@ -9,7 +9,7 @@ public enum CommunityChest {
   HOLIDAY_FUND;
 
   public void processCard(AbstractPlayer player, Monopoly game) throws BankruptcyException {
-    game.logger.info("Processing Community Chest Card '" + toString()
+    game.logger.finest("Processing Community Chest Card '" + toString()
         + "' for player " + player.playerIndex);
 
     switch (this) {
