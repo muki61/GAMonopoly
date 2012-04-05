@@ -36,6 +36,7 @@ public class RailroadLocation extends Location {
     int numRailroads = owner.getNumRailroads();
     if (numRailroads == 0) {
       owner.logInfo("!!! Bad numRailroads: " + numRailroads);
+      assert numRailroads > 0 : "!!! Bad numRailroads: " + numRailroads;
       numRailroads = 1;
       owner.logInfo(owner.toString());
     }

@@ -1143,11 +1143,13 @@ public abstract class AbstractPlayer
       if (lotSize != 3) {
         logInfo("Bad lot size!!!");
       }
+      assert lotSize == 3 : "Bad lot size!!!";
    }
    if (g == PropertyGroups.BROWN || g == PropertyGroups.DARK_BLUE) {
      if (lotSize != 2) {
        logInfo("Bad lot size!!!");
      }
+     assert lotSize == 2 : "Bad lot size!!!";
    }
         
     // verify that the lots are in order by index
