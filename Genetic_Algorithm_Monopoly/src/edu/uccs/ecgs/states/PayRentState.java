@@ -15,7 +15,7 @@ public class PayRentState extends PlayerState {
 
   @Override
   public PlayerState processEvent(Monopoly game, AbstractPlayer player, Events event) {
-    game.logger.finest("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
+    game.logFinest("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
         "; event " + event.name());
     switch (event) {
 
@@ -24,14 +24,14 @@ public class PayRentState extends PlayerState {
 
       if (location.owner != player) {
         if (location.isMortgaged()) {
-            game.logger.finest("Lot is mortgaged, rent: 0");
+            game.logFinest("Lot is mortgaged, rent: 0");
             location.resetRentMultiplier();
         } else {
           int amount = location.getRent(game.getDice().getLastRoll());
           assert amount >= 0 : "Invalid rent: " + location.name + "; rent: "
               + amount;
 
-          game.logger.finest("Rent for " + location.toString() + ": " + amount);
+          game.logFinest("Rent for " + location.toString() + ": " + amount);
           
           if (amount > 0) {
             try {

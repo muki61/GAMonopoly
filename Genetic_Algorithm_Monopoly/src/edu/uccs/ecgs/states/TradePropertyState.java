@@ -13,7 +13,7 @@ public class TradePropertyState extends PlayerState {
 
   @Override
   public PlayerState processEvent (Monopoly game, AbstractPlayer player, Events event) {
-    game.logger.finest("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
+    game.logFinest("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
         "; event " + event.name());
     switch (event) {
     

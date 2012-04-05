@@ -18,7 +18,7 @@ import edu.uccs.ecgs.states.Events;
 
 public class Monopoly implements Runnable {
 
-  public Logger logger;
+  private Logger logger;
   Formatter formatter;
   FileHandler fh;
 
@@ -66,8 +66,6 @@ public class Monopoly implements Runnable {
     this.players = players;
 
     gamekey = "edu.uccs.ecgs.ga." + this.generation + "." + this.match + "." + game;
-    logger = Logger.getLogger(gamekey);
-    assert logger != null;
 
     r = new Random();
     seed = 1241797664697L;
@@ -90,9 +88,9 @@ public class Monopoly implements Runnable {
     } catch (Throwable t) {
       t.printStackTrace();
       StackTraceElement[] ste = t.getStackTrace();
-      logger.severe(t.toString());
+      logSevere(t.toString());
       for (StackTraceElement s : ste) {
-        logger.log(Level.SEVERE, s.toString());
+        logSevere(s.toString());
       }
     } finally {
       endGame();
@@ -104,20 +102,19 @@ public class Monopoly implements Runnable {
    */
   private void playGame() {
     initLogger();
-    logFileSetup();
 
     done = false;
 
-    logger.finest("Started game " + this.generation + "." + this.match + "." + this.game + " with players: ");
+    logFinest("Started game " + this.generation + "." + this.match + "." + this.game + " with players: ");
     for (AbstractPlayer p : players) {
-      logger.finest("Player " + p.playerIndex);
+      logFinest("Player " + p.playerIndex);
     }
 
     for (AbstractPlayer player : players) {
       player.joinGame(this);
     }
 
-    logger.finest("Game seed: " + seed);
+    logFinest("Game seed: " + seed);
 
     bankruptCount = 0;
 
@@ -141,9 +138,9 @@ public class Monopoly implements Runnable {
       AbstractPlayer player = getNextPlayer();
       player.resetDoubles();
 
-      logger.finest("");
-      logger.finest("Turn: " + turnCounter);
-      logger.finest("Player " + player.playerIndex);
+      logFinest("");
+      logFinest("Turn: " + turnCounter);
+      logFinest("Player " + player.playerIndex);
 
       Events event = Events.PLAYER_ACTIVATED_EVENT;
       Actions action = Actions.NULL;
@@ -232,7 +229,7 @@ public class Monopoly implements Runnable {
       }
     }
 
-    logger.finest('\f' + "GAME OVER");
+    logFinest('\f' + "GAME OVER");
 
     // In order from loser to winner, add score points to player
     int score = 0;
@@ -242,8 +239,8 @@ public class Monopoly implements Runnable {
     }
 
     for (AbstractPlayer p : sortedPlayers.values()) {
-      logger.finest("");
-      logger.finest(p.toString());
+      logFinest("");
+      logFinest(p.toString());
     }    
   }
 
@@ -282,6 +279,7 @@ public class Monopoly implements Runnable {
    */
   public void initLogger() {
     if (Main.debug != Level.OFF) {
+      logger = Logger.getLogger(gamekey);
       logger.setLevel(Main.debug);
 
       formatter = new Formatter() {
@@ -294,8 +292,8 @@ public class Monopoly implements Runnable {
               + record.getMessage() + "\n";
         }
       };
-    } else {
-      logger.setLevel(Level.OFF);
+
+      logFileSetup();
     }
   }
 
@@ -304,16 +302,6 @@ public class Monopoly implements Runnable {
    * the formatter to the logger.
    */
   public void logFileSetup() {
-    if (Main.debug.equals(Level.OFF)) {
-      return;
-    }
-
-    if (fh != null) {
-      fh.flush();
-      fh.close();
-      logger.removeHandler(fh);
-    }
-
     StringBuilder dir = Utility.getDirForGen(generation);
 
     File file = new File(dir.toString());
@@ -387,7 +375,7 @@ public class Monopoly implements Runnable {
     location.owner.receiveCash(location.getHouseCost() / 2);
     ++numHouses;
     
-    logger.finest("Sold house at " + location.toString() + "; property now has " + location.getNumHouses() + " houses");
+    logFinest("Sold house at " + location.toString() + "; property now has " + location.getNumHouses() + " houses");
     
     assert numHouses < 33 : "Invalid number of houses: " + numHouses;
   }
@@ -440,7 +428,7 @@ public class Monopoly implements Runnable {
     default:
       // more than 4 houses
       location.removeHotel();
-      logger.finest("Sold hotel at " + location.toString() + "; property now has 4 houses");
+      logFinest("Sold hotel at " + location.toString() + "; property now has 4 houses");
       player.receiveCash(location.getHotelCost() / 2);
       ++numHotels;
       assert numHotels <= 12 : "Invalid number of hotels: " + numHotels;
@@ -471,13 +459,12 @@ public class Monopoly implements Runnable {
         numHousesToSell3 = 4;
 
       } else {
-        logger
-            .severe("Invalid number of hotels/houses in property group for location "
-                + location
-                + "; hotels/houses: "
-                + numHotelsInGroup
-                + "/"
-                + numHousesInGroup);
+        logSevere("Invalid number of hotels/houses in property group for location "
+            + location
+            + "; hotels/houses: "
+            + numHotelsInGroup
+            + "/"
+            + numHousesInGroup);
         assert false : "Invalid number of hotels/houses in property group for location "
             + location
             + "; hotels/houses: "
@@ -507,13 +494,12 @@ public class Monopoly implements Runnable {
         numHousesToSell3 = 4;
 
       } else {
-        logger
-            .severe("Invalid number of hotels/houses in property group for location "
-                + location
-                + "; hotels/houses: "
-                + numHotelsInGroup
-                + "/"
-                + numHousesInGroup);
+        logSevere("Invalid number of hotels/houses in property group for location "
+            + location
+            + "; hotels/houses: "
+            + numHotelsInGroup
+            + "/"
+            + numHousesInGroup);
         assert false : "Invalid number of hotels/houses in property group for location "
             + location
             + "; hotels/houses: "
@@ -543,13 +529,12 @@ public class Monopoly implements Runnable {
         numHousesToSell3 = 4;
 
       } else {
-        logger
-            .severe("Invalid number of hotels/houses in property group for location "
-                + location
-                + "; hotels/houses: "
-                + numHotelsInGroup
-                + "/"
-                + numHousesInGroup);
+        logSevere("Invalid number of hotels/houses in property group for location "
+            + location
+            + "; hotels/houses: "
+            + numHotelsInGroup
+            + "/"
+            + numHousesInGroup);
         assert false : "Invalid number of hotels/houses in property group for location "
             + location
             + "; hotels/houses: "
@@ -638,7 +623,7 @@ public class Monopoly implements Runnable {
         ++count;
 
         loc.removeHotel();
-        logger.finest("Sold hotel at " + loc.toString());
+        logFinest("Sold hotel at " + loc.toString());
         ++numHotels;
         assert numHotels < 13 : "Invalid number hotels: " + numHotels;
 
@@ -680,7 +665,7 @@ public class Monopoly implements Runnable {
    */
   public void buyHouse(AbstractPlayer player, Location location) {
     if (numHouses == 0) {
-      logger.finest("Player " + player.playerIndex
+      logFinest("Player " + player.playerIndex
           + " wanted to buy house, but none are available");
       return;
     }
@@ -695,15 +680,15 @@ public class Monopoly implements Runnable {
       player.getCash(location.getHouseCost());
       location.addHouse();
       --numHouses;
-      logger.finest("Bought house for property group " + location.getGroup());
+      logFinest("Bought house for property group " + location.getGroup());
       assert numHouses >= 0 : "Invalid number of houses: " + numHouses;
-      logger.finest("Bank now has " + numHouses + " houses");
+      logFinest("Bank now has " + numHouses + " houses");
     } catch (BankruptcyException ignored) {
       // expect that any player that buys a house first verifies they
       // have enough cash
       ignored.printStackTrace();
     } catch (AssertionError ae) {
-      logger.finest(player.toString());
+      logFinest(player.toString());
       throw ae;
     }
   }
@@ -722,7 +707,7 @@ public class Monopoly implements Runnable {
       location.addHotel();
       --numHotels;
       player.getCash(location.getHotelCost());
-      logger.finest("Bought hotel at " + location.toString());
+      logFinest("Bought hotel at " + location.toString());
       assert numHotels >= 0 : "Invalid number of hotels: " + numHotels;
 
       // add the houses back to the bank
@@ -753,7 +738,7 @@ public class Monopoly implements Runnable {
   public void processBankruptcy(AbstractPlayer player,
       AbstractPlayer gainingPlayer) {
 
-    logger.finest("Player " + player.playerIndex + " is bankrupt");
+    logFinest("Player " + player.playerIndex + " is bankrupt");
     player.setBankruptIndex(bankruptCount);
     ++bankruptCount;
 
@@ -763,9 +748,9 @@ public class Monopoly implements Runnable {
     }
 
     if (gainingPlayer != null) {
-      logger.finest("Gaining player is " + gainingPlayer.playerIndex);
+      logFinest("Gaining player is " + gainingPlayer.playerIndex);
     } else {
-      logger.finest("Gaining player is bank");
+      logFinest("Gaining player is bank");
     }
 
     // return any get out of jail cards to the stack
@@ -773,7 +758,7 @@ public class Monopoly implements Runnable {
       player.useGetOutOfJailCard();
     }
 
-    logger.finest("Bankrupt count: " + bankruptCount);
+    logFinest("Bankrupt count: " + bankruptCount);
 
     player.sellAllHousesAndHotels();
 
@@ -817,7 +802,7 @@ public class Monopoly implements Runnable {
     String msg = "";
 
     for (Location location : lotsToAuction.values()) {
-      logger.finest("Bank is auctioning " + location.name);
+      logFinest("Bank is auctioning " + location.name);
 
       int highBid = 0;
       AbstractPlayer highBidPlayer = null;
@@ -825,7 +810,7 @@ public class Monopoly implements Runnable {
 
       for (AbstractPlayer p : players) {
         int bid = p.getBidForLocation(location);
-        logger.finest("Player " + p.playerIndex + " has " + p.cash
+        logFinest("Player " + p.playerIndex + " has " + p.cash
             + " dollars and bids " + bid);
 
         if (bid > highBid) {
@@ -865,15 +850,15 @@ public class Monopoly implements Runnable {
       }
     }
 
-    logger.finest("Auction has ended " + msg);
+    logFinest("Auction has ended " + msg);
     boolean printHead = true;
     for (Location location : lotsToAuction.values()) {
       if (location.owner == null) {
         if (printHead) {
-          logger.finest("The following lots were not bought at auction:");
+          logFinest("The following lots were not bought at auction:");
           printHead = false;
         }
-        logger.finest(location.name);
+        logFinest(location.name);
       }
     }
   }
@@ -889,13 +874,13 @@ public class Monopoly implements Runnable {
       int amount) throws BankruptcyException 
   {
     aPlayer.getCash(amount);
-    logger.fine("Player " + aPlayer.playerIndex + " won auction for "
+    logFinest("Player " + aPlayer.playerIndex + " won auction for "
         + aLocation.name);
     aLocation.setOwner(aPlayer);
     aPlayer.addProperty(aLocation);
     PropertyFactory.getPropertyFactory(gamekey).checkForMonopoly();
     if (aLocation.partOfMonopoly) {
-      logger.finest("Player " + aPlayer.playerIndex + " acquired monopoly with "
+      logFinest("Player " + aPlayer.playerIndex + " acquired monopoly with "
           + aLocation.name);
     }
   }
@@ -1008,11 +993,11 @@ public class Monopoly implements Runnable {
    *          The values of each dice.
    */
   public void logDiceRoll(int[] roll) {
-    logger.finest("Dice 1: " + roll[0]);
-    logger.finest("Dice 2: " + roll[1]);
+    logFinest("Dice 1: " + roll[0]);
+    logFinest("Dice 2: " + roll[1]);
 
     if (roll[0] == roll[1]) {
-      logger.finest("Doubles!!");
+      logFinest("Doubles!!");
     }
   }
 
@@ -1028,5 +1013,23 @@ public class Monopoly implements Runnable {
   @Override
   public String toString() {
     return "Gen: " + generation + "; Match: " + match + "; Game: " + game;
+  }
+  
+  public void logInfo(String s) {
+    if (logger != null) {
+      logger.info(s);
+    }
+  }
+  
+  public void logFinest(String s) {
+    if (logger != null) {
+      logger.finest(s);
+    }
+  }
+  
+  public void logSevere(String s) {
+    if (logger != null) {
+      logger.severe(s);
+    }
   }
 }

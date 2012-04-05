@@ -19,7 +19,7 @@ public class AtNewLocationState extends PlayerState {
 
   @Override
   public PlayerState processEvent(Monopoly game, AbstractPlayer player, Events event) {
-    game.logger.finest("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
+    game.logFinest("Player " + player.playerIndex + "; state " + this.getClass().getSimpleName() +
         "; event " + event.name());
     Location location = player.getCurrentLocation();
 
@@ -178,7 +178,7 @@ public class AtNewLocationState extends PlayerState {
           return developPropertyState;
         }
       } else if (location.name.equals("Go To Jail")) {
-        game.logger.finest("Player " + player.playerIndex + " landed on Go To Jail.");
+        game.logFinest("Player " + player.playerIndex + " landed on Go To Jail.");
 
         PropertyFactory pf = PropertyFactory.getPropertyFactory(game.gamekey);
         player.enteredJail();
@@ -189,9 +189,9 @@ public class AtNewLocationState extends PlayerState {
         developPropertyState.enter();
         return developPropertyState;
       } else {
-        game.logger.finest("****************************************************");
-        game.logger.finest("Location : " + location.name);
-        game.logger.finest("****************************************************");
+        game.logFinest("****************************************************");
+        game.logFinest("Location : " + location.name);
+        game.logFinest("****************************************************");
         System.exit(1);
       }
       return this;

@@ -189,6 +189,12 @@ public class GAEngine implements Runnable {
         playerPool.clear();
         playerPool.addAll(newPopulation);
       }
+      
+      try {
+        System.gc(); // suggest garbage collection
+        Thread.sleep(1000); // sleep for 1 sec to allow gc
+      } catch (InterruptedException ignored) {
+      }
     }
   }
 

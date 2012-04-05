@@ -184,15 +184,15 @@ public class SGAPlayer extends AbstractPlayer {
 
   @Override
   public void printGenome() {
-    game.logger.finest("Chromosome chrNoOwners (property group has no owners");
+    game.logFinest("Chromosome chrNoOwners (property group has no owners");
     printChromo(chrNoOwners, numLots);
-    game.logger.finest("Chromosome chrPlayerOwns (player owns property in property group");
+    game.logFinest("Chromosome chrPlayerOwns (player owns property in property group");
     printChromo(chrPlayerOwns, numLots);
-    game.logger.finest("Chromosome chrOpponentOwns (opponent owns property in property group");
+    game.logFinest("Chromosome chrOpponentOwns (opponent owns property in property group");
     printChromo(chrOpponentOwns, numLots);
-    game.logger.finest("Chromosome chrTwoOpponentOwns (two opponents own property in property group");
+    game.logFinest("Chromosome chrTwoOpponentOwns (two opponents own property in property group");
     printChromo(chrTwoOpponentOwns, numLots);
-    game.logger.finest("Chromosome chrJail");
+    game.logFinest("Chromosome chrJail");
     printChromo(chrJail, numJailCombos);
   }
 
@@ -204,7 +204,7 @@ public class SGAPlayer extends AbstractPlayer {
       b.append(BitSetUtility.to6BitBinary(r)).append(" ");
     }
 
-    game.logger.finest(b.toString());
+    game.logFinest(b.toString());
   }
 
   @Override

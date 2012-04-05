@@ -3,7 +3,6 @@ package edu.uccs.ecgs.ga;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.*;
-import java.util.logging.Logger;
 import edu.uccs.ecgs.states.Events;
 import edu.uccs.ecgs.states.PlayerState;
 
@@ -1297,7 +1296,7 @@ public abstract class AbstractPlayer
    */
   public void logInfo(String s) {
     if (game != null) {
-      Logger.getLogger(game.gamekey).info(s);
+      game.logInfo(s);
     }
   }
 
@@ -1307,7 +1306,7 @@ public abstract class AbstractPlayer
    */
   public void logFinest(String s) {
     if (game != null) {
-      Logger.getLogger(game.gamekey).finest(s);
+      game.logFinest(s);
     }
   }
 }

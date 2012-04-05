@@ -125,15 +125,15 @@ public abstract class CGPlayer extends AbstractPlayer {
 
   @Override
   public void printGenome() {
-    game.logger.finest("Chromosome chrNoOwners (property group has no owners");
+    game.logFinest("Chromosome chrNoOwners (property group has no owners");
     printChromo(chrNoOwners);
-    game.logger.finest("Chromosome chrPlayerOwns (player owns property in property group");
+    game.logFinest("Chromosome chrPlayerOwns (player owns property in property group");
     printChromo(chrPlayerOwns);
-    game.logger.finest("Chromosome chrOpponentOwns (opponent owns property in property group");
+    game.logFinest("Chromosome chrOpponentOwns (opponent owns property in property group");
     printChromo(chrOpponentOwns);
-    game.logger.finest("Chromosome chrTwoOpponentOwns (two opponents own property in property group");
+    game.logFinest("Chromosome chrTwoOpponentOwns (two opponents own property in property group");
     printChromo(chrTwoOpponentOwns);
-    game.logger.finest("Chromosome chrJail");
+    game.logFinest("Chromosome chrJail");
     for (double[] a : chrJail) {
       printChromo(a);
     }
@@ -151,8 +151,6 @@ public abstract class CGPlayer extends AbstractPlayer {
         prependComma = true;
       }
     }
-    
-//    game.logger.finest(b.toString());
   }
 
   @Override
