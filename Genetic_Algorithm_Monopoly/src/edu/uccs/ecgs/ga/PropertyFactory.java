@@ -44,7 +44,7 @@ public class PropertyFactory {
     properties = new Properties();
 
     Class<edu.uccs.ecgs.ga.PropertyFactory> c = PropertyFactory.class;
-    InputStream fis = c.getResourceAsStream("/locations.properties");
+    InputStream fis = c.getResourceAsStream("locations.properties");
 
     try {
       properties.load(fis);
