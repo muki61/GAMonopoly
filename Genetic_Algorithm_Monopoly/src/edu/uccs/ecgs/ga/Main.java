@@ -170,7 +170,7 @@ public class Main {
           { "Load players from disk", "" + loadFromDisk }, 
           { "Generation to load", "" + lastGeneration },
           { "Debug", "" + debug }, 
-          { "Chromosome Type (RGA, SGA, TGA)", "" + ChromoTypes.TGA.toString() },
+          { "Chromosome Type (RGA, SGA, TGA)", "" + chromoType.toString() },
           { "Mutation Rate", "" + mutationRate },
           { "Use random seed for games", "" + useRandomSeed},
           { "Number of threads (1 thread per concurrent game)", "" + numThreads } };
