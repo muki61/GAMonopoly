@@ -75,7 +75,7 @@ public class SGAPlayer extends AbstractPlayer {
     super(index);
 
     try {
-      fitnessScore = dis.readInt();
+      setFitness(dis.readInt());
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -167,7 +167,7 @@ public class SGAPlayer extends AbstractPlayer {
   @Override
   public void dumpGenome(DataOutputStream out) throws IOException {
     out.writeChars("SGA");
-    out.writeInt(fitnessScore);
+    out.writeInt(getFitness());
     dumpBitSet(out, chrNoOwners);
     dumpBitSet(out, chrPlayerOwns);
     dumpBitSet(out, chrOpponentOwns);

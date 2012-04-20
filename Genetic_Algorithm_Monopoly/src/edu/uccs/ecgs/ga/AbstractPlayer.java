@@ -48,7 +48,8 @@ public abstract class AbstractPlayer
   public boolean inJail = false;
   private Chance chanceGOOJ;
   private CommunityChest ccGOOJ;
-  int fitnessScore = 0;
+  private int fitnessScore = 0;
+  private int finishOrder = 0;
   
   private boolean isBankrupt = false;
   private int bankruptIndex = 0;
@@ -405,11 +406,36 @@ public abstract class AbstractPlayer
   /**
    * Add to the player's fitness score.
    * 
-   * @param amount
+   * @param score
    *          The amount to add to the player's fitness.
    */
-  public void addToScore(int amount) {
-    fitnessScore += amount;
+  public void setFitness(int score) {
+    fitnessScore = score;
+  }
+
+  /**
+   * @return The player's current fitness score.
+   */
+  public int getFitness() {
+    return fitnessScore;
+  }
+
+  /**
+   * @return the finishOrder
+   */
+  public int getFinishOrder() {
+    return finishOrder;
+  }
+
+  /**
+   * Sets the finish order of a game, 1 for winner (first place), 2 for second
+   * place, etc.
+   * 
+   * @param finishOrder
+   *          the finishOrder to set
+   */
+  public void setFinishOrder(int finishOrder) {
+    this.finishOrder = finishOrder;
   }
 
   /**

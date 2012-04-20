@@ -232,10 +232,10 @@ public class Monopoly implements Runnable {
     logFinest('\f' + "GAME OVER");
 
     // In order from loser to winner, add score points to player
-    int score = 0;
+    int score = Main.numPlayers;
     for (AbstractPlayer p : sortedPlayers.values()) {
-      p.addToScore(score);
-      score++;
+      p.setFinishOrder(score);
+      score--;
     }
 
     for (AbstractPlayer p : sortedPlayers.values()) {

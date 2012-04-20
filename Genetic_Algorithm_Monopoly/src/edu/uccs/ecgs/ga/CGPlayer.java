@@ -98,7 +98,7 @@ public abstract class CGPlayer extends AbstractPlayer {
 
   @Override
   public void dumpGenome(DataOutputStream out) throws IOException {
-    out.writeInt(fitnessScore);
+    out.writeInt(getFitness());
 
     for (double d : chrNoOwners) {
       out.writeDouble(d);

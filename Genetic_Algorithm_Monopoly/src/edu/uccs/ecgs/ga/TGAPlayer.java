@@ -42,7 +42,7 @@ public class TGAPlayer extends CGPlayer {
     chrTwoOpponentOwns = new double[lotLength];
     chrJail = new double[jailLength][jailLength];
 
-    fitnessScore = dis.readInt();
+    setFitness(dis.readInt());
 
     for (int i = 0; i < chrNoOwners.length; i++) {
       chrNoOwners[i] = dis.readDouble();

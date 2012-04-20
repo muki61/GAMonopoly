@@ -169,6 +169,12 @@ public class GAEngine implements Runnable {
           }
         }
 
+        //TODO generalize getting the fitness evaluator
+        AbstractFitnessEvaluator fitEval = new NumWinsFitnessEvaluator();
+        for (AbstractPlayer player : playersDone) {
+          fitEval.evaluate(player);
+        }
+        
         ++matches;
 
         // Move all the players back to the player pool.
@@ -189,7 +195,10 @@ public class GAEngine implements Runnable {
         playerPool.clear();
         playerPool.addAll(newPopulation);
       }
-      
+
+      // TODO There seems to be memory being held onto by the program
+      // I suspect it is in the loggers. Remove this if the memory problem
+      // is ever fixed.
       try {
         System.gc(); // suggest garbage collection
         Thread.sleep(1000); // sleep for 1 sec to allow gc
@@ -214,12 +223,12 @@ public class GAEngine implements Runnable {
     for (AbstractPlayer player : playerPool) {
       fitness.add(player);
 
-      Integer val = scores.get(player.fitnessScore);
+      Integer val = scores.get(player.getFitness());
       if (val == null) {
-        scores.put(player.fitnessScore, 1);
+        scores.put(player.getFitness(), 1);
       } else {
         Integer newVal = val.intValue() + 1;
-        scores.put(player.fitnessScore, newVal);
+        scores.put(player.getFitness(), newVal);
       }
     }
 
@@ -285,7 +294,7 @@ public class GAEngine implements Runnable {
       bw = new BufferedWriter(fw);
 
       for (AbstractPlayer player : fitness) {
-        bw.write(player.fitnessScore + "," + player.playerIndex);
+        bw.write(player.getFitness() + "," + player.playerIndex);
         bw.newLine();
       }
     } catch (IOException e) {

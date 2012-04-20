@@ -48,12 +48,12 @@ public class PopulationPropagator {
     for (AbstractPlayer player : population) {
       // elitism - pick the top 10% best players (might be more than 10% due to duplicate fitness)
       //TODO Frayn used only top 3
-      if (player.fitnessScore >= minEliteScore) {
+      if (player.getFitness() >= minEliteScore) {
         elites.add(player);
       }
 
       //fill up the roulette wheel
-      for (int i = 0; i < player.fitnessScore; i++) {
+      for (int i = 0; i < player.getFitness(); i++) {
         roulette.add(player);
       }
     }
@@ -74,7 +74,7 @@ public class PopulationPropagator {
       population.add(parent2);
 
       try {
-        if (parent1.fitnessScore >= parent2.fitnessScore) {
+        if (parent1.getFitness() >= parent2.getFitness()) {
           newPopulation.add((AbstractPlayer) parent1.clone());
         } else {
           newPopulation.add((AbstractPlayer) parent2.clone());
@@ -95,7 +95,7 @@ public class PopulationPropagator {
       population.add(parent2);
 
       AbstractPlayer child = null;
-      if (parent1.fitnessScore >= parent2.fitnessScore) {
+      if (parent1.getFitness() >= parent2.getFitness()) {
         child = parent1.copyAndMutate();
         newPopulation.add(child);
       } else {
@@ -131,7 +131,7 @@ public class PopulationPropagator {
     int index = 0;
     for (AbstractPlayer player : newPopulation) {
       player.setIndex(index);
-      player.fitnessScore = 0;
+      player.setFitness(0);
       ++index;
     }
 
