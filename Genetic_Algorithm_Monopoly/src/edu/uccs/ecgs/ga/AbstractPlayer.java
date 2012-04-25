@@ -410,7 +410,14 @@ public abstract class AbstractPlayer
    *          The amount to add to the player's fitness.
    */
   public void setFitness(int score) {
-    fitnessScore = score;
+    fitnessScore += score;
+  }
+
+  /**
+   * Reset the fitness value to 0
+   */
+  public void resetFitness() {
+    fitnessScore = 0;
   }
 
   /**

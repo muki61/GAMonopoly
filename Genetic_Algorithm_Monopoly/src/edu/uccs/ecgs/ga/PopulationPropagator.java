@@ -25,6 +25,7 @@ public class PopulationPropagator {
     // In a game with 4 players, the total points per game is 0+1+2+3 = 6
     // In a game with 5 players, the total points per game is 0+1+2+3+4 = 10
     // In general, total points is sum 0..(numPlayers-1)
+    // TODO: With different evaluators, this is no longer true
     for (int i = 0; i < Main.numPlayers; i++) {
       pointsPerGame += i;
     }
@@ -131,7 +132,7 @@ public class PopulationPropagator {
     int index = 0;
     for (AbstractPlayer player : newPopulation) {
       player.setIndex(index);
-      player.setFitness(0);
+      player.resetFitness();
       ++index;
     }
 
