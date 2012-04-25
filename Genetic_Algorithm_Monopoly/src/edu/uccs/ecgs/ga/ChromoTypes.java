@@ -1,49 +1,26 @@
 package edu.uccs.ecgs.ga;
 
+import java.io.DataInputStream;
+import java.io.IOException;
+
 public enum ChromoTypes {
-  RGA {
-    @Override
-    public AbstractPlayer getPlayer(int index) {
-      return new RGAPlayer(index);
-    }
+  RGA, SGA, TGA;
 
-    @Override
-    public AbstractPlayer getPlayer(int index, double[] chrNoOwners,
-        double[] chrPlayerOwns, double[] chrOpponentOwns,
-        double[] chrTwoOpponentOwns, double[][] chrJail) {
-      return new RGAPlayer(index, chrNoOwners, chrPlayerOwns, chrOpponentOwns,
-          chrTwoOpponentOwns, chrJail);
+  public AbstractPlayer getPlayer(int index) {
+    switch (this) {
+    case RGA: return new RGAPlayer(index);
+    case SGA: return new SGAPlayer(index);
+    case TGA: return new TGAPlayer(index);
+    default: return null;
     }
-  },
-  
-  SGA  {
-    @Override
-    public AbstractPlayer getPlayer(int index) {
-      return new SGAPlayer(index);
-    }
-  },
-  
-  TGA {
-    @Override
-    public AbstractPlayer getPlayer(int index) {
-      return new TGAPlayer(index);
-    }
+  }
 
-    @Override
-    public AbstractPlayer getPlayer(int index, double[] chrNoOwners,
-        double[] chrPlayerOwns, double[] chrOpponentOwns,
-        double[] chrTwoOpponentOwns, double[][] chrJail) {
-      return new TGAPlayer(index, chrNoOwners, chrPlayerOwns, chrOpponentOwns,
-          chrTwoOpponentOwns, chrJail);
+  public AbstractPlayer getPlayer(int index, DataInputStream dis) throws IOException {
+    switch (this) {
+    case RGA: return new RGAPlayer(index, dis);
+    case SGA: return new SGAPlayer(index, dis);
+    case TGA: return new TGAPlayer(index, dis);
+    default: return null;
     }
-  };  
-  
-  public abstract AbstractPlayer getPlayer(int index);
-
-  public AbstractPlayer getPlayer(int index, double[] chrNoOwners,
-      double[] chrPlayerOwns, double[] chrOpponentOwns,
-      double[] chrTwoOpponentOwns, double[][] chrJail)
-  {
-    return null;
   }
 }

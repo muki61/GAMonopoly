@@ -9,11 +9,12 @@ import java.util.HashMap;
  * for a win is 3). The player gets 0 points for any other game result (second
  * through last place).
  */
-public class NumWinsFitnessEvaluator extends AbstractFitnessEvaluator {
-
+public class NumWinsFitnessEvaluator implements IFitnessEvaluator {
   private HashMap<AbstractPlayer, Integer> scores = new HashMap<AbstractPlayer, Integer>();
   private static final int FIRST_PLACE = 1;
   private static final int MAX_SCORE = Main.numPlayers - 1;
+  private static final int MIN_SCORE = 0;
+  private static final int POINTS_PER_GAME = 3;
 
   @Override
   public void evaluate(AbstractPlayer player) {
@@ -21,7 +22,7 @@ public class NumWinsFitnessEvaluator extends AbstractFitnessEvaluator {
     Integer fitness = scores.get(player);
 
     // Compute the score for the most recent game
-    int gameScore = player.getFinishOrder() == FIRST_PLACE ? MAX_SCORE : 0;
+    int gameScore = player.getFinishOrder() == FIRST_PLACE ? MAX_SCORE : MIN_SCORE;
 
     // Add gameScore to fitness
     if (fitness != null) {
@@ -35,4 +36,8 @@ public class NumWinsFitnessEvaluator extends AbstractFitnessEvaluator {
     player.setFitness(fitness);
   }
 
+  @Override
+  public int getMaxPointsPerGame() {
+    return POINTS_PER_GAME;
+  }
 }

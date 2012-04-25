@@ -38,7 +38,7 @@ public class PlayerPanel extends JPanel implements ListSelectionListener {
   JTextField cashField = new JTextField();
   
   JLabel lotLabel = new JLabel("Location");
-  JComboBox lotComboBox;
+  JComboBox<Location> lotComboBox;
 
   JLabel dummy = new JLabel();
   JButton addLotButton = new JButton("Add");
@@ -49,6 +49,7 @@ public class PlayerPanel extends JPanel implements ListSelectionListener {
   MTableModel m = new MTableModel();
   JScrollPane scrollPane = new JScrollPane(table);
 
+  @SuppressWarnings("unchecked")
   public PlayerPanel(int index) {
     this.index = index;
     
@@ -90,7 +91,7 @@ public class PlayerPanel extends JPanel implements ListSelectionListener {
     layout.setConstraints(lotLabel, gbc);
     add(lotLabel, gbc);
 
-    lotComboBox = new JComboBox();
+    lotComboBox = new JComboBox<Location>();
     MComboBoxModel model = new MComboBoxModel(this); 
     lotComboBox.setModel(model);
     for (Location lot : PropertyFactory.getPropertyFactory(PlayerGui.factoryKey).getLocations()) {

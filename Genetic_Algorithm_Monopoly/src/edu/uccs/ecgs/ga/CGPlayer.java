@@ -4,7 +4,12 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 
-//Player with a continuous genome
+/**
+ * Represents a player with a real-valued genome, i.e. each gene in the 
+ * chromosome is a real number not a binary string. Since all children
+ * will have a 40 element array for the properties chromosomes, the primary
+ * difference in subclasses will be the length of the jail array.
+ */
 public abstract class CGPlayer extends AbstractPlayer {
   protected int jailLength = 0;       //num of entries in chrJailArray
   protected final int lotLength = 40; //num of entries in any lot array
@@ -155,10 +160,11 @@ public abstract class CGPlayer extends AbstractPlayer {
 
   @Override
   public AbstractPlayer[] createChildren(AbstractPlayer parent, int index) {
-    AbstractPlayer[] result = new AbstractPlayer[2];
+    CGPlayer[] result = new CGPlayer[2];
+    CGPlayer parent1 = this;
     CGPlayer parent2 = (CGPlayer) parent;
 
-    // get a beta value
+    // get a beta value, uniformly distributed, 0 <= beta < 1
     double beta = r.nextDouble();
 
     double[] chrNoOwners1 = new double[lotLength];
@@ -174,40 +180,42 @@ public abstract class CGPlayer extends AbstractPlayer {
     double[][] chrJail2 = new double[jailLength][jailLength];
 
     for (int i = 0; i < lotLength; i++) {
-      chrNoOwners1[i] = this.chrNoOwners[i] * beta  
+      // p1 * beta + p2 * (1-beta)
+      chrNoOwners1[i] = parent1.chrNoOwners[i] * beta  
                         + parent2.chrNoOwners[i] * (1.0 - beta);
-      chrPlayerOwns1[i] = this.chrPlayerOwns[i] * beta
+      chrPlayerOwns1[i] = parent1.chrPlayerOwns[i] * beta
                           + parent2.chrPlayerOwns[i] * (1.0 - beta);
-      chrOpponentOwns1[i] = this.chrOpponentOwns[i] * beta
+      chrOpponentOwns1[i] = parent1.chrOpponentOwns[i] * beta
                             + parent2.chrOpponentOwns[i] * (1.0 - beta);
-      chrTwoOpponentOwns1[i] = this.chrTwoOpponentOwns[i] * beta
+      chrTwoOpponentOwns1[i] = parent1.chrTwoOpponentOwns[i] * beta
                                + parent2.chrTwoOpponentOwns[i] * (1.0 - beta);
 
-      chrNoOwners2[i] = this.chrNoOwners[i] * (1.0 - beta)  
+      // p1 * (1-beta) + p2 * beta
+      chrNoOwners2[i] = parent1.chrNoOwners[i] * (1.0 - beta)  
                         + parent2.chrNoOwners[i] * beta;
-      chrPlayerOwns2[i] = this.chrPlayerOwns[i] * (1.0 - beta)
+      chrPlayerOwns2[i] = parent1.chrPlayerOwns[i] * (1.0 - beta)
                           + parent2.chrPlayerOwns[i] * beta;
-      chrOpponentOwns2[i] = this.chrOpponentOwns[i] * (1.0 - beta)
+      chrOpponentOwns2[i] = parent1.chrOpponentOwns[i] * (1.0 - beta)
                             + parent2.chrOpponentOwns[i] * beta;
-      chrTwoOpponentOwns2[i] = this.chrTwoOpponentOwns[i] * (1.0 - beta)
+      chrTwoOpponentOwns2[i] = parent1.chrTwoOpponentOwns[i] * (1.0 - beta)
                                + parent2.chrTwoOpponentOwns[i] * beta;
     }
 
     for (int i = 0; i < jailLength; i++) {
       for (int j = 0; j < jailLength; j++) {
-        chrJail1[i][j] = this.chrJail[i][j] * beta 
+        chrJail1[i][j] = parent1.chrJail[i][j] * beta 
                          + parent2.chrJail[i][j] * (1.0 - beta);
-        chrJail2[i][j] = this.chrJail[i][j] * (1.0 - beta)
+        chrJail2[i][j] = parent1.chrJail[i][j] * (1.0 - beta)
                          + parent2.chrJail[i][j] * beta;
       }
     }
 
-    result[0] = Main.chromoType.getPlayer(index, chrNoOwners1, chrPlayerOwns1,
+    result[0] = createChild(index, chrNoOwners1, chrPlayerOwns1,
         chrOpponentOwns1, chrTwoOpponentOwns1, chrJail1);
 
     ++index;
 
-    result[1] = Main.chromoType.getPlayer(index, chrNoOwners2, chrPlayerOwns2,
+    result[1] = createChild(index, chrNoOwners2, chrPlayerOwns2,
         chrOpponentOwns2, chrTwoOpponentOwns2, chrJail2);
 
     return result; 
@@ -260,8 +268,6 @@ public abstract class CGPlayer extends AbstractPlayer {
 
   @Override
   protected Object clone() throws CloneNotSupportedException {
-    CGPlayer child = null;
-    
     double[] chrNoOwners1 = new double[lotLength];
     double[] chrPlayerOwns1 = new double[lotLength];
     double[] chrOpponentOwns1 = new double[lotLength];
@@ -281,14 +287,43 @@ public abstract class CGPlayer extends AbstractPlayer {
       }
     }
 
-    if (Main.chromoType == ChromoTypes.RGA) {
-      child = new RGAPlayer(0, chrNoOwners1, chrPlayerOwns1,
-                            chrOpponentOwns1, chrTwoOpponentOwns1, chrJail1);
-    } else {
-      child = new TGAPlayer(0, chrNoOwners1, chrPlayerOwns1,
-                            chrOpponentOwns1, chrTwoOpponentOwns1, chrJail1);
-    }
+    return createChild(0, chrNoOwners1, chrPlayerOwns1, chrOpponentOwns1,
+        chrTwoOpponentOwns1, chrJail1);
+  }
 
-    return child;
+  /**
+   * Create a new player instance from the passed in chromosomes.
+   * 
+   * @param index
+   *          The index of the player
+   * @param chrNoOwners
+   *          The chromosome to use when no player owns a property in a group.
+   * @param chrPlayerOwns
+   *          The chromosome to use when this player owns a property in a group.
+   * @param chrOpponentOwns
+   *          The chromosome to use when another player owns a property in a
+   *          group.
+   * @param chrTwoOpponentOwns
+   *          The chromosome to use when two other players own property in a
+   *          group.
+   * @param chrJail
+   *          The chromosome to use when determining whether to pay bail to
+   *          leave jail.
+   * @return The new player instance.
+   */
+  private CGPlayer createChild(int index, 
+      double[] chrNoOwners, double[] chrPlayerOwns,
+      double[] chrOpponentOwns, double[] chrTwoOpponentOwns,
+      double[][] chrJail) 
+  {
+    CGPlayer player = (CGPlayer) Main.chromoType.getPlayer(index);
+    player.jailLength = this.jailLength;
+    player.chrNoOwners = chrNoOwners;
+    player.chrPlayerOwns = chrPlayerOwns;
+    player.chrOpponentOwns = chrOpponentOwns;
+    player.chrTwoOpponentOwns = chrTwoOpponentOwns;
+    player.chrJail = chrJail;
+    
+    return player;
   }
 }

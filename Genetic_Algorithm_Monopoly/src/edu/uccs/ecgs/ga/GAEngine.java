@@ -169,8 +169,7 @@ public class GAEngine implements Runnable {
           }
         }
 
-        //TODO generalize getting the fitness evaluator
-        AbstractFitnessEvaluator fitEval = new NumWinsFitnessEvaluator();
+        IFitnessEvaluator fitEval = Main.fitnessEvaluator.get();
         for (AbstractPlayer player : playersDone) {
           fitEval.evaluate(player);
         }

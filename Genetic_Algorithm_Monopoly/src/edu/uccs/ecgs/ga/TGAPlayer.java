@@ -8,9 +8,12 @@ import java.io.IOException;
 //same as RGA but jail chromosome is only 4x4 (RGA is 64x64)
 public class TGAPlayer extends CGPlayer {
 
+  // Jail Chromosome dimension
+  private static final int JAIL_LENGTH = 4;
+
   public TGAPlayer(int index) {
     super(index);
-    jailLength = 4;
+    jailLength = JAIL_LENGTH;
 
     chrNoOwners = new double[lotLength];
     chrPlayerOwns = new double[lotLength];
@@ -34,7 +37,7 @@ public class TGAPlayer extends CGPlayer {
 
   public TGAPlayer(int index, DataInputStream dis) throws IOException {
     super(index);
-    jailLength = 4;
+    jailLength = JAIL_LENGTH;
 
     chrNoOwners = new double[lotLength];
     chrPlayerOwns = new double[lotLength];
@@ -69,7 +72,7 @@ public class TGAPlayer extends CGPlayer {
       double[][] chrJail) 
   {
     super(index);
-    jailLength = 4;
+    jailLength = JAIL_LENGTH;
 
     this.chrNoOwners = chrNoOwners;
     this.chrPlayerOwns = chrPlayerOwns;

@@ -10,10 +10,10 @@ import edu.uccs.ecgs.ga.Location;
 import edu.uccs.ecgs.ga.PropertyGroups;
 
 public class BuyButtonListener implements ActionListener {
-  JComboBox list;
+  JComboBox<Location> list;
   PlayerPanel pp;
   
-  public BuyButtonListener(PlayerPanel pp, JComboBox list) {
+  public BuyButtonListener(PlayerPanel pp, JComboBox<Location> list) {
     super();
     this.pp = pp;
     this.list = list;

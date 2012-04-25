@@ -12,7 +12,7 @@ import edu.uccs.ecgs.ga.PropertyFactory;
 public class RemoveLotActionListener implements ActionListener {
   JTable table;
 
-  public RemoveLotActionListener(JComboBox comboBox, JTable table) {
+  public RemoveLotActionListener(JComboBox<Location> comboBox, JTable table) {
     super();
     this.table = table;
   }

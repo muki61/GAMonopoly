@@ -7,9 +7,12 @@ import java.io.IOException;
 //player that uses a genome with continuous values 
 public class RGAPlayer extends CGPlayer {
 
+  // Jail Chromosome dimension
+  private static final int JAIL_LENGTH = 64;
+
   public RGAPlayer(int index) {
     super(index);
-    jailLength = 64;
+    jailLength = JAIL_LENGTH;
 
     chrNoOwners = new double[lotLength];
     chrPlayerOwns = new double[lotLength];
@@ -33,7 +36,7 @@ public class RGAPlayer extends CGPlayer {
 
   public RGAPlayer(int index, DataInputStream dis) throws IOException {
     super(index);
-    jailLength = 64;
+    jailLength = JAIL_LENGTH;
 
     chrNoOwners = new double[lotLength];
     chrPlayerOwns = new double[lotLength];
@@ -68,7 +71,7 @@ public class RGAPlayer extends CGPlayer {
       double[][] chrJail) 
   {
     super(index);
-    jailLength = 64;
+    jailLength = JAIL_LENGTH;
 
     this.chrNoOwners = chrNoOwners;
     this.chrPlayerOwns = chrPlayerOwns;

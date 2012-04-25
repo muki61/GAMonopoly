@@ -46,6 +46,11 @@ public class Main {
   public static int numPlayers = 4;
 
   /**
+   * The fitness evaluator type to use for the algorithm.
+   */
+  public static FitEvalTypes fitnessEvaluator = FitEvalTypes.NUM_WINS;
+
+  /**
    * Should existing players be loaded from data files (loadFromDisk=true) or
    * generated from scratch (loadFromDisk=false).
    */
@@ -128,6 +133,8 @@ public class Main {
             maxTurns = Integer.parseInt(value);
           } else if (key.equals("numPlayers")) {
             numPlayers = Integer.parseInt(value);
+          } else if (key.equals("fitnessEvaluator")) {
+            fitnessEvaluator = FitEvalTypes.valueOf(value);
           } else if (key.equals("loadFromDisk")) {
             loadFromDisk = Boolean.parseBoolean(value);
           } else if (key.equals("lastGeneration")) {
@@ -161,16 +168,19 @@ public class Main {
     }
     
     if (useGui) {
-      String[][] fields = new String[][] { 
+      Object[][] fields = new Object[][] { 
           { "Number of generations", "" + numGenerations },
           { "Number of matches per generation", "" + numMatches },
           { "Max number of turns per game", "" + maxTurns },
           { "Number of players in population", "" + maxPlayers },
           { "Number of players per game", "" + numPlayers },
+          { "Fitness Evaluator", FitEvalTypes.values() },
           { "Load players from disk", "" + loadFromDisk }, 
           { "Generation to load", "" + lastGeneration },
-          { "Debug", "" + debug }, 
-          { "Chromosome Type (RGA, SGA, TGA)", "" + chromoType.toString() },
+          { "Debug",
+              new String[] { Level.OFF.toString(), Level.FINEST.toString(),
+                  Level.INFO.toString(), Level.SEVERE.toString() } },
+          { "Chromosome Type", ChromoTypes.values() },
           { "Mutation Rate", "" + mutationRate },
           { "Use random seed for games", "" + useRandomSeed},
           { "Number of threads (1 thread per concurrent game)", "" + numThreads } };
@@ -203,17 +213,33 @@ public class Main {
     System.exit(0);
   }
 
+  /**
+   * Pause the simulation
+   */
   public static void pause()
   {
     paused = true;
   }
 
+  /**
+   * Resume the simulation
+   */
   public static void resume()
   {
     paused = false;
     gaEngine.resume();
   }
 
+  /**
+   * Utility method for GUI to set simulation parameters
+   * 
+   * @param index
+   *          The index of the parameter in the class to set. The index is
+   *          zero-based and based on the position of the parameter in the GUI,
+   *          with the first parameter given index 0, the second parameter in
+   *          the GUI is index 1, etc.
+   * @param text The value of the parameter
+   */
   public static void setExecutionValue(int index, String text)
   {
     switch (index) {
@@ -237,38 +263,37 @@ public class Main {
       // Number of players per game
       numPlayers = Integer.parseInt(text);
       break;
-    case 5:
+    case 6:
       // Load players from disk 
       loadFromDisk = Boolean.parseBoolean(text);
       break;
-    case 6:
+    case 7:
       // Generation to load
       lastGeneration = Integer.parseInt(text);
       break;
-    case 7:
-      // Debug
-      debug = Level.parse(text.toUpperCase());
-      break;
-    case 8:
-      // Chromosome Type
-      chromoType = ChromoTypes.valueOf(text.toUpperCase());
-      break;
-    case 9:
+    case 10:
       // Mutation Rate
       mutationRate = Double.parseDouble(text);
       break;
-    case 10:
+    case 11:
       // use random seed
       useRandomSeed = Boolean.parseBoolean(text);
       break;
-    case 11:
+    case 12:
       // number of threads
       numThreads = Integer.parseInt(text);
       break;
     default:
+      break;
     }
   }
 
+  /**
+   * Utility method for this object to set the Match field in the GUI
+   * 
+   * @param matches
+   *          The current match number
+   */
   public void setMatchNum(int matches)
   {
     if (useGui) {
@@ -276,10 +301,47 @@ public class Main {
     }
   }
 
+  /**
+   * Utility method for this object to set the Generation field in the GUI
+   * 
+   * @param matches
+   *          The current generation number
+   */
   public void setGenNum(int generation)
   {
     if (useGui) {
       gui.genNum.setText("" + generation);
+    }
+  }
+
+  /**
+   * Utility method for GUI to set simulation parameters from a Combo Box
+   * 
+   * @param index
+   *          The index of the parameter in the class to set. The index is
+   *          zero-based and based on the position of the parameter in the GUI,
+   *          with the first parameter given index 0, the second parameter in
+   *          the GUI is index 1, etc.
+   * @param text
+   *          The object used to set the parameter. For Fitness Evaluator and
+   *          Chromosome Type, the object is an instance of the appropriate
+   *          enum. For Log Level, the object is a String.
+   */
+  public static void setExecutionValue(int index, Object selectedItem) {
+    switch (index) {
+    case 5:
+      // Fitness Evaluator
+      fitnessEvaluator = (FitEvalTypes) selectedItem;
+      break;
+    case 8:
+      // Debug
+      debug = Level.parse(selectedItem.toString());
+      break;
+    case 9:
+      // Chromosome Type
+      chromoType = (ChromoTypes) selectedItem;
+      break;
+    default:
     }
   }
 }

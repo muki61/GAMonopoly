@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Random;
-import java.util.TreeSet;
 import java.util.Vector;
 
 
@@ -25,7 +24,8 @@ public class PopulationPropagator {
     // In a game with 4 players, the total points per game is 0+1+2+3 = 6
     // In a game with 5 players, the total points per game is 0+1+2+3+4 = 10
     // In general, total points is sum 0..(numPlayers-1)
-    // TODO: With different evaluators, this is no longer true
+    // TODO: With different evaluators, this is no longer true, but this is only
+    // used to size the Vector used for roulette picking, so it's probably not a big deal
     for (int i = 0; i < Main.numPlayers; i++) {
       pointsPerGame += i;
     }
@@ -44,13 +44,12 @@ public class PopulationPropagator {
     // Each player gets one entry in the roulette for each point of fitness, so make the
     // roulette have has many slots as the total fitness in a generation
     Vector<AbstractPlayer> roulette = new Vector<AbstractPlayer>(totalFitness);
-    TreeSet<AbstractPlayer> elites = new TreeSet<AbstractPlayer>();
 
     for (AbstractPlayer player : population) {
       // elitism - pick the top 10% best players (might be more than 10% due to duplicate fitness)
       //TODO Frayn used only top 3
       if (player.getFitness() >= minEliteScore) {
-        elites.add(player);
+        newPopulation.add(player);
       }
 
       //fill up the roulette wheel
@@ -58,8 +57,6 @@ public class PopulationPropagator {
         roulette.add(player);
       }
     }
-
-    newPopulation.addAll(elites);
 
     AbstractPlayer parent1 = null;
     AbstractPlayer parent2 = null;
@@ -138,7 +135,6 @@ public class PopulationPropagator {
 
     //release references
     roulette.clear();
-    elites.clear();
     
     assert newPopulation.size() == Main.maxPlayers;
     return newPopulation;
@@ -187,15 +183,10 @@ public class PopulationPropagator {
       header[2] = dis.readChar();
       
       String headerStr = new String(header);
-      //System.out.println("Header            : [" + headerStr + "]");
 
-      if (headerStr.equals("RGA")) {
-        player = new RGAPlayer(index, dis);
-      } else if (headerStr.equals("SGA")) {
-        player = new SGAPlayer(index, dis);
-      } else if (headerStr.equals("TGA")) {
-        player = new TGAPlayer(index, dis);
-      }
+      ChromoTypes chromoType = ChromoTypes.valueOf(headerStr);
+      player = chromoType.getPlayer(index, dis);
+
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     } catch (IOException e) {

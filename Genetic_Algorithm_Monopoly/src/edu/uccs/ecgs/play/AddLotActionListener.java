@@ -12,11 +12,11 @@ import edu.uccs.ecgs.ga.PropertyFactory;
 import edu.uccs.ecgs.ga.PropertyGroups;
 
 public class AddLotActionListener implements ActionListener {
-  JComboBox comboBox;
+  JComboBox<Location> comboBox;
   JTable table;
   AbstractPlayer player;
   
-  public AddLotActionListener(AbstractPlayer player, JComboBox comboBox, JTable table) {
+  public AddLotActionListener(AbstractPlayer player, JComboBox<Location> comboBox, JTable table) {
     super();
     this.comboBox = comboBox;
     this.table = table;

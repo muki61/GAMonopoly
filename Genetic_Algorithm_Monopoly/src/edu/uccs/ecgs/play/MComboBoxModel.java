@@ -12,7 +12,7 @@ import edu.uccs.ecgs.ga.Location;
 import edu.uccs.ecgs.ga.PropertyFactory;
 import edu.uccs.ecgs.ga.PropertyGroups;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({ "serial", "rawtypes" })
 public class MComboBoxModel extends DefaultComboBoxModel implements ActionListener {
   TreeSet<Location> data = new TreeSet<Location>();
   Location selected = PropertyFactory.getPropertyFactory(PlayerGui.factoryKey).getLocationAt(0);
@@ -77,7 +77,6 @@ public class MComboBoxModel extends DefaultComboBoxModel implements ActionListen
 
   @Override
   public void removeElement(Object obj) {
-//    System.out.println("removeElement(Object obj) "+getClass().toString());
     int i = getIndexOf(obj) - 1;
     if (i < 0) i = 0;
     data.remove((Location)obj);
@@ -115,7 +114,7 @@ public class MComboBoxModel extends DefaultComboBoxModel implements ActionListen
 
   @Override
   public void actionPerformed(ActionEvent actionevent) {
-    JComboBox cb = (JComboBox)actionevent.getSource();
+    JComboBox<?> cb = (JComboBox<?>)actionevent.getSource();
     Location lot = (Location)cb.getSelectedItem();
     setSelectedItem(lot);
   }

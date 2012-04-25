@@ -1342,4 +1342,25 @@ public abstract class AbstractPlayer
       game.logFinest(s);
     }
   }
+
+  /**
+   * @return The number of properties owned by the player
+   */
+  public int getNumProperties() {
+    return owned.size();
+  }
+
+  public int getNumMonopolies() {
+    int result = 0;
+    PropertyGroups lastGroup = PropertyGroups.SPECIAL;
+
+    for (Location l : owned.values()) {
+      if (l.partOfMonopoly && l.getGroup() != lastGroup) {
+        ++result;
+        lastGroup = l.getGroup();
+      }
+    }
+
+    return result;
+  }
 }
