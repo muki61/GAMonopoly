@@ -208,8 +208,12 @@ public class Main {
       e.printStackTrace();
     }
 
-    JOptionPane.showMessageDialog(null, "Monopoly simulation is complete",
-        "Simulation Complete", JOptionPane.INFORMATION_MESSAGE);
+    if (useGui) {
+      JOptionPane.showMessageDialog(null, "Monopoly simulation is complete",
+          "Simulation Complete", JOptionPane.INFORMATION_MESSAGE);
+    } else {
+      System.out.println("Monopoly simulation is complete");
+    }
     System.exit(0);
   }
 
