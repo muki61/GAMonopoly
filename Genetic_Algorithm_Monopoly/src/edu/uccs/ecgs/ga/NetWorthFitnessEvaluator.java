@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class NetWorthFitnessEvaluator implements IFitnessEvaluator {
   private HashMap<AbstractPlayer, Integer> scores = new HashMap<AbstractPlayer, Integer>();
-  private static final int POINTS_PER_GAME = 8; // this is a theoretical max
+  private static final int POINTS_PER_GAME = 10; // just a guess...
 
   @Override
   public void evaluate(AbstractPlayer player) {
