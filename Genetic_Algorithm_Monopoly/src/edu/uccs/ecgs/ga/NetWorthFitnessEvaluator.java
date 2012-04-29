@@ -19,7 +19,7 @@ public class NetWorthFitnessEvaluator implements IFitnessEvaluator {
     Integer fitness = scores.get(player);
 
     // Compute the score for the most recent game
-    int gameScore = player.getTotalWorth() / 10;
+    int gameScore = player.getTotalWorth() / 100;
 
     // Add gameScore to fitness
     if (fitness != null) {
