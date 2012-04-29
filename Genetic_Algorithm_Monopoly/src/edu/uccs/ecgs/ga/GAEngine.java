@@ -261,10 +261,14 @@ public class GAEngine implements Runnable {
       FileWriter fw = new FileWriter(dir.toString() + "/fitness_scores.csv");
       bw = new BufferedWriter(fw);
 
-      // all scores
-      int maxScore = Main.numMatches * (Main.numPlayers - 1);
+      bw.write("fitness,num players");
+      bw.newLine();
 
-      for (int i = 0; i <= maxScore; i++) {
+      // all scores
+      int minScore = scores.firstKey();
+      int maxScore = scores.lastKey();
+
+      for (int i = minScore; i <= maxScore; i++) {
         if (scores.containsKey(i)) {
           bw.write(i + "," + scores.get(i).intValue());
           bw.newLine();
@@ -291,6 +295,9 @@ public class GAEngine implements Runnable {
     try {
       FileWriter fw = new FileWriter(dir.toString() + "/player_fitness.csv");
       bw = new BufferedWriter(fw);
+
+      bw.write("fitness,player id");
+      bw.newLine();
 
       for (AbstractPlayer player : fitness) {
         bw.write(player.getFitness() + "," + player.playerIndex);
