@@ -106,6 +106,13 @@ public class Main {
 
   public static boolean started = false;
 
+  public static boolean dumpPlayerData = false;
+
+  // TODO create other labels
+  public static final String loadFromDiskLabel = "Load players from disk";
+  public static final String randomSeedLabel = "Use random seed for games";
+  public static final String dumpPlayerDataLabel = "Dump Player Data";
+
   public static void main(String[] args)
   {
     Main main = new Main();
@@ -151,6 +158,8 @@ public class Main {
             useRandomSeed = Boolean.parseBoolean(value);
           } else if (key.equals("numThreads")) {
             numThreads = Integer.parseInt(value);
+          } else if (key.equals("dumpPlayerData")) {
+            dumpPlayerData = Boolean.parseBoolean(value);
           }
         }
       } catch (IOException e) {
@@ -175,15 +184,17 @@ public class Main {
           { "Number of players in population", "" + maxPlayers },
           { "Number of players per game", "" + numPlayers },
           { "Fitness Evaluator", FitEvalTypes.values() },
-          { "Load players from disk", "" + loadFromDisk }, 
+          { loadFromDiskLabel,
+              new Boolean[] { Boolean.TRUE, Boolean.FALSE } },
           { "Generation to load", "" + lastGeneration },
           { "Debug",
               new String[] { Level.OFF.toString(), Level.FINEST.toString(),
                   Level.INFO.toString(), Level.SEVERE.toString() } },
           { "Chromosome Type", ChromoTypes.values() },
           { "Mutation Rate", "" + mutationRate },
-          { "Use random seed for games", "" + useRandomSeed},
-          { "Number of threads (1 thread per concurrent game)", "" + numThreads } };
+          { randomSeedLabel, new Boolean[] { Boolean.TRUE, Boolean.FALSE } },
+          { "Number of threads (1 thread per concurrent game)", "" + numThreads },
+          { dumpPlayerDataLabel, new Boolean[] { Boolean.TRUE, Boolean.FALSE }  } };
 
       gui = new Gui(this);
       gui.init(fields);
@@ -267,10 +278,6 @@ public class Main {
       // Number of players per game
       numPlayers = Integer.parseInt(text);
       break;
-    case 6:
-      // Load players from disk 
-      loadFromDisk = Boolean.parseBoolean(text);
-      break;
     case 7:
       // Generation to load
       lastGeneration = Integer.parseInt(text);
@@ -278,10 +285,6 @@ public class Main {
     case 10:
       // Mutation Rate
       mutationRate = Double.parseDouble(text);
-      break;
-    case 11:
-      // use random seed
-      useRandomSeed = Boolean.parseBoolean(text);
       break;
     case 12:
       // number of threads
@@ -337,6 +340,10 @@ public class Main {
       // Fitness Evaluator
       fitnessEvaluator = (FitEvalTypes) selectedItem;
       break;
+    case 6:
+      // Load players from disk 
+      loadFromDisk = (Boolean) selectedItem;
+      break;
     case 8:
       // Debug
       debug = Level.parse(selectedItem.toString());
@@ -344,6 +351,14 @@ public class Main {
     case 9:
       // Chromosome Type
       chromoType = (ChromoTypes) selectedItem;
+      break;
+    case 11:
+      // use random seed
+      useRandomSeed = (Boolean) selectedItem;
+      break;
+    case 13:
+      // whether to dump player data files or not
+      dumpPlayerData = (Boolean) selectedItem;
       break;
     default:
     }

@@ -313,6 +313,10 @@ public class GAEngine implements Runnable {
    * Output data files with the chromosome for each player.
    */
   private void dumpGenome() {
+    if (!Main.dumpPlayerData) {
+      return;
+    }
+
     for (AbstractPlayer player : playerPool) {
       StringBuilder fn1 = new StringBuilder(32);
       fn1.append("0000").append(player.playerIndex);

@@ -6,6 +6,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -38,6 +39,7 @@ public class Gui extends JFrame {
     assert program != null;
   }
 
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   private JPanel getSimPanel(Object[][] fields) {
     JPanel panel = new JPanel();
     panel.setLayout(new GridBagLayout());
@@ -54,6 +56,7 @@ public class Gui extends JFrame {
         choice = new JTextField(field[1].toString(), 6);
       } else {
         choice = new JComboBox((Object[])field[1]);
+        setComboBoxSelection((JComboBox) choice, field[0].toString());
       }
 
       textFields.add(choice);
@@ -123,6 +126,21 @@ public class Gui extends JFrame {
     });
 
     return panel;
+  }
+
+  @SuppressWarnings("rawtypes")
+  private void setComboBoxSelection(JComboBox choice, String label) {
+    if (label.equalsIgnoreCase(Main.loadFromDiskLabel)) {
+      ((JComboBox) choice).setSelectedItem(Main.loadFromDisk);
+    } else if (label.equalsIgnoreCase(Main.randomSeedLabel)) {
+      ((JComboBox) choice).setSelectedItem(Main.useRandomSeed);      
+    } else if (label.equalsIgnoreCase(Main.dumpPlayerDataLabel)) {
+      ((JComboBox) choice).setSelectedItem(Main.dumpPlayerData);          
+    } else {
+      ((JComboBox) choice).setSelectedItem(Main.fitnessEvaluator);
+      ((JComboBox) choice).setSelectedItem(Main.debug);
+      ((JComboBox) choice).setSelectedItem(Main.chromoType);
+    }
   }
 
   private void setExecutionValues()
