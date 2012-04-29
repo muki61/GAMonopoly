@@ -183,6 +183,13 @@ public class GAEngine implements Runnable {
         games.clear();
       }
 
+      //TODO Not sure about keeping this...
+      if (generation % 100 == 0 || generation == 999) {
+        Main.dumpPlayerData = true;
+      } else {
+        Main.dumpPlayerData = false;
+      }
+
       dumpGenome();
       dumpPlayerFitness();
 
