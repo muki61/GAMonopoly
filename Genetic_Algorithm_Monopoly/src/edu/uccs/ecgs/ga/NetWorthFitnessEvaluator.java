@@ -11,7 +11,7 @@ import java.util.HashMap;
  */
 public class NetWorthFitnessEvaluator implements IFitnessEvaluator {
   private HashMap<AbstractPlayer, Integer> scores = new HashMap<AbstractPlayer, Integer>();
-  private static final int POINTS_PER_GAME = 5000; // just a guess...
+  private static final int POINTS_PER_GAME = 4000; // just a guess...
 
   @Override
   public void evaluate(AbstractPlayer player) {
