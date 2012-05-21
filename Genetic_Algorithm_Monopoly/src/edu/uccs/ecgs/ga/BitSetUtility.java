@@ -68,8 +68,8 @@ public class BitSetUtility {
     // convert each set of three bits to a 1 or 0
     // 111  -> 1
     // else -> 0
-    int highBits = idx & 0x38; //0x111000
-    int lowBits  = idx & 0x07; //0x000111
+    int highBits = idx & 0x38; // b 11 1000
+    int lowBits  = idx & 0x07; // b 00 0111
     
     int result = 0;
 

@@ -94,38 +94,20 @@ public class PropertyFactory {
 
     switch (edge) {
     case SOUTH:
-      edgeProperties = new Location[5];
-      edgeProperties[0] = locations[1];
-      edgeProperties[1] = locations[3];
-      edgeProperties[2] = locations[6];
-      edgeProperties[3] = locations[8];
-      edgeProperties[4] = locations[9];
+      edgeProperties = new Location[] { locations[1], locations[3],
+          locations[6], locations[8], locations[9] };
       break;
     case WEST:
-      edgeProperties = new Location[6];
-      edgeProperties[0] = locations[11];
-      edgeProperties[1] = locations[13];
-      edgeProperties[2] = locations[14];
-      edgeProperties[3] = locations[16];
-      edgeProperties[4] = locations[18];
-      edgeProperties[5] = locations[19];
+      edgeProperties = new Location[] { locations[11], locations[13],
+          locations[14], locations[16], locations[18], locations[19] };
       break;
     case NORTH:
-      edgeProperties = new Location[6];
-      edgeProperties[0] = locations[21];
-      edgeProperties[1] = locations[23];
-      edgeProperties[2] = locations[24];
-      edgeProperties[3] = locations[26];
-      edgeProperties[4] = locations[27];
-      edgeProperties[5] = locations[29];
+      edgeProperties = new Location[] { locations[21], locations[23],
+          locations[24], locations[26], locations[27], locations[29] };
       break;
     case EAST:
-      edgeProperties = new Location[5];
-      edgeProperties[0] = locations[31];
-      edgeProperties[1] = locations[32];
-      edgeProperties[2] = locations[34];
-      edgeProperties[3] = locations[37];
-      edgeProperties[4] = locations[39];
+      edgeProperties = new Location[] { locations[31], locations[32],
+          locations[34], locations[37], locations[39] };
     }
 
     return edgeProperties;
@@ -279,6 +261,14 @@ public class PropertyFactory {
     return result;
   }
 
+  /**
+   * @param p
+   *          The player
+   * @param edge
+   *          The edge to check for monopolies
+   * @return The number of monopolies on the given edge that are not controlled
+   *         by the given player.
+   */
   public int getNumOtherMonopolies(AbstractPlayer p, Edges edge) {
     int result = 0;
     int index1 = 0;
