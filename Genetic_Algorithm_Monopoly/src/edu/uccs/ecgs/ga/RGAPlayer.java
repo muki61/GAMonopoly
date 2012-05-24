@@ -80,13 +80,9 @@ public class RGAPlayer extends CGPlayer {
     this.chrJail = chrJail;
   }
 
-  /**
-   * Predicate asking whether or not player wishes to pay bail 
-   * 
-   * True --> player wishes to pay bail 
-   * 
-   * False --> player wishes to attempt to roll doubles
-   */
+  // Predicate asking whether or not player wishes to pay bail
+  // True --> player wishes to pay bail
+  // False --> player wishes to attempt to roll doubles
   @Override
   public boolean payBailP() {
     if (!hasAtLeastCash(50) && !canRaiseCash(50) && !hasGetOutOfJailCard()) {

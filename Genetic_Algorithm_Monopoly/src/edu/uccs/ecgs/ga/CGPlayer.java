@@ -75,8 +75,9 @@ public abstract class CGPlayer extends AbstractPlayer {
   }  
 
   /**
-   * If player wants to buy the given location --> return true Otherwise -->
-   * return false.
+   * If player wants to buy the given location --> return true<br/>
+   * Otherwise --> return false.<br/>
+   * <br/>
    * 
    * Player will buy property if random double is less than chromosome value; in
    * other words, a higher chromosome value means a higher likelihood of buying

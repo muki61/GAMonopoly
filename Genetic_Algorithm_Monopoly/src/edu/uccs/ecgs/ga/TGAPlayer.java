@@ -91,12 +91,9 @@ public class TGAPlayer extends CGPlayer {
     }
 
     PropertyFactory pf = PropertyFactory.getPropertyFactory(game.gamekey);
-    int idx1 = pf.getIndexFromProperties(Edges.WEST, this);
-    int idx2 = pf.getIndexFromProperties(Edges.NORTH, this);
+    int idx1 = pf.getIndexFromMonopolies(this, Edges.WEST);
+    int idx2 = pf.getIndexFromMonopolies(this, Edges.NORTH);
 
-    idx1 = BitSetUtility.convertToTwoBits(idx1);
-    idx2 = BitSetUtility.convertToTwoBits(idx2);
-    
     return r.nextDouble() < chrJail[idx1][idx2];
   }
 

@@ -113,6 +113,9 @@ public class SGAPlayer extends AbstractPlayer {
     }
   }
 
+  // Predicate asking whether or not player wishes to pay bail
+  // True --> player wishes to pay bail
+  // False --> player wishes to attempt to roll doubles
   @Override
   public boolean payBailP() {
     if (!hasAtLeastCash(50) && !canRaiseCash(50) && !hasGetOutOfJailCard()) {
@@ -120,11 +123,8 @@ public class SGAPlayer extends AbstractPlayer {
     }
 
     PropertyFactory pf = PropertyFactory.getPropertyFactory(game.gamekey);
-    int idx1 = pf.getIndexFromProperties(Edges.WEST, this);
-    int idx2 = pf.getIndexFromProperties(Edges.NORTH, this);
-
-    idx1 = BitSetUtility.convertToTwoBits(idx1);
-    idx2 = BitSetUtility.convertToTwoBits(idx2);
+    int idx1 = pf.getIndexFromMonopolies(this, Edges.WEST);
+    int idx2 = pf.getIndexFromMonopolies(this, Edges.NORTH);
     
     int idx = idx1 * 4 + idx2;
 
