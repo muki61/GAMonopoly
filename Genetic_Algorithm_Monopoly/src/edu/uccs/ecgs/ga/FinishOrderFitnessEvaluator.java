@@ -11,7 +11,7 @@ import java.util.HashMap;
  */
 public class FinishOrderFitnessEvaluator implements IFitnessEvaluator {
   private HashMap<AbstractPlayer, Integer> scores = new HashMap<AbstractPlayer, Integer>();
-  private static final int POINTS_PER_GAME = 6;
+  private static final int POINTS_PER_GAME = 3;
 
   @Override
   public void evaluate(AbstractPlayer player) {

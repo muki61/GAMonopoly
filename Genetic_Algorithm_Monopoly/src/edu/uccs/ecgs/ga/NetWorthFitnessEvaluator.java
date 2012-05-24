@@ -3,15 +3,11 @@ package edu.uccs.ecgs.ga;
 import java.util.HashMap;
 
 /**
- * Compute fitness based on the net worth a player has. For each first
- * place finish in a game, the player is awarded a score that is the number of
- * players in a game minus 1 (e.g. if there are 4 players in a game, the score
- * for a win is 3). The player gets 0 points for any other game result (second
- * through last place).
+ * Compute fitness based on the net worth a player has. 
  */
 public class NetWorthFitnessEvaluator implements IFitnessEvaluator {
   private HashMap<AbstractPlayer, Integer> scores = new HashMap<AbstractPlayer, Integer>();
-  private static final int POINTS_PER_GAME = 4000; // just a guess...
+  private static int POINTS_PER_GAME = 0;
 
   @Override
   public void evaluate(AbstractPlayer player) {

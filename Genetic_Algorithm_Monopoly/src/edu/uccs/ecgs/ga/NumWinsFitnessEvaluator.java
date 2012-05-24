@@ -14,7 +14,7 @@ public class NumWinsFitnessEvaluator implements IFitnessEvaluator {
   private static final int FIRST_PLACE = 1;
   private static final int MAX_SCORE = Main.numPlayers - 1;
   private static final int MIN_SCORE = 0;
-  private static final int POINTS_PER_GAME = 3;
+  private static final int POINTS_PER_GAME = Main.numPlayers - 1;
 
   @Override
   public void evaluate(AbstractPlayer player) {
