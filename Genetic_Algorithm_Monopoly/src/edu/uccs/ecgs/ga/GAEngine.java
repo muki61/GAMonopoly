@@ -34,6 +34,12 @@ public class GAEngine implements Runnable {
   private int minEliteScore;
 
   /**
+   * A map sorted by score; the key for each entry is a score and the entry
+   * value is the number of players with that score
+   */
+  TreeMap<Integer, Integer> scores = new TreeMap<Integer, Integer>();
+
+  /**
    * The pool of available players in a generation. When a player is picked for
    * a game, the player is removed from playerPool and placed into playersDone.
    * After all games have been played, the players are placed back into the
@@ -129,6 +135,9 @@ public class GAEngine implements Runnable {
     while (generation < Main.numGenerations) {
       main.setGenNum(generation);
       matches = 0;
+
+      IFitnessEvaluator fitEval = Main.fitnessEvaluator.get();
+
       while (matches < Main.numMatches) {
         main.setMatchNum(matches);
         gameExecutor = new ThreadPoolExecutor(Main.numThreads, Main.numThreads*2, 1L, TimeUnit.MINUTES, runnableGames);
@@ -163,13 +172,13 @@ public class GAEngine implements Runnable {
             // InterruptedException (timeout should not occur given the timeout
             // value of 106752 days). If the executor terminates normally,
             // allGamesComplete will be set to true.
-            allGamesComplete = gameExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            allGamesComplete = gameExecutor.awaitTermination(Long.MAX_VALUE,
+                TimeUnit.NANOSECONDS);
           } catch (InterruptedException ignored) {
             ignored.printStackTrace();
           }
         }
 
-        IFitnessEvaluator fitEval = Main.fitnessEvaluator.get();
         for (AbstractPlayer player : playersDone) {
           fitEval.evaluate(player);
         }
@@ -183,28 +192,32 @@ public class GAEngine implements Runnable {
         games.clear();
       }
 
-      //TODO Not sure about keeping this...
-      if (generation % 100 == 0 || generation == 999) {
-        Main.dumpPlayerData = true;
-      } else {
-        Main.dumpPlayerData = false;
+      // dump the player data every dumpPeriod generations and the last
+      // generation
+      if (generation % Main.dumpPeriod == 0
+          || generation == Main.numGenerations - 1) {
+        dumpGenome();
       }
 
-      dumpGenome();
+      fitEval.normalize(playerPool);
+
       dumpPlayerFitness();
 
       generation++;
 
       if (generation < Main.numGenerations) {
-        Vector<AbstractPlayer> newPopulation = PopulationPropagator.evolve(
-            playerPool, minEliteScore);
+        computeMinEliteScore();
+        Vector<AbstractPlayer> newPopulation = 
+            PopulationPropagator.evolve(playerPool, minEliteScore);
         playerPool.clear();
         playerPool.addAll(newPopulation);
       }
 
-      // TODO There seems to be memory being held onto by the program
-      // I suspect it is in the loggers. Remove this if the memory problem
-      // is ever fixed.
+      // TODO There seems to be memory being held onto by the program.
+      // I suspect it is the loggers or in the loggers. We have a different
+      // logger instance for every game, and it does not appear that they ever
+      // get released. This is here in the hope that it will help release some 
+      // of the memory.
       try {
         System.gc(); // suggest garbage collection
         Thread.sleep(1000); // sleep for 1 sec to allow gc
@@ -214,13 +227,9 @@ public class GAEngine implements Runnable {
   }
 
   /**
-   * Output files with player fitness data
+   * Output files with player fitness data.
    */
   private void dumpPlayerFitness() {
-    // create a map sorted by score, where the value is the number of
-    // players with that score
-    TreeMap<Integer, Integer> scores = new TreeMap<Integer, Integer>();
-
     // the set is used to dump a list of each player with the player's
     // individual score
     ArrayList<AbstractPlayer> fitness = new ArrayList<AbstractPlayer>(
@@ -235,23 +244,6 @@ public class GAEngine implements Runnable {
       } else {
         Integer newVal = val.intValue() + 1;
         scores.put(player.getFitness(), newVal);
-      }
-    }
-
-    // determine the minimum elite score
-    minEliteScore = 0;
-    int playerCount = 0;
-    int maxPlayerCount = (int) (0.1 * Main.maxPlayers);
-    // Ensure at least 1 player move to next generation based on eliteness
-    if (maxPlayerCount < 1) {
-      maxPlayerCount = 1;
-    }
-
-    for (Integer key : scores.descendingKeySet()) {
-      playerCount += scores.get(key).intValue();
-      if (playerCount >= maxPlayerCount) {
-        minEliteScore = key.intValue();
-        break;
       }
     }
 
@@ -324,19 +316,42 @@ public class GAEngine implements Runnable {
   }
 
   /**
+   * Compute the minimu elite score to allow 10% of the players to directly
+   * propagate to the next generation.
+   */
+  private void computeMinEliteScore()
+  {
+    minEliteScore = 0;
+    int playerCount = 0;
+    int maxPlayerCount = (int) (0.1 * Main.maxPlayers);
+    // Ensure at least 1 player move to next generation based on eliteness
+    if (maxPlayerCount < 1) {
+      maxPlayerCount = 1;
+    }
+
+    for (Integer key : scores.descendingKeySet()) {
+      playerCount += scores.get(key).intValue();
+      if (playerCount >= maxPlayerCount) {
+        minEliteScore = key.intValue();
+        break;
+      }
+    }
+  }
+
+  /**
    * Output data files with the chromosome for each player.
    */
   private void dumpGenome() {
-    if (!Main.dumpPlayerData) {
-      return;
-    }
-
     for (AbstractPlayer player : playerPool) {
       StringBuilder fn1 = new StringBuilder(32);
-      fn1.append("0000").append(player.playerIndex);
-      String fn2 = fn1.reverse().substring(0, 4);
-      StringBuilder fn3 = new StringBuilder(fn2).append("rylp").reverse();
-      fn3.append(".dat");
+      // prepend 0s to the player index number 
+      fn1.append("000").append(player.playerIndex);
+      // now take just the last four chars so we have 0000 to 9999
+      while (fn1.length() > 4) {
+        fn1.deleteCharAt(0);
+      }
+      fn1.insert(0, "player");
+      fn1.append(".dat");
 
       StringBuilder dir = Utility.getDirForGen(generation);
 
@@ -348,7 +363,7 @@ public class GAEngine implements Runnable {
       DataOutputStream dos = null;
       try {
         FileOutputStream fos = new FileOutputStream(dir.toString() + "/"
-            + fn3.toString());
+            + fn1.toString());
         dos = new DataOutputStream(fos);
         player.dumpGenome(dos);
       } catch (FileNotFoundException e) {

@@ -74,7 +74,7 @@ public class SGAPlayer extends AbstractPlayer {
   public SGAPlayer(int index, DataInputStream dis) throws IOException {
     super(index);
 
-    setFitness(dis.readInt());
+    addToFitness(dis.readInt());
 
     chrNoOwners = new BitSet(chromoLength);
     chrPlayerOwns = new BitSet(chromoLength);

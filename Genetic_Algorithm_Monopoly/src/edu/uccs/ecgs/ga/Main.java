@@ -106,12 +106,19 @@ public class Main {
 
   public static boolean started = false;
 
-  public static boolean dumpPlayerData = false;
+  /**
+   * How often to dump the player genome to data files. Player data will be
+   * written to disk when generation mod dumpPeriod == 0. To dump every
+   * generation, set the dumpPeriod = 1; To dump generation 0, 100, 200, etc.,
+   * set the dumpPeriod = 100. NOTE: Player data is also dumped in the last
+   * generation.
+   */
+  public static int dumpPeriod = 100;
 
   // TODO create other labels
   public static final String loadFromDiskLabel = "Load players from disk";
   public static final String randomSeedLabel = "Use random seed for games";
-  public static final String dumpPlayerDataLabel = "Dump Player Data";
+  public static final String dumpPeriodLabel = "Dump Player Data every n generations";
 
   public static void main(String[] args)
   {
@@ -130,36 +137,36 @@ public class Main {
         props.load(inStream);
         for(String key : props.stringPropertyNames()) {
           String value = props.getProperty(key);
-          if (key.equals("maxPlayers")) {
+          if (key.equalsIgnoreCase("maxPlayers")) {
             maxPlayers = Integer.parseInt(value);
-          } else if (key.equals("numGenerations")) {
+          } else if (key.equalsIgnoreCase("numGenerations")) {
             numGenerations = Integer.parseInt(value);
-          } else if (key.equals("numMatches")) {
+          } else if (key.equalsIgnoreCase("numMatches")) {
             numMatches = Integer.parseInt(value);
-          } else if (key.equals("maxTurns")) {
+          } else if (key.equalsIgnoreCase("maxTurns")) {
             maxTurns = Integer.parseInt(value);
-          } else if (key.equals("numPlayers")) {
+          } else if (key.equalsIgnoreCase("numPlayers")) {
             numPlayers = Integer.parseInt(value);
-          } else if (key.equals("fitnessEvaluator")) {
+          } else if (key.equalsIgnoreCase("fitnessEvaluator")) {
             fitnessEvaluator = FitEvalTypes.valueOf(value);
-          } else if (key.equals("loadFromDisk")) {
+          } else if (key.equalsIgnoreCase("loadFromDisk")) {
             loadFromDisk = Boolean.parseBoolean(value);
-          } else if (key.equals("lastGeneration")) {
+          } else if (key.equalsIgnoreCase("lastGeneration")) {
             lastGeneration = Integer.parseInt(value);
-          } else if (key.equals("useGui")) {
+          } else if (key.equalsIgnoreCase("useGui")) {
             useGui = Boolean.parseBoolean(value);
-          } else if (key.equals("debug")) {
+          } else if (key.equalsIgnoreCase("debug")) {
             debug = Level.parse(value);
-          } else if (key.equals("chromoType")) {
+          } else if (key.equalsIgnoreCase("chromoType")) {
             chromoType = ChromoTypes.valueOf(value);
-          } else if (key.equals("mutationRate")) {
+          } else if (key.equalsIgnoreCase("mutationRate")) {
             mutationRate = Double.parseDouble(value);
-          } else if (key.equals("useRandomSeed")) {
+          } else if (key.equalsIgnoreCase("useRandomSeed")) {
             useRandomSeed = Boolean.parseBoolean(value);
-          } else if (key.equals("numThreads")) {
+          } else if (key.equalsIgnoreCase("numThreads")) {
             numThreads = Integer.parseInt(value);
-          } else if (key.equals("dumpPlayerData")) {
-            dumpPlayerData = Boolean.parseBoolean(value);
+          } else if (key.equalsIgnoreCase("dumpPeriod")) {
+            dumpPeriod = Integer.parseInt(value);
           }
         }
       } catch (IOException e) {
@@ -194,7 +201,7 @@ public class Main {
           { "Mutation Rate", "" + mutationRate },
           { randomSeedLabel, new Boolean[] { Boolean.TRUE, Boolean.FALSE } },
           { "Number of threads (1 thread per concurrent game)", "" + numThreads },
-          { dumpPlayerDataLabel, new Boolean[] { Boolean.TRUE, Boolean.FALSE }  } };
+          { dumpPeriodLabel, ""+dumpPeriod} };
 
       gui = new Gui(this);
       gui.init(fields);
@@ -246,14 +253,18 @@ public class Main {
   }
 
   /**
-   * Utility method for GUI to set simulation parameters
+   * Utility method for GUI to set simulation parameters. Note that there are
+   * two versions of this method, this one for Integers and Doubles, and another 
+   * method for objects, which is why the switch statement does not cover all
+   * possible index values.
    * 
    * @param index
    *          The index of the parameter in the class to set. The index is
    *          zero-based and based on the position of the parameter in the GUI,
    *          with the first parameter given index 0, the second parameter in
    *          the GUI is index 1, etc.
-   * @param text The value of the parameter
+   * @param text
+   *          The value of the parameter
    */
   public static void setExecutionValue(int index, String text)
   {
@@ -290,39 +301,20 @@ public class Main {
       // number of threads
       numThreads = Integer.parseInt(text);
       break;
+    case 13:
+      // dump period
+      dumpPeriod = Integer.parseInt(text);
+      break;
     default:
       break;
     }
   }
 
   /**
-   * Utility method for this object to set the Match field in the GUI
-   * 
-   * @param matches
-   *          The current match number
-   */
-  public void setMatchNum(int matches)
-  {
-    if (useGui) {
-      gui.matchNum.setText("" + matches);
-    }
-  }
-
-  /**
-   * Utility method for this object to set the Generation field in the GUI
-   * 
-   * @param matches
-   *          The current generation number
-   */
-  public void setGenNum(int generation)
-  {
-    if (useGui) {
-      gui.genNum.setText("" + generation);
-    }
-  }
-
-  /**
-   * Utility method for GUI to set simulation parameters from a Combo Box
+   * Utility method for GUI to set simulation parameters from a Combo Box. Note
+   * that there are two versions of this method, this one for objects and
+   * another method for Integers and Doubles, which is why the switch statement
+   * does not cover all possible index values.
    * 
    * @param index
    *          The index of the parameter in the class to set. The index is
@@ -356,11 +348,33 @@ public class Main {
       // use random seed
       useRandomSeed = (Boolean) selectedItem;
       break;
-    case 13:
-      // whether to dump player data files or not
-      dumpPlayerData = (Boolean) selectedItem;
-      break;
     default:
+    }
+  }
+
+  /**
+   * Utility method for this object to set the Match field in the GUI
+   * 
+   * @param matches
+   *          The current match number
+   */
+  public void setMatchNum(int matches)
+  {
+    if (useGui) {
+      gui.matchNum.setText("" + matches);
+    }
+  }
+
+  /**
+   * Utility method for this object to set the Generation field in the GUI
+   * 
+   * @param matches
+   *          The current generation number
+   */
+  public void setGenNum(int generation)
+  {
+    if (useGui) {
+      gui.genNum.setText("" + generation);
     }
   }
 }

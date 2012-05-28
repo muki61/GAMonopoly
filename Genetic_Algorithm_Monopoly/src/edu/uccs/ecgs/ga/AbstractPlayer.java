@@ -46,8 +46,8 @@ public abstract class AbstractPlayer
 
   private TreeMap<Integer, Location> owned;
   public boolean inJail = false;
-  private Chance chanceGOOJ;
-  private CommunityChest ccGOOJ;
+  private Chance chanceGOOJ; // chance get out of jail card
+  private CommunityChest ccGOOJ; // community chest get out of jail card
   private int fitnessScore = 0;
   private int finishOrder = 0;
   
@@ -409,8 +409,18 @@ public abstract class AbstractPlayer
    * @param score
    *          The amount to add to the player's fitness.
    */
-  public void setFitness(int score) {
+  public void addToFitness(int score) {
     fitnessScore += score;
+  }
+
+  /**
+   * Set the player's fitness score to the given value.
+   * 
+   * @param score
+   *          The new value for the fitness score.
+   */
+  public void setFitness (int score) {
+    fitnessScore = score;
   }
 
   /**
@@ -917,10 +927,11 @@ public abstract class AbstractPlayer
    */
   private void processMortgagedLots(Vector<Location> mortgaged) {
     // only unmortgage when other monopolies have been fully developed
+    //
     // TODO: Need to validate this FOR block. It appears that the original
     // intent here was that if a location was part of a monopoly, then it should
-    // be fully developed with 3 houses or a hotel before the player pays off the
-    // mortgage for other properties.
+    // be fully developed with 3 houses or a hotel before the player pays off
+    // the mortgage for other properties.
     for (Location location : owned.values()) {
       if (location.isMortgaged() || location.groupIsMortgaged(game.gamekey)) {
         continue;

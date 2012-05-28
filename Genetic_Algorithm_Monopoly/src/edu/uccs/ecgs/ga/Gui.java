@@ -134,8 +134,6 @@ public class Gui extends JFrame {
       ((JComboBox) choice).setSelectedItem(Main.loadFromDisk);
     } else if (label.equalsIgnoreCase(Main.randomSeedLabel)) {
       ((JComboBox) choice).setSelectedItem(Main.useRandomSeed);      
-    } else if (label.equalsIgnoreCase(Main.dumpPlayerDataLabel)) {
-      ((JComboBox) choice).setSelectedItem(Main.dumpPlayerData);          
     } else {
       ((JComboBox) choice).setSelectedItem(Main.fitnessEvaluator);
       ((JComboBox) choice).setSelectedItem(Main.debug);

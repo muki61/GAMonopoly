@@ -11,7 +11,13 @@ import java.util.Vector;
 
 public class PopulationPropagator {
   private static Random r = new Random();
-  private static int pointsPerGame;
+
+  // Fitness is normalized to a 0 to 100 scale, so average fitness should
+  // be around 50. Add a buffer fact of 1.
+  private static final int avgPointsPerGame = 51;
+
+  private static final int rouletteSize = avgPointsPerGame * Main.maxPlayers;
+  
   private static PopulationPropagator _this = new PopulationPropagator();
 
   private PopulationPropagator() {
@@ -19,35 +25,27 @@ public class PopulationPropagator {
     if (Main.useRandomSeed) {
       seed = System.currentTimeMillis();
     }
-    r.setSeed(seed);
-    
-    // In a game with 4 players, the total points per game is 0+1+2+3 = 6
-    // In a game with 5 players, the total points per game is 0+1+2+3+4 = 10
-    // In general, total points is sum 0..(numPlayers-1)
-    // TODO: With different evaluators, this is no longer true, but this is only
-    // used to size the Vector used for roulette picking, so it's probably not a big deal
-    for (int i = 0; i < Main.numPlayers; i++) {
-      pointsPerGame += i;
-    }
+    r.setSeed(seed);    
   }
   
   public PopulationPropagator getEvolver() {
     return _this;
   }
   
-  public static Vector<AbstractPlayer> evolve (Vector<AbstractPlayer> population, int minEliteScore) 
+  public static Vector<AbstractPlayer> evolve(Vector<AbstractPlayer> population,
+                                              int minEliteScore)
   {
-    Vector<AbstractPlayer> newPopulation = new Vector<AbstractPlayer>(Main.maxPlayers);
-    // Total fitness available in one generation is 
-    //      (points per game) * (number of games per match) * (number of Matches) 
-    int totalFitness = pointsPerGame * (Main.maxPlayers / Main.numPlayers) * Main.numMatches;
-    // Each player gets one entry in the roulette for each point of fitness, so make the
-    // roulette have has many slots as the total fitness in a generation
-    Vector<AbstractPlayer> roulette = new Vector<AbstractPlayer>(totalFitness);
+    Vector<AbstractPlayer> newPopulation = new Vector<AbstractPlayer>(
+        Main.maxPlayers);
+
+    // Each player gets one entry in the roulette for each point of fitness, so
+    // make the roulette have has many slots as the total fitness in a
+    // generation
+    Vector<AbstractPlayer> roulette = new Vector<AbstractPlayer>(rouletteSize);
 
     for (AbstractPlayer player : population) {
-      // elitism - pick the top 10% best players (might be more than 10% due to duplicate fitness)
-      //TODO Frayn used only top 3
+      // elitism - pick the top 10% best players (might be more than 10% due to
+      // duplicate fitness)
       if (player.getFitness() >= minEliteScore) {
         newPopulation.add(player);
       }
@@ -156,7 +154,7 @@ public class PopulationPropagator {
       }
 
       // filenames run from plyr0000.dat to plyr0999.dat
-      if (filename.matches("plyr\\d\\d\\d\\d.dat")) {
+      if (filename.matches("player\\d\\d\\d\\d.dat")) {
         //System.out.println("Found matching filename: " + filename);
         int index = Integer.parseInt(filename.substring(4, 8));
         AbstractPlayer player = loadPlayer(dir + "/" + filename, index);
