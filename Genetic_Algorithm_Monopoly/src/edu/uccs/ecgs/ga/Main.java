@@ -123,10 +123,11 @@ public class Main {
   public static void main(String[] args)
   {
     Main main = new Main();
-    main.start();
+
+    main.start(args);
   }
 
-  public void start()
+  public void start(String[] args)
   {
     File f = new File("Main.properties");
     BufferedInputStream inStream = null;
@@ -137,37 +138,7 @@ public class Main {
         props.load(inStream);
         for(String key : props.stringPropertyNames()) {
           String value = props.getProperty(key);
-          if (key.equalsIgnoreCase("maxPlayers")) {
-            maxPlayers = Integer.parseInt(value);
-          } else if (key.equalsIgnoreCase("numGenerations")) {
-            numGenerations = Integer.parseInt(value);
-          } else if (key.equalsIgnoreCase("numMatches")) {
-            numMatches = Integer.parseInt(value);
-          } else if (key.equalsIgnoreCase("maxTurns")) {
-            maxTurns = Integer.parseInt(value);
-          } else if (key.equalsIgnoreCase("numPlayers")) {
-            numPlayers = Integer.parseInt(value);
-          } else if (key.equalsIgnoreCase("fitnessEvaluator")) {
-            fitnessEvaluator = FitEvalTypes.valueOf(value);
-          } else if (key.equalsIgnoreCase("loadFromDisk")) {
-            loadFromDisk = Boolean.parseBoolean(value);
-          } else if (key.equalsIgnoreCase("lastGeneration")) {
-            lastGeneration = Integer.parseInt(value);
-          } else if (key.equalsIgnoreCase("useGui")) {
-            useGui = Boolean.parseBoolean(value);
-          } else if (key.equalsIgnoreCase("debug")) {
-            debug = Level.parse(value);
-          } else if (key.equalsIgnoreCase("chromoType")) {
-            chromoType = ChromoTypes.valueOf(value);
-          } else if (key.equalsIgnoreCase("mutationRate")) {
-            mutationRate = Double.parseDouble(value);
-          } else if (key.equalsIgnoreCase("useRandomSeed")) {
-            useRandomSeed = Boolean.parseBoolean(value);
-          } else if (key.equalsIgnoreCase("numThreads")) {
-            numThreads = Integer.parseInt(value);
-          } else if (key.equalsIgnoreCase("dumpPeriod")) {
-            dumpPeriod = Integer.parseInt(value);
-          }
+          setParam(key, value);
         }
       } catch (IOException e) {
         e.printStackTrace();
@@ -182,7 +153,13 @@ public class Main {
       System.out.println("Could not find properties file " + f.getAbsolutePath());
       System.out.println("Using default program parameters.");
     }
-    
+
+    for (String arg : args) {
+      String[] keyValue = arg.split("=");
+      // key is index 0, value is index 1
+      setParam(keyValue[0], keyValue[1]);
+    }
+
     if (useGui) {
       Object[][] fields = new Object[][] { 
           { "Number of generations", "" + numGenerations },
@@ -349,6 +326,45 @@ public class Main {
       useRandomSeed = (Boolean) selectedItem;
       break;
     default:
+    }
+  }
+
+  /**
+   * @param key
+   * @param value
+   */
+  private void setParam(String key, String value)
+  {
+    if (key.equalsIgnoreCase("maxPlayers")) {
+      maxPlayers = Integer.parseInt(value);
+    } else if (key.equalsIgnoreCase("numGenerations")) {
+      numGenerations = Integer.parseInt(value);
+    } else if (key.equalsIgnoreCase("numMatches")) {
+      numMatches = Integer.parseInt(value);
+    } else if (key.equalsIgnoreCase("maxTurns")) {
+      maxTurns = Integer.parseInt(value);
+    } else if (key.equalsIgnoreCase("numPlayers")) {
+      numPlayers = Integer.parseInt(value);
+    } else if (key.equalsIgnoreCase("fitnessEvaluator")) {
+      fitnessEvaluator = FitEvalTypes.valueOf(value);
+    } else if (key.equalsIgnoreCase("loadFromDisk")) {
+      loadFromDisk = Boolean.parseBoolean(value);
+    } else if (key.equalsIgnoreCase("lastGeneration")) {
+      lastGeneration = Integer.parseInt(value);
+    } else if (key.equalsIgnoreCase("useGui")) {
+      useGui = Boolean.parseBoolean(value);
+    } else if (key.equalsIgnoreCase("debug")) {
+      debug = Level.parse(value);
+    } else if (key.equalsIgnoreCase("chromoType")) {
+      chromoType = ChromoTypes.valueOf(value);
+    } else if (key.equalsIgnoreCase("mutationRate")) {
+      mutationRate = Double.parseDouble(value);
+    } else if (key.equalsIgnoreCase("useRandomSeed")) {
+      useRandomSeed = Boolean.parseBoolean(value);
+    } else if (key.equalsIgnoreCase("numThreads")) {
+      numThreads = Integer.parseInt(value);
+    } else if (key.equalsIgnoreCase("dumpPeriod")) {
+      dumpPeriod = Integer.parseInt(value);
     }
   }
 
