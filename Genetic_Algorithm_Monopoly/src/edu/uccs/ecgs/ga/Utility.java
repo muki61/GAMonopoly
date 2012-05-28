@@ -6,7 +6,15 @@ import javax.swing.JFileChooser;
 public class Utility {
   private static String rootDir;
 
-  public static synchronized StringBuilder getDirForGen(int generation) {
+  public static synchronized StringBuilder getDirForGen(int generation)
+  {
+    return getDirForGen(null, null, generation);
+  }
+
+  public static synchronized StringBuilder getDirForGen(ChromoTypes chromoType,
+                                                        FitEvalTypes fitEval,
+                                                        int generation)
+  {
     File f = null;
     if (rootDir == null || rootDir.equals("")) {
       if (Main.useGui) {
@@ -22,9 +30,6 @@ public class Utility {
       } else {
         // not using gui
         f = new File("data");
-        if (!f.exists()) {
-          f.mkdir();
-        }
       }
 
       rootDir = f.getAbsolutePath();
@@ -32,7 +37,8 @@ public class Utility {
     }
 
     StringBuilder dir = new StringBuilder(rootDir);
-    dir.append("/");
+    dir.append("/").append(chromoType.toString());
+    dir.append("/").append(fitEval.get().getDirName()).append("/");
 
     if (generation < 10) {
       dir.append("Generation_0000" + generation);
@@ -45,6 +51,12 @@ public class Utility {
     } else if (generation < 100000) {
       dir.append("Generation_" + generation);
     }
+    
+    f = new File(dir.toString());
+    if (!f.exists()) {
+      f.mkdirs();
+    }
+
     return dir;
   }
 }

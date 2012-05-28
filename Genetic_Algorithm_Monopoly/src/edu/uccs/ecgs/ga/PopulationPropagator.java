@@ -138,12 +138,13 @@ public class PopulationPropagator {
     return newPopulation;
   }
   
-  public static Vector<AbstractPlayer> loadPlayers(int gen) {
+  public static Vector<AbstractPlayer> loadPlayers(int generation) {
     int playerCount = 0;
 
     Vector<AbstractPlayer> newPopulation = new Vector<AbstractPlayer>(Main.maxPlayers);
 
-    StringBuilder dir = Utility.getDirForGen(gen);
+    StringBuilder dir = Utility.getDirForGen(Main.chromoType,
+        Main.fitnessEvaluator, generation);
 
     File theDirectory = new File(dir.toString());
     String[] files = theDirectory.list();

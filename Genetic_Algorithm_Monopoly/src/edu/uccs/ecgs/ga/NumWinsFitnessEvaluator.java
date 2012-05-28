@@ -26,4 +26,10 @@ public class NumWinsFitnessEvaluator extends AbstractFitnessEvaluator {
       player.addToFitness(gameScore);
     }
   }
+
+  @Override
+  public String getDirName()
+  {
+    return "num_wins";
+  }
 }

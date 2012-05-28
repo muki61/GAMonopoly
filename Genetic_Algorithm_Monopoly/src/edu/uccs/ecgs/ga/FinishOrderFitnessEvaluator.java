@@ -21,4 +21,10 @@ public class FinishOrderFitnessEvaluator extends AbstractFitnessEvaluator {
       player.addToFitness(gameScore);
     }
   }
+
+  @Override
+  public String getDirName()
+  {
+    return "finish_order";
+  }
 }

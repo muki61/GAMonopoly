@@ -17,4 +17,10 @@ public class TournamentFitnessEvaluator extends AbstractFitnessEvaluator {
       player.addToFitness(gameScore);
     }
   }
+
+  @Override
+  public String getDirName()
+  {
+    return "tournament";
+  }
 }

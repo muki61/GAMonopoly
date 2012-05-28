@@ -22,4 +22,10 @@ public class NetWorthFitnessEvaluator extends AbstractFitnessEvaluator {
       player.addToFitness(Math.round(gameScore));
     }
   }
+
+  @Override
+  public String getDirName()
+  {
+    return "net_worth";
+  }
 }

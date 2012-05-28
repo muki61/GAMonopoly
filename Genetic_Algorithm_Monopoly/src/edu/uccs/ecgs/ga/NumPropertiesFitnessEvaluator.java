@@ -20,4 +20,10 @@ public class NumPropertiesFitnessEvaluator extends AbstractFitnessEvaluator {
       player.addToFitness(gameScore);
     }
   }
+
+  @Override
+  public String getDirName()
+  {
+    return "num_properties";
+  }
 }

@@ -245,12 +245,8 @@ public class GAEngine implements Runnable {
       }
     }
 
-    StringBuilder dir = Utility.getDirForGen(generation);
-
-    File file = new File(dir.toString());
-    if (!file.exists()) {
-      file.mkdir();
-    }
+    StringBuilder dir = Utility.getDirForGen(Main.chromoType,
+        Main.fitnessEvaluator, generation);
 
     // dump the score counts
     BufferedWriter bw = null;
@@ -351,12 +347,8 @@ public class GAEngine implements Runnable {
       fn1.insert(0, "player");
       fn1.append(".dat");
 
-      StringBuilder dir = Utility.getDirForGen(generation);
-
-      File file = new File(dir.toString());
-      if (!file.exists()) {
-        file.mkdir();
-      }
+      StringBuilder dir = Utility.getDirForGen(Main.chromoType,
+          Main.fitnessEvaluator, generation);
 
       DataOutputStream dos = null;
       try {

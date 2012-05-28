@@ -310,15 +310,11 @@ public class Monopoly implements Runnable {
    * the formatter to the logger.
    */
   public void logFileSetup() {
-    StringBuilder dir = Utility.getDirForGen(generation);
-
-    File file = new File(dir.toString());
-    if (!file.exists()) {
-      file.mkdir();
-    }
+    StringBuilder dir = Utility.getDirForGen(Main.chromoType,
+        Main.fitnessEvaluator, generation);
 
     dir.append("/").append(getMatchString());
-    file = new File(dir.toString());
+    File file = new File(dir.toString());
     if (!file.exists()) {
       file.mkdir();
     }
