@@ -153,7 +153,7 @@ public class PopulationPropagator {
         break;
       }
 
-      // filenames run from plyr0000.dat to plyr0999.dat
+      // filenames run from player0000.dat to player0999.dat
       if (filename.matches("player\\d\\d\\d\\d.dat")) {
         //System.out.println("Found matching filename: " + filename);
         int index = Integer.parseInt(filename.substring(4, 8));
