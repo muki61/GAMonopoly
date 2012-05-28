@@ -54,6 +54,8 @@ public abstract class AbstractPlayer
   private boolean isBankrupt = false;
   private int bankruptIndex = 0;
   protected Monopoly game;
+  // the total net worth of all players in a single game
+  private int gameNetWorth;
 
   /**
    * Constructor
@@ -1374,4 +1376,15 @@ public abstract class AbstractPlayer
 
     return result;
   }
+
+  public void setGameNetWorth(int totalNetWorth)
+  {
+    gameNetWorth = totalNetWorth;
+  }
+  
+  public int getGameNetWorth()
+  {
+    return gameNetWorth;
+  }
+
 }

@@ -1,5 +1,7 @@
 package edu.uccs.ecgs.ga;
 
+import java.util.Vector;
+
 /**
  * Compute fitness based on the number of wins a player has. For each first
  * place finish in a game, the player is awarded a score that is the number of
@@ -13,11 +15,15 @@ public class NumWinsFitnessEvaluator extends AbstractFitnessEvaluator {
   private static final int MIN_SCORE = 0;
 
   @Override
-  public void evaluate(AbstractPlayer player) {
-    // Compute the score for the most recent game
-    int gameScore = player.getFinishOrder() == FIRST_PLACE ? MAX_SCORE : MIN_SCORE;
+  public void evaluate(Vector<AbstractPlayer> players)
+  {
+    for (AbstractPlayer player : players) {
+      // Compute the score for the most recent game
+      int gameScore = player.getFinishOrder() == FIRST_PLACE ? MAX_SCORE
+          : MIN_SCORE;
 
-    // Store the new fitness value
-    player.addToFitness(gameScore);
+      // Store the new fitness value
+      player.addToFitness(gameScore);
+    }
   }
 }

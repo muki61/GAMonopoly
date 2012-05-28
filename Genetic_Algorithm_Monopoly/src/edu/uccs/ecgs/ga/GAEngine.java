@@ -179,9 +179,7 @@ public class GAEngine implements Runnable {
           }
         }
 
-        for (AbstractPlayer player : playersDone) {
-          fitEval.evaluate(player);
-        }
+        fitEval.evaluate(playersDone);
         
         ++matches;
 

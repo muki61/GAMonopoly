@@ -1,5 +1,6 @@
 package edu.uccs.ecgs.ga;
 
+import java.util.Vector;
 
 /**
  * Compute fitness based on the finish order for the player. For each first
@@ -10,11 +11,14 @@ package edu.uccs.ecgs.ga;
  */
 public class FinishOrderFitnessEvaluator extends AbstractFitnessEvaluator {
   @Override
-  public void evaluate(AbstractPlayer player) {
-    // Compute the score for the most recent game
-    int gameScore = Main.numPlayers - player.getFinishOrder();
+  public void evaluate(Vector<AbstractPlayer> players)
+  {
+    for (AbstractPlayer player : players) {
+      // Compute the score for the most recent game
+      int gameScore = Main.numPlayers - player.getFinishOrder();
 
-    // Store the new fitness value
-    player.addToFitness(gameScore);
+      // Store the new fitness value
+      player.addToFitness(gameScore);
+    }
   }
 }

@@ -220,13 +220,20 @@ public class Monopoly implements Runnable {
       }
     }
 
-    TreeMap<Integer, AbstractPlayer> sortedPlayers = new TreeMap<Integer, AbstractPlayer>();
+    TreeMap<Integer, AbstractPlayer> sortedPlayers = 
+        new TreeMap<Integer, AbstractPlayer>();
+
+    int totalNetWorth = 0;
+    
     for (AbstractPlayer p : players) {
-      if (p.getTotalWorth() == 0) {
+      int playerNetWorth = p.getTotalWorth();
+      totalNetWorth += playerNetWorth;
+      
+      if (playerNetWorth == 0) {
         sortedPlayers.put(p.getBankruptIndex(), p);
       } else {
-        sortedPlayers.put(p.getTotalWorth(), p);
-      }
+        sortedPlayers.put(playerNetWorth, p);
+      }      
     }
 
     logFinest('\f' + "GAME OVER");
@@ -235,6 +242,7 @@ public class Monopoly implements Runnable {
     int score = Main.numPlayers;
     for (AbstractPlayer p : sortedPlayers.values()) {
       p.setFinishOrder(score);
+      p.setGameNetWorth(totalNetWorth);
       score--;
     }
 
