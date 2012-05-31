@@ -36,7 +36,7 @@ public class GAEngine implements Runnable {
    * A map sorted by score; the key for each entry is a score and the entry
    * value is the number of players with that score
    */
-  TreeMap<Integer, Integer> scores = new TreeMap<Integer, Integer>();
+  TreeMap<Integer, Integer> scores = null;
 
   /**
    * The pool of available players in a generation. When a player is picked for
@@ -196,7 +196,8 @@ public class GAEngine implements Runnable {
         dumpGenome();
       }
 
-      fitEval.normalize(playerPool);
+      // not sure if normalization is useful, so don't call it for now.
+      // fitEval.normalize(playerPool);
 
       dumpPlayerFitness();
 
@@ -231,6 +232,8 @@ public class GAEngine implements Runnable {
     // individual score
     ArrayList<AbstractPlayer> fitness = new ArrayList<AbstractPlayer>(
         Main.maxPlayers);
+
+    scores = new TreeMap<Integer, Integer>();
 
     for (AbstractPlayer player : playerPool) {
       fitness.add(player);
@@ -309,7 +312,7 @@ public class GAEngine implements Runnable {
   }
 
   /**
-   * Compute the minimu elite score to allow 10% of the players to directly
+   * Compute the minimum elite score to allow 10% of the players to directly
    * propagate to the next generation.
    */
   private void computeMinEliteScore()
