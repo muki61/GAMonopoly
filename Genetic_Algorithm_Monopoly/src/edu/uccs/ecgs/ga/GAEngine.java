@@ -189,22 +189,23 @@ public class GAEngine implements Runnable {
         games.clear();
       }
 
+      computeMinEliteScore();
+
       // dump the player data every dumpPeriod generations and the last
       // generation
       if (generation % Main.dumpPeriod == 0
           || generation == Main.numGenerations - 1) {
         dumpGenome();
+
+        // not sure if normalization is useful, so don't call it for now.
+        // fitEval.normalize(playerPool);
+
+        dumpPlayerFitness();
       }
-
-      // not sure if normalization is useful, so don't call it for now.
-      // fitEval.normalize(playerPool);
-
-      dumpPlayerFitness();
 
       generation++;
 
       if (generation < Main.numGenerations) {
-        computeMinEliteScore();
         Vector<AbstractPlayer> newPopulation = 
             PopulationPropagator.evolve(playerPool, minEliteScore);
         playerPool.clear();
@@ -233,19 +234,7 @@ public class GAEngine implements Runnable {
     ArrayList<AbstractPlayer> fitness = new ArrayList<AbstractPlayer>(
         Main.maxPlayers);
 
-    scores = new TreeMap<Integer, Integer>();
-
-    for (AbstractPlayer player : playerPool) {
-      fitness.add(player);
-
-      Integer val = scores.get(player.getFitness());
-      if (val == null) {
-        scores.put(player.getFitness(), 1);
-      } else {
-        Integer newVal = val.intValue() + 1;
-        scores.put(player.getFitness(), newVal);
-      }
-    }
+    fitness.addAll(playerPool);
 
     StringBuilder dir = Utility.getDirForGen(Main.chromoType,
         Main.fitnessEvaluator, generation);
@@ -317,6 +306,18 @@ public class GAEngine implements Runnable {
    */
   private void computeMinEliteScore()
   {
+    scores = new TreeMap<Integer, Integer>();
+
+    for (AbstractPlayer player : playerPool) {
+      Integer val = scores.get(player.getFitness());
+      if (val == null) {
+        scores.put(player.getFitness(), 1);
+      } else {
+        Integer newVal = val.intValue() + 1;
+        scores.put(player.getFitness(), newVal);
+      }
+    }
+
     minEliteScore = 0;
     int playerCount = 0;
     int maxPlayerCount = (int) (0.1 * Main.maxPlayers);
