@@ -413,6 +413,7 @@ public abstract class AbstractPlayer
    */
   public void addToFitness(int score) {
     fitnessScore += score;
+    assert fitnessScore >= 0;
   }
 
   /**

@@ -19,8 +19,13 @@ public class NetWorthFitnessEvaluator extends AbstractFitnessEvaluator {
       float gameScore = 300f * ((float) player.getTotalWorth())
           / ((float) player.getGameNetWorth());
       
+      assert gameScore >= 0.0f;
+      
+      int roundedGameScore = Math.round(gameScore);
+      assert roundedGameScore >= 0;
+
       // Store the new fitness value
-      player.addToFitness(Math.round(gameScore));
+      player.addToFitness(roundedGameScore);
     }
   }
 
