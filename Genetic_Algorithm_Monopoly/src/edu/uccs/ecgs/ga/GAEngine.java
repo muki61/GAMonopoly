@@ -158,6 +158,7 @@ public class GAEngine implements Runnable {
           } catch (InterruptedException ignored) {
           }
         }
+        assert playerPool.isEmpty();
 
         // Start the executor shutdown process...
         gameExecutor.shutdown();
@@ -178,6 +179,9 @@ public class GAEngine implements Runnable {
           }
         }
 
+        for (Monopoly game : games) {
+          assert game.done;
+        }
         fitEval.evaluate(playersDone);
         
         ++matches;
@@ -210,6 +214,10 @@ public class GAEngine implements Runnable {
             PopulationPropagator.evolve(playerPool, minEliteScore);
         playerPool.clear();
         playerPool.addAll(newPopulation);
+        
+        for (AbstractPlayer player : playerPool) {
+          assert player.getFitness() == 0;
+        }
       }
 
       // TODO There seems to be memory being held onto by the program.

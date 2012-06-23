@@ -16,13 +16,17 @@ public class NetWorthFitnessEvaluator extends AbstractFitnessEvaluator {
       // Compute the score for the most recent game
       // game score is ratio of net worth to total net worth in game
       // and then mapped and rounded to a scale from 0 to 300
-      float gameScore = 300f * ((float) player.getTotalWorth())
-          / ((float) player.getGameNetWorth());
+      float playerNetWorth = (float) player.getTotalWorth();
+      float gameNetWorth = (float) player.getGameNetWorth(); 
+      float gameScore = 300f * playerNetWorth
+          / gameNetWorth;
       
       assert gameScore >= 0.0f;
+      assert gameScore <= 300.0f;
       
       int roundedGameScore = Math.round(gameScore);
       assert roundedGameScore >= 0;
+      assert roundedGameScore <= 300;
 
       // Store the new fitness value
       player.addToFitness(roundedGameScore);

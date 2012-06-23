@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Random;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
@@ -22,7 +19,7 @@ public class Monopoly implements Runnable {
   Formatter formatter;
   FileHandler fh;
 
-  private boolean done = false;
+  boolean done = false;
 
   private int generation;
   private int match;
@@ -220,33 +217,30 @@ public class Monopoly implements Runnable {
       }
     }
 
-    TreeMap<Integer, AbstractPlayer> sortedPlayers = 
-        new TreeMap<Integer, AbstractPlayer>();
+    ArrayList<AbstractPlayer> sortedPlayers = new ArrayList<AbstractPlayer>();
 
     int totalNetWorth = 0;
     
     for (AbstractPlayer p : players) {
       int playerNetWorth = p.getTotalWorth();
       totalNetWorth += playerNetWorth;
-      
-      if (playerNetWorth == 0) {
-        sortedPlayers.put(p.getBankruptIndex(), p);
-      } else {
-        sortedPlayers.put(playerNetWorth, p);
-      }      
+      sortedPlayers.add(p);
     }
+    
+    Collections.sort(sortedPlayers, NetWorthComparator.get());
 
     logFinest('\f' + "GAME OVER");
+    assert totalNetWorth > 0;
 
     // In order from loser to winner, add score points to player
     int score = Main.numPlayers;
-    for (AbstractPlayer p : sortedPlayers.values()) {
+    for (AbstractPlayer p : sortedPlayers) {
       p.setFinishOrder(score);
       p.setGameNetWorth(totalNetWorth);
       score--;
     }
 
-    for (AbstractPlayer p : sortedPlayers.values()) {
+    for (AbstractPlayer p : sortedPlayers) {
       logFinest("");
       logFinest(p.toString());
     }    

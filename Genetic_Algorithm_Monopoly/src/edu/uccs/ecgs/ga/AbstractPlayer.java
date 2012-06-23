@@ -1387,5 +1387,4 @@ public abstract class AbstractPlayer
   {
     return gameNetWorth;
   }
-
 }
